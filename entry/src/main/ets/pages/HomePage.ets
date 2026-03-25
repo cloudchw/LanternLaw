@@ -74,16 +74,23 @@ export struct HomePage {
       Column() {
         this.TopStatusBar()
 
-        Column() {
-          this.TitleSection()
-          this.ClockSection()
-          this.LanternSection()
-          this.MotivationSection()
-          this.StatisticsSection()
-          this.ActionButtons()
+        // 可滚动内容区域
+        Scroll() {
+          Column() {
+            this.TitleSection()
+            this.ClockSection()
+            this.LanternSection()
+            this.MotivationSection()
+            this.StatisticsSection()
+            this.ActionButtons()
+          }
+          .width('90%')
+          .padding({ bottom: 20 })
         }
         .layoutWeight(1)
-        .width('90%')
+        .width('100%')
+        .scrollable(ScrollDirection.Vertical)
+        .edgeEffect(EdgeEffect.Spring)
       }
       .width('100%')
       .height('100%')
@@ -111,7 +118,7 @@ export struct HomePage {
   @Builder
   private TopStatusBar(): void {
     Row() {
-      Text('提灯')
+      Text('掌灯人')
         .fontSize(16)
         .fontColor(this.COLORS.text)
         .fontWeight(FontWeight.Bold)

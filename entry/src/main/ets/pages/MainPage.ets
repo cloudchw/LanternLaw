@@ -16,7 +16,7 @@ export interface TabItem {
 @Component
 export struct MainPage {
   @State currentIndex: number = 0;
-  @State tabBarHeight: number = 80;
+  @State tabBarHeight: number = 60;
 
   private tabs: TabItem[] = [
     {

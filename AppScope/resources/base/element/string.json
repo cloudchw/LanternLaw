@@ -2,11 +2,11 @@
   "string": [
     {
       "name": "app_name",
-      "value": "灯律"
+      "value": "掌灯人"
     },
     {
       "name": "app_description",
-      "value": "鸿蒙灯律自律应用"
+      "value": "LanternLaw - 鸿蒙自律应用"
     }
   ]
 }

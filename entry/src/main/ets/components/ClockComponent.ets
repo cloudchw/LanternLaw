@@ -5,11 +5,24 @@
  */
 @Component
 export struct ClockComponent {
-  @Prop currentTime: Date = new Date();
-  @Prop isLanternLawActive: boolean = false;
+  @Prop @Watch('onTimeChanged') currentTime: Date = new Date();
+  @Prop @Watch('onStateChanged') isLanternLawActive: boolean = false;
+  @Prop @Watch('onRemainingChanged') remainingMinutes: number = 0;
   @Prop clockSize: number = 300;
   private settings: RenderingContextSettings = new RenderingContextSettings(true);
   private context: CanvasRenderingContext2D = new CanvasRenderingContext2D(this.settings);
+
+  onTimeChanged(): void {
+    this.updateClock();
+  }
+
+  onStateChanged(): void {
+    this.updateClock();
+  }
+
+  onRemainingChanged(): void {
+    this.updateClock();
+  }
 
   /**
    * 绘制表盘背景
@@ -205,14 +218,7 @@ export struct ClockComponent {
         .width(this.clockSize)
         .height(this.clockSize)
         .onReady(() => {
-          // 初始绘制
-          this.drawClockFace();
-          this.drawClockHands();
-        })
-        .onAreaChange((oldValue: Area, newValue: Area) => {
-          // 区域变化时重新绘制
-          this.drawClockFace();
-          this.drawClockHands();
+          this.updateClock();
         })
     }
     .width(this.clockSize)
@@ -222,11 +228,12 @@ export struct ClockComponent {
   /**
    * 更新时钟显示
    */
-  updateClock(remainingMinutes: number = 0): void {
+  updateClock(): void {
+    // 清空画布
     this.drawClockFace();
     this.drawClockHands();
-    if (this.isLanternLawActive) {
-      this.drawProgressRing(remainingMinutes);
+    if (this.isLanternLawActive && this.remainingMinutes > 0) {
+      this.drawProgressRing(this.remainingMinutes);
     }
   }
 }

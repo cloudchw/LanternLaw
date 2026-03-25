@@ -191,6 +191,7 @@ struct Index {
       ClockComponent({
         currentTime: this.currentTime,
         isLanternLawActive: this.lanternLawState === LanternLawState.ACTIVE,
+        remainingMinutes: this.getRemainingMinutes(),
         clockSize: 260
       })
         .margin({ bottom: 24 })

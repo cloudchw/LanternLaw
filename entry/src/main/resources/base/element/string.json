@@ -2,15 +2,15 @@
   "string": [
     {
       "name": "module_desc",
-      "value": "module description"
+      "value": "灯律自律应用模块"
     },
     {
       "name": "EntryAbility_desc",
-      "value": "description"
+      "value": "灯律主界面"
     },
     {
       "name": "EntryAbility_label",
-      "value": "label"
+      "value": "灯律"
     }
   ]
 }

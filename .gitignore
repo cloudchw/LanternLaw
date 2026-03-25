@@ -11,4 +11,6 @@
 **/.test
 /.appanalyzer
 /.claude
-/signaturebuild-profile.json5
+/signature
+build-profile.json5
+*.eps

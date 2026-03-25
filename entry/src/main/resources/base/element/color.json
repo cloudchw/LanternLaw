@@ -1,0 +1,46 @@
+{
+  "color": [
+    {
+      "name": "start_window_background",
+      "value": "#0f1529"
+    },
+    {
+      "name": "background",
+      "value": "#0f1529"
+    },
+    {
+      "name": "backgroundLight",
+      "value": "#1a1f3a"
+    },
+    {
+      "name": "accent",
+      "value": "#2a3157"
+    },
+    {
+      "name": "gold",
+      "value": "#ffd166"
+    },
+    {
+      "name": "orange",
+      "value": "#ff9e6d"
+    },
+    {
+      "name": "text",
+      "value": "#c0c6e9"
+    },
+    {
+      "name": "textDim",
+
+
+      "value": "#c0c6e9"
+    },
+    {
+      "name": "primary",
+      "value": "#ffd166"
+    },
+    {
+      "name": "secondary",
+      "value": "#1a1f3a"
+    }
+  ]
+}

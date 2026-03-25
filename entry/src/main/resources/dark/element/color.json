@@ -1,0 +1,28 @@
+{
+  "color": [
+    {
+      "name": "start_window_background",
+      "value": "#0f1529"
+    },
+    {
+      "name": "background",
+      "value": "#0f1529"
+    },
+    {
+      "name": "backgroundLight",
+      "value": "#1a1f3a"
+    },
+    {
+      "name": "gold",
+      "value": "#ffd166"
+    },
+    {
+      "name": "orange",
+      "value": "#ff9e6d"
+    },
+    {
+      "name": "text",
+      "value": "#c0c6e9"
+    }
+  ]
+}

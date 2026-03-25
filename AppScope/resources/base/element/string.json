@@ -1,0 +1,12 @@
+{
+  "string": [
+    {
+      "name": "app_name",
+      "value": "灯律"
+    },
+    {
+      "name": "app_description",
+      "value": "鸿蒙灯律自律应用"
+    }
+  ]
+}

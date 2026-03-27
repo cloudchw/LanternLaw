@@ -14,7 +14,7 @@
       ],
       "settings": {
         "description": "检测用户尝试绕过灯律的行为，包括应用切换和卸载尝试",
-        "settingsAbility": "com.cloudchw.lanternlaw.MainAbility"
+        "settingsAbility": "com.cloudchw.lanternlaw.EntryAbility"
       }
     }
   ]

@@ -6,13 +6,11 @@
  * 并在灯律时段内拦截非白名单应用
  */
 
-import AccessibilityExtensionAbility from '@ohos.application.AccessibilityExtensionAbility';
-import AccessibilityEvent from '@ohos.application.AccessibilityEvent';
+import { AccessibilityExtensionAbility, AccessibilityEvent } from '@kit.AccessibilityKit';
 import { LanternLawStateManager } from '../managers/LanternLawStateManager';
 import { AppBlockingService } from '../services/AppBlockingService';
 import { Logger } from '../utils/Logger';
-import { ErrorHandler } from '../utils/ErrorHandler';
-import { TimerWorker } from '../utils/TimerWorker';
+import bundleManager from '@ohos.bundle.bundleManager';
 
 // 频率限制窗口：5分钟
 const FREQUENCY_LIMIT_WINDOW_MS: number = 5 * 60 * 1000;
@@ -44,9 +42,6 @@ export default class LanternLawAccessibilityAbility extends AccessibilityExtensi
   // 应用切换记录缓存（用于频率限制）
   private appSwitchRecords: Map<string, AppSwitchRecord> = new Map();
 
-  // 定时器用于清理过期记录
-  private cleanupTimer: TimerWorker | null = null;
-
   /**
    * 无障碍服务初始化
    */
@@ -55,11 +50,7 @@ export default class LanternLawAccessibilityAbility extends AccessibilityExtensi
 
     try {
       // 获取本应用包名
-      LANTERNLAW_APP_PACKAGE = this.context?.applicationInfo?.bundleName || 'com.example.lanternlaw';
-      Logger.info('LanternLawAccessibilityAbility', `应用包名: ${LANTERNLAW_APP_PACKAGE}`);
-
-      // 启动定时清理任务（每小时清理一次过期记录）
-      this.startCleanupTimer();
+      this.getBundleName();
 
       Logger.info('LanternLawAccessibilityAbility', '无障碍服务初始化完成');
     } catch (error) {
@@ -68,14 +59,33 @@ export default class LanternLawAccessibilityAbility extends AccessibilityExtensi
   }
 
   /**
+   * 获取本应用包名
+   */
+  private async getBundleName(): Promise<void> {
+    try {
+      const bundleInfo = await bundleManager.getBundleInfoForSelf(bundleManager.BundleFlag.GET_BUNDLE_INFO_DEFAULT);
+      LANTERNLAW_APP_PACKAGE = bundleInfo.name;
+      Logger.info('LanternLawAccessibilityAbility', `应用包名: ${LANTERNLAW_APP_PACKAGE}`);
+    } catch (error) {
+      Logger.exception('LanternLawAccessibilityAbility', error instanceof Error ? error : String(error), '获取包名失败');
+      LANTERNLAW_APP_PACKAGE = 'com.cloudchw.lanternlaw';
+    }
+  }
+
+  /**
    * 无障碍事件处理
    * @param event 无障碍事件
    */
   onAccessibilityEvent(event: AccessibilityEvent): void {
-    // 使用安全同步错误处理
-    ErrorHandler.safeSync('处理无障碍事件', () => {
+    if (!event) {
+      return;
+    }
+
+    try {
       this.handleAccessibilityEvent(event);
-    });
+    } catch (error) {
+      Logger.exception('LanternLawAccessibilityAbility', error instanceof Error ? error : String(error), '处理无障碍事件时发生错误');
+    }
   }
 
   /**
@@ -97,10 +107,6 @@ export default class LanternLawAccessibilityAbility extends AccessibilityExtensi
    */
   onDestroy(): void {
     Logger.info('LanternLawAccessibilityAbility', '无障碍服务销毁');
-
-    // 停止定时器
-    this.stopCleanupTimer();
-
     // 清理缓存
     this.appSwitchRecords.clear();
   }
@@ -110,68 +116,60 @@ export default class LanternLawAccessibilityAbility extends AccessibilityExtensi
    * @param event 无障碍事件
    */
   private handleAccessibilityEvent(event: AccessibilityEvent): void {
-    if (!event || !event.type) {
-      return;
-    }
+    // 将事件转换为字符串形式进行处理
+    const eventStr = JSON.stringify(event);
+    const eventObj = JSON.parse(eventStr) as Record<string, Object>;
 
-    try {
-      const eventType = event.type;
+    // 获取事件类型
+    const eventType = eventObj['eventType'] as number;
 
-      // 根据事件类型处理
-      switch (eventType) {
-        case 'windowStateChanged':
-          this.handleWindowStateChanged(event);
-          break;
-
-        case 'notificationChange':
-          this.handleNotificationStateChanged(event);
-          break;
-
-        case 'windowContentChanged':
-          this.handleWindowContentChanged(event);
-          break;
-
-        default:
-          // 其他事件类型可以忽略
-          Logger.debug('LanternLawAccessibilityAbility', `收到未处理的无障碍事件类型: ${eventType}`);
-          break;
-      }
-    } catch (error) {
-      Logger.exception('LanternLawAccessibilityAbility', error instanceof Error ? error : String(error), '处理无障碍事件时发生错误');
+    // 根据事件类型处理
+    // 0x00000010 = TYPE_WINDOW_STATE_CHANGED (16)
+    // 0x00000020 = TYPE_NOTIFICATION_STATE_CHANGED (32)
+    // 0x00000800 = TYPE_WINDOW_CONTENT_CHANGED (2048)
+    if (eventType === 16) {
+      this.handleWindowStateChanged(eventObj);
+    } else if (eventType === 32) {
+      this.handleNotificationStateChanged(eventObj);
+    } else if (eventType === 2048) {
+      this.handleWindowContentChanged(eventObj);
     }
   }
 
   /**
    * 处理窗口状态变化事件（应用切换检测）
-   * @param event 无障碍事件
+   * @param eventObj 事件对象
    */
-  private handleWindowStateChanged(event: AccessibilityEvent): void {
+  private handleWindowStateChanged(eventObj: Record<string, Object>): void {
     try {
-      const packageName = event?.packageName;
-      const className = event?.className;
+      const packageName = eventObj['packageName'] as string;
+      const bundleName = eventObj['bundleName'] as string;
 
-      if (!packageName || !className) {
+      // 使用 packageName 或 bundleName
+      const targetPackage = packageName || bundleName;
+
+      if (!targetPackage) {
         return;
       }
 
-      Logger.debug('LanternLawAccessibilityAbility', `窗口状态变化: ${packageName}/${className}`);
+      Logger.debug('LanternLawAccessibilityAbility', `窗口状态变化: ${targetPackage}`);
 
       // 检测是否切换到其他应用
-      if (packageName !== LANTERNLAW_APP_PACKAGE) {
+      if (targetPackage !== LANTERNLAW_APP_PACKAGE) {
         // 检查是否是系统应用
-        if (this.isSystemApp(packageName)) {
-          Logger.debug('LanternLawAccessibilityAbility', `系统应用切换，忽略: ${packageName}`);
+        if (this.isSystemApp(targetPackage)) {
+          Logger.debug('LanternLawAccessibilityAbility', `系统应用切换，忽略: ${targetPackage}`);
           return;
         }
 
         // 调用拦截服务处理应用切换
         const blockingService = AppBlockingService.getInstance();
-        blockingService.handleAppSwitch(packageName);
+        blockingService.handleAppSwitch(targetPackage);
 
         // 检查频率限制
-        if (this.shouldRecordAppSwitch(packageName)) {
+        if (this.shouldRecordAppSwitch(targetPackage)) {
           // 记录应用切换尝试（用于统计）
-          this.recordAppSwitchAttempt(packageName);
+          this.recordAppSwitchAttempt(targetPackage);
         }
       }
     } catch (error) {
@@ -181,12 +179,12 @@ export default class LanternLawAccessibilityAbility extends AccessibilityExtensi
 
   /**
    * 处理通知状态变化事件（卸载/禁用检测）
-   * @param event 无障碍事件
+   * @param eventObj 事件对象
    */
-  private handleNotificationStateChanged(event: AccessibilityEvent): void {
+  private handleNotificationStateChanged(eventObj: Record<string, Object>): void {
     try {
       // 检查是否包含卸载相关文本
-      const textContent = this.extractTextContent(event);
+      const textContent = this.extractTextContent(eventObj);
       if (this.isUninstallRelatedText(textContent)) {
         Logger.info('LanternLawAccessibilityAbility', '检测到卸载相关操作');
         this.recordUninstallAttempt();
@@ -198,12 +196,12 @@ export default class LanternLawAccessibilityAbility extends AccessibilityExtensi
 
   /**
    * 处理窗口内容变化事件（卸载界面检测）
-   * @param event 无障碍事件
+   * @param eventObj 事件对象
    */
-  private handleWindowContentChanged(event: AccessibilityEvent): void {
+  private handleWindowContentChanged(eventObj: Record<string, Object>): void {
     try {
       // 检查是否包含卸载相关文本
-      const textContent = this.extractTextContent(event);
+      const textContent = this.extractTextContent(eventObj);
       if (this.isUninstallRelatedText(textContent)) {
         Logger.info('LanternLawAccessibilityAbility', '检测到卸载界面');
         this.recordUninstallAttempt();
@@ -246,7 +244,7 @@ export default class LanternLawAccessibilityAbility extends AccessibilityExtensi
 
       // 更新记录
       this.appSwitchRecords.set(packageName, {
-        packageName,
+        packageName: packageName,
         timestamp: Date.now()
       });
 
@@ -292,17 +290,26 @@ export default class LanternLawAccessibilityAbility extends AccessibilityExtensi
 
   /**
    * 提取文本内容
-   * @param event 无障碍事件
+   * @param eventObj 事件对象
    * @returns 提取的文本内容
    */
-  private extractTextContent(event: AccessibilityEvent): string {
+  private extractTextContent(eventObj: Record<string, Object>): string {
     try {
-      if (!event || !event.source) {
-        return '';
+      const text = eventObj['text'] as string;
+      if (text) {
+        return String(text).toLowerCase();
       }
 
-      const text = event.source.text || '';
-      return String(text).toLowerCase();
+      // 尝试从 source 中获取
+      const source = eventObj['source'] as Record<string, Object>;
+      if (source) {
+        const sourceText = source['text'] as string;
+        if (sourceText) {
+          return String(sourceText).toLowerCase();
+        }
+      }
+
+      return '';
     } catch (error) {
       Logger.exception('LanternLawAccessibilityAbility', error instanceof Error ? error : String(error), '提取文本内容时发生错误');
       return '';
@@ -319,7 +326,7 @@ export default class LanternLawAccessibilityAbility extends AccessibilityExtensi
       return false;
     }
 
-    const uninstallKeywords = [
+    const uninstallKeywords: string[] = [
       'uninstall',
       '卸载',
       'remove',
@@ -340,66 +347,5 @@ export default class LanternLawAccessibilityAbility extends AccessibilityExtensi
     ];
 
     return uninstallKeywords.some(keyword => text.includes(keyword));
-  }
-
-  /**
-   * 启动定时清理任务
-   */
-  private startCleanupTimer(): void {
-    try {
-      this.cleanupTimer = new TimerWorker();
-
-      // 每小时清理一次过期记录
-      const success = this.cleanupTimer.start(60 * 60 * 1000, () => {
-        this.cleanupExpiredRecords();
-      });
-
-      if (success) {
-        Logger.info('LanternLawAccessibilityAbility', '定时清理任务已启动');
-      } else {
-        Logger.warn('LanternLawAccessibilityAbility', '启动定时清理任务失败');
-      }
-    } catch (error) {
-      Logger.exception('LanternLawAccessibilityAbility', error instanceof Error ? error : String(error), '启动定时清理任务时发生错误');
-    }
-  }
-
-  /**
-   * 停止定时清理任务
-   */
-  private stopCleanupTimer(): void {
-    try {
-      if (this.cleanupTimer) {
-        this.cleanupTimer.stop();
-        this.cleanupTimer = null;
-        Logger.info('LanternLawAccessibilityAbility', '定时清理任务已停止');
-      }
-    } catch (error) {
-      Logger.exception('LanternLawAccessibilityAbility', error instanceof Error ? error : String(error), '停止定时清理任务时发生错误');
-    }
-  }
-
-  /**
-   * 清理过期记录
-   */
-  private cleanupExpiredRecords(): void {
-    try {
-      const now = Date.now();
-      let removedCount = 0;
-
-      for (const [packageName, record] of this.appSwitchRecords.entries()) {
-        const timeDiff = now - record.timestamp;
-        if (timeDiff > FREQUENCY_LIMIT_WINDOW_MS * 2) { // 两倍频率限制窗口
-          this.appSwitchRecords.delete(packageName);
-          removedCount++;
-        }
-      }
-
-      if (removedCount > 0) {
-        Logger.debug('LanternLawAccessibilityAbility', `清理了 ${removedCount} 个过期应用切换记录`);
-      }
-    } catch (error) {
-      Logger.exception('LanternLawAccessibilityAbility', error instanceof Error ? error : String(error), '清理过期记录时发生错误');
-    }
   }
 }

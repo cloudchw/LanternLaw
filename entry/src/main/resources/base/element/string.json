@@ -15,6 +15,18 @@
     {
       "name": "permission_bundle_info_reason",
       "value": "用于获取已安装应用列表，以便添加到白名单"
+    },
+    {
+      "name": "permission_running_info_reason",
+      "value": "用于监测前台应用切换,实现应用拦截"
+    },
+    {
+      "name": "accessibility_service_label",
+      "value": "掌灯人无障碍服务"
+    },
+    {
+      "name": "accessibility_service_desc",
+      "value": "检测用户尝试绕过灯律的行为，包括应用切换和卸载尝试"
     }
   ]
 }

@@ -3,6 +3,7 @@
     "pages/MainPage",
     "pages/Index",
     "pages/SettingsPage",
-    "pages/StatsPage"
+    "pages/StatsPage",
+    "pages/BlockingOverlayPage"
   ]
 }

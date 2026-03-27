@@ -4,10 +4,7 @@
  */
 import { Logger } from '../utils/Logger';
 import { ClockComponent } from '../components/ClockComponent';
-import { LanternSystem } from '../components/LanternSystem';
-import { TimeDisplay } from '../components/TimeDisplay';
 import { MotivationText } from '../components/MotivationText';
-import { StatsPanel } from '../components/StatsPanel';
 import {
   LanternLawStateManager,
   LanternLawState
@@ -34,13 +31,8 @@ export struct HomePage {
   // 状态管理
   @State currentTime: Date = new Date();
   @State lanternLawState: LanternLawState = LanternLawState.IDLE;
-  @State isStatsExpanded: boolean = false;
   @State currentStreak: number = 0;
-  @State successRate: number = 0;
-  @State todayDuration: number = 0;
-  @State todaySuccess: boolean = false;
-  @State weeklyTrends: number[] = [];
-  @State successDays: number = 0;
+  @State lanternlawEnabled: boolean = true;
 
   // 管理器实例
   private stateManager: LanternLawStateManager = LanternLawStateManager.getInstance();
@@ -72,17 +64,12 @@ export struct HomePage {
       this.BackgroundGradient()
 
       Column() {
-        this.TopStatusBar()
-
         // 可滚动内容区域
         Scroll() {
           Column() {
             this.TitleSection()
             this.ClockSection()
-            this.LanternSection()
             this.MotivationSection()
-            this.StatisticsSection()
-            this.ActionButtons()
           }
           .width('90%')
           .padding({ bottom: 20 })
@@ -116,25 +103,9 @@ export struct HomePage {
   }
 
   @Builder
-  private TopStatusBar(): void {
-    Row() {
-      Text('掌灯人')
-        .fontSize(16)
-        .fontColor(this.COLORS.text)
-        .fontWeight(FontWeight.Bold)
-      Blank()
-      Text(`${this.currentTime.getHours().toString().padStart(2, '0')}:${this.currentTime.getMinutes().toString().padStart(2, '0')}`)
-        .fontSize(14)
-        .fontColor(this.COLORS.textDim)
-    }
-    .width('100%')
-    .padding({ left: 20, right: 20, top: 8, bottom: 8 })
-  }
-
-  @Builder
   private TitleSection(): void {
     Column() {
-      Text('灯律')
+      Text('掌灯人')
         .fontSize(32)
         .fontColor(this.COLORS.gold)
         .fontWeight(FontWeight.Bold)
@@ -181,47 +152,6 @@ export struct HomePage {
   }
 
   @Builder
-  private LanternSection(): void {
-    Column() {
-      // 本周连续天数卡片
-      Row() {
-        Text('本周连续')
-          .fontSize(14)
-          .fontColor(this.COLORS.textDim)
-
-        Blank()
-
-        Row() {
-          Text(this.currentStreak.toString())
-            .fontSize(28)
-            .fontColor(this.COLORS.gold)
-            .fontWeight(FontWeight.Bold)
-
-          Text(' 天')
-            .fontSize(14)
-            .fontColor(this.COLORS.text)
-            .margin({ left: 4 })
-        }
-      }
-      .width('100%')
-      .padding({ left: 20, right: 20, top: 16, bottom: 16 })
-      .backgroundColor('rgba(26, 31, 58, 0.6)')
-      .borderRadius(16)
-
-      // 进度条
-      Progress({ value: this.successRate, total: 100, type: ProgressType.Linear })
-        .width('100%')
-        .height(6)
-        .color(this.COLORS.gold)
-        .backgroundColor(this.COLORS.backgroundLight)
-        .margin({ top: 12 })
-    }
-    .width('100%')
-    .padding({ left: 20, right: 20 })
-    .margin({ bottom: 28 })
-  }
-
-  @Builder
   private MotivationSection(): void {
     MotivationText({
       lanternLawState: this.lanternLawState,
@@ -231,79 +161,19 @@ export struct HomePage {
     })
   }
 
-  @Builder
-  private StatisticsSection(): void {
-    StatsPanel({
-      isExpanded: this.isStatsExpanded,
-      todayDuration: this.todayDuration,
-      todaySuccess: this.todaySuccess,
-      weeklyTrends: this.weeklyTrends,
-      onToggle: () => {
-        this.toggleStatsPanel();
-      }
-    })
-      .margin({ bottom: 24 })
+  private showStopDialog(): void {
+    Logger.info('HomePage', '显示停止灯律对话框');
+    // TODO: 实现停止灯律确认对话框
   }
 
-  @Builder
-  private ActionButtons(): void {
-    Column() {
-      if (!this.isAccessibilityServiceEnabled()) {
-        Row() {
-          Column() {
-            Text('⚠️ 无障碍服务未启用')
-              .fontSize(13)
-              .fontColor(this.COLORS.orange)
-              .fontWeight(FontWeight.Medium)
-            Text('越狱检测功能将无法正常工作')
-              .fontSize(11)
-              .fontColor(this.COLORS.textDim)
-              .margin({ top: 4 })
-          }
-          .alignItems(HorizontalAlign.Start)
-          .layoutWeight(1)
-          Button('启用服务')
-            .fontSize(12)
-            .height(32)
-            .backgroundColor(this.COLORS.accent)
-            .fontColor(this.COLORS.gold)
-            .borderRadius(16)
-            .margin({ left: 12 })
-            .onClick(() => {
-              this.openAccessibilitySettings();
-            })
-        }
-        .width('100%')
-        .padding({ left: 16, right: 16, top: 12, bottom: 12 })
-        .backgroundColor('rgba(255, 158, 109, 0.1)')
-        .borderRadius(12)
-        .margin({ bottom: 16 })
-      }
+  private showRecoveryDialog(): void {
+    Logger.info('HomePage', '显示恢复灯律对话框');
+    // TODO: 实现恢复灯律确认对话框
+  }
 
-      Row() {
-        Button('启用灯律')
-          .layoutWeight(1)
-          .height(48)
-          .backgroundColor(this.COLORS.gold)
-          .fontColor(this.COLORS.background)
-          .fontSize(16)
-          .fontWeight(FontWeight.Medium)
-          .borderRadius(24)
-          .margin({ right: 12 })
-
-        Button('设置时间')
-          .layoutWeight(1)
-          .height(48)
-          .backgroundColor(this.COLORS.accent)
-          .fontColor(this.COLORS.gold)
-          .fontSize(16)
-          .fontWeight(FontWeight.Medium)
-          .borderRadius(24)
-      }
-      .width('100%')
-    }
-    .width('100%')
-    .padding({ left: 20, right: 20 })
+  private navigateToSettings(): void {
+    Logger.info('HomePage', '导航到设置页面');
+    // TODO: 实现导航到设置页面
   }
 
   private startClockTimer(): void {
@@ -321,7 +191,8 @@ export struct HomePage {
   private async initializeManagers(): Promise<void> {
     try {
       const ctx = getContext(this) as common.UIAbilityContext;
-      await this.database.initialize(ctx);
+      // 初始化状态管理器（会自动初始化数据库并加载配置，包括 timeRanges）
+      await this.stateManager.initialize(ctx);
       await this.statsManager.initialize();
       await this.achievementManager.initialize();
       await this.updateStatus();
@@ -337,28 +208,14 @@ export struct HomePage {
     }
     try {
       this.lanternLawState = this.stateManager.getCurrentState();
+      const config = this.stateManager.getConfig();
+      this.lanternlawEnabled = config.lanternlawEnabled;
+
       const stats = await this.statsManager.getOverallStatistics(7);
       this.currentStreak = stats.consecutiveSuccessDays;
-      this.successRate = stats.successRate;
-
-      const trends = await this.statsManager.getWeeklyTrends();
-      this.weeklyTrends = trends.map(t => t.duration);
-
-      const recentRecords = await this.statsManager.getOverallStatistics(1);
-      if (recentRecords.totalDays > 0) {
-        this.todayDuration = recentRecords.averageDuration;
-        this.todaySuccess = recentRecords.successRate > 0;
-      }
-
-      const lanternProgress = this.achievementManager.getLanternProgress();
-      this.successDays = lanternProgress.current;
     } catch (error) {
       Logger.exception('HomePage', error instanceof Error ? error : new Error(String(error)), '状态更新失败');
     }
-  }
-
-  private toggleStatsPanel(): void {
-    this.isStatsExpanded = !this.isStatsExpanded;
   }
 
   private isAccessibilityServiceEnabled(): boolean {

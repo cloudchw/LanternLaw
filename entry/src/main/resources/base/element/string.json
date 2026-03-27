@@ -11,6 +11,10 @@
     {
       "name": "EntryAbility_label",
       "value": "掌灯人"
+    },
+    {
+      "name": "permission_bundle_info_reason",
+      "value": "用于获取已安装应用列表，以便添加到白名单"
     }
   ]
 }

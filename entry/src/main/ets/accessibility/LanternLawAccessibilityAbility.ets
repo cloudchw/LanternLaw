@@ -3,11 +3,13 @@
  * 越狱检测无障碍服务
  * LanternLaw Accessibility Ability
  * 检测用户尝试绕过灯律的行为，包括应用切换和卸载尝试检测
+ * 并在灯律时段内拦截非白名单应用
  */
 
 import AccessibilityExtensionAbility from '@ohos.application.AccessibilityExtensionAbility';
 import AccessibilityEvent from '@ohos.application.AccessibilityEvent';
 import { LanternLawStateManager } from '../managers/LanternLawStateManager';
+import { AppBlockingService } from '../services/AppBlockingService';
 import { Logger } from '../utils/Logger';
 import { ErrorHandler } from '../utils/ErrorHandler';
 import { TimerWorker } from '../utils/TimerWorker';
@@ -162,9 +164,13 @@ export default class LanternLawAccessibilityAbility extends AccessibilityExtensi
           return;
         }
 
+        // 调用拦截服务处理应用切换
+        const blockingService = AppBlockingService.getInstance();
+        blockingService.handleAppSwitch(packageName);
+
         // 检查频率限制
         if (this.shouldRecordAppSwitch(packageName)) {
-          // 记录应用切换尝试
+          // 记录应用切换尝试（用于统计）
           this.recordAppSwitchAttempt(packageName);
         }
       }

@@ -136,7 +136,9 @@ export class LanternLawDatabase {
 
   // 保存配置
   public async saveConfig(key: string, value: string): Promise<void> {
+    console.info('[LanternLawDatabase] saveConfig 开始执行, key: ' + key);
     if (!this.rdbStore) {
+      console.error('[LanternLawDatabase] 数据库未初始化');
       throw new Error('数据库未初始化');
     }
 
@@ -146,31 +148,38 @@ export class LanternLawDatabase {
 
     try {
       // 检查是否已存在
+      console.info('[LanternLawDatabase] 检查记录是否存在');
       const resultSet = await this.rdbStore.query(predicates, ['id']);
       let isUpdate = false;
       if (resultSet) {
         isUpdate = await resultSet.goToFirstRow();
         resultSet.close();
       }
+      console.info('[LanternLawDatabase] isUpdate: ' + isUpdate);
 
       if (isUpdate) {
         // 更新现有记录
+        console.info('[LanternLawDatabase] 更新现有记录');
         const valuesBucket: relationalStore.ValuesBucket = {
           'value': value,
           'updated_at': now
         };
         await this.rdbStore.update(valuesBucket, predicates);
+        console.info('[LanternLawDatabase] 更新完成');
       } else {
         // 插入新记录
+        console.info('[LanternLawDatabase] 插入新记录');
         const valuesBucket: relationalStore.ValuesBucket = {
           'key': key,
           'value': value,
           'updated_at': now
         };
         await this.rdbStore.insert('lanternlaw_config', valuesBucket);
+        console.info('[LanternLawDatabase] 插入完成');
       }
+      console.info('[LanternLawDatabase] saveConfig 完成');
     } catch (error) {
-      console.error(`保存配置失败: ${JSON.stringify(error)}`);
+      console.error('[LanternLawDatabase] 保存配置失败: ' + JSON.stringify(error));
       if (error instanceof Error) {
         throw error;
       } else {

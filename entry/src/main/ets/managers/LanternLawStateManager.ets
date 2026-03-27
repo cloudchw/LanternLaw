@@ -122,26 +122,43 @@ export class LanternLawStateManager {
 
   // 加载配置
   private async loadConfig(): Promise<void> {
+    console.info('[LanternLawStateManager] loadConfig 开始执行');
     await ErrorHandler.safeAsync('加载配置', async () => {
+      console.info('[LanternLawStateManager] 准备从数据库读取配置');
       const configJson = await this.database.getConfig('lanternlaw_config');
+      console.info('[LanternLawStateManager] 数据库返回的 configJson: ' + (configJson ? configJson.substring(0, 200) + '...' : 'null'));
       if (configJson) {
+        console.info('[LanternLawStateManager] 准备解析 JSON');
         this.config = LanternLawConfig.fromJSON(configJson);
+        console.info('[LanternLawStateManager] 解析后的 config.timeRanges: ' + JSON.stringify(this.config.timeRanges));
+        console.info('[LanternLawStateManager] config.timeRanges 长度: ' + this.config.timeRanges.length);
+      } else {
+        console.info('[LanternLawStateManager] 数据库中没有配置，使用默认值');
       }
     });
+    console.info('[LanternLawStateManager] loadConfig 完成，当前 config.timeRanges 长度: ' + this.config.timeRanges.length);
   }
 
   // 保存配置
   public async saveConfig(config: LanternLawConfig): Promise<void> {
+    console.info('[LanternLawStateManager] saveConfig 开始执行');
     await ErrorHandler.safeAsync('保存配置', async () => {
       // 验证配置
+      console.info('[LanternLawStateManager] 验证配置');
       ErrorHandler.validateParam('config', config, (cfg) => cfg !== null && cfg.isValid());
 
+      console.info('[LanternLawStateManager] 配置验证通过，准备保存');
       this.config = config;
+
+      console.info('[LanternLawStateManager] 准备调用 database.saveConfig');
       await this.database.saveConfig('lanternlaw_config', config.toJSON());
+      console.info('[LanternLawStateManager] database.saveConfig 完成');
 
       // 重新计算状态
       await this.calculateCurrentState();
+      console.info('[LanternLawStateManager] calculateCurrentState 完成');
     }, true);
+    console.info('[LanternLawStateManager] saveConfig 完成');
   }
 
   // 加载今日记录

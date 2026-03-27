@@ -3,14 +3,19 @@
  * 灯律配置模型
  * LanternLaw Configuration Model
  */
+import { TimeRange } from './TimeRange';
+import { WhitelistApp } from './WhitelistApp';
+
 export class LanternLawConfig {
-  bedtime: string = '22:30';                  // 就寝时间 HH:mm
-  wakeupTime: string = '06:30';               // 解锁时间 HH:mm
+  bedtime: string = '22:00';                  // 就寝时间 HH:mm (向后兼容)
+  wakeupTime: string = '23:00';               // 解锁时间 HH:mm (向后兼容)
   emergencyUnlocks: number = 3;              // 每月紧急解锁次数
   emergencyUsed: number = 0;                 // 已用紧急解锁次数
   lanternlawEnabled: boolean = true;         // 灯律是否启用
   vibrationEnabled: boolean = true;          // 振动反馈是否启用
   soundEnabled: boolean = false;             // 声音反馈是否启用
+  timeRanges: TimeRange[] = [];              // 时间段列表
+  whitelistApps: WhitelistApp[] = [];        // 白名单应用列表
 
   // 验证配置有效性
   isValid(): boolean {
@@ -41,7 +46,9 @@ export class LanternLawConfig {
       emergencyUsed: this.emergencyUsed,
       lanternlawEnabled: this.lanternlawEnabled,
       vibrationEnabled: this.vibrationEnabled,
-      soundEnabled: this.soundEnabled
+      soundEnabled: this.soundEnabled,
+      timeRanges: this.timeRanges,
+      whitelistApps: this.whitelistApps
     });
   }
 
@@ -84,6 +91,18 @@ export class LanternLawConfig {
       config.soundEnabled = soundEnabledValue as boolean;
     }
 
+    // 加载时间段列表
+    const timeRangesValue = data.timeRanges;
+    if (timeRangesValue !== undefined && Array.isArray(timeRangesValue)) {
+      config.timeRanges = timeRangesValue as TimeRange[];
+    }
+
+    // 加载白名单应用列表
+    const whitelistAppsValue = data.whitelistApps;
+    if (whitelistAppsValue !== undefined && Array.isArray(whitelistAppsValue)) {
+      config.whitelistApps = whitelistAppsValue as WhitelistApp[];
+    }
+
     return config;
   }
 
@@ -98,6 +117,8 @@ export class LanternLawConfig {
     config.lanternlawEnabled = this.lanternlawEnabled;
     config.vibrationEnabled = this.vibrationEnabled;
     config.soundEnabled = this.soundEnabled;
+    config.timeRanges = JSON.parse(JSON.stringify(this.timeRanges));
+    config.whitelistApps = JSON.parse(JSON.stringify(this.whitelistApps));
 
     return config;
   }

@@ -18,19 +18,15 @@ export default class EntryAbility extends UIAbility {
 
   onDestroy(): void {
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onDestroy');
-
-    // 停止应用拦截服务
     const blockingService = AppBlockingService.getInstance();
     blockingService.stop();
   }
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
-    // Main window is created, set main page for this ability
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
-
-    // 初始化服务
     this.initializeServices();
 
+    // 检查是否从拦截返回
     windowStage.loadContent('pages/MainPage', (err) => {
       if (err.code) {
         hilog.error(DOMAIN, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err));
@@ -41,18 +37,23 @@ export default class EntryAbility extends UIAbility {
   }
 
   onWindowStageDestroy(): void {
-    // Main window is destroyed, release UI related resources
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onWindowStageDestroy');
   }
 
   onForeground(): void {
-    // Ability has brought to foreground
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onForeground');
   }
 
+  /**
+   * 应用切到后台 — 核心拦截入口
+   * 在管控时段内立即拉回前台
+   */
   onBackground(): void {
-    // Ability has back to background
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onBackground');
+
+    // 调用拦截服务检查并处理
+    const blockingService = AppBlockingService.getInstance();
+    blockingService.onAppGoBackground();
   }
 
   /**
@@ -60,11 +61,9 @@ export default class EntryAbility extends UIAbility {
    */
   private async initializeServices(): Promise<void> {
     try {
-      // 初始化状态管理器
       const stateManager = LanternLawStateManager.getInstance();
       await stateManager.initialize(this.context);
 
-      // 初始化应用拦截服务
       const blockingService = AppBlockingService.getInstance();
       await blockingService.initialize(this.context);
       blockingService.start();

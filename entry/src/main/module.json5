@@ -18,14 +18,6 @@
           "abilities": ["EntryAbility"],
           "when": "inuse"
         }
-      },
-      {
-        "name": "ohos.permission.GET_RUNNING_INFO",
-        "reason": "$string:permission_running_info_reason",
-        "usedScene": {
-          "abilities": ["EntryAbility"],
-          "when": "inuse"
-        }
       }
     ],
     "abilities": [
@@ -60,19 +52,6 @@
           {
             "name": "ohos.extension.backup",
             "resource": "$profile:backup_config"
-          }
-        ]
-      },
-      {
-        "name": "LanternLawAccessibilityAbility",
-        "srcEntry": "./ets/accessibility/LanternLawAccessibilityAbility.ets",
-        "type": "accessibility",
-        "label": "$string:accessibility_service_label",
-        "description": "$string:accessibility_service_desc",
-        "metadata": [
-          {
-            "name": "ohos.accessibility.accessibility",
-            "resource": "$profile:accessibility_config"
           }
         ]
       }

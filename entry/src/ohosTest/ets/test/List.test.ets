@@ -3,6 +3,7 @@ import timeRangeTest from './TimeRangeTest.test';
 import timeRangeQuickTest from './TimeRangeQuickTest.test';
 import timeRangeUIFullTest from './TimeRangeUIFullTest.test';
 import timeRangeLogicTest from './TimeRangeLogicTest.test';
+import appBlockingTest from './AppBlockingTest.test';
 
 export default function testsuite() {
   abilityTest();
@@ -10,4 +11,5 @@ export default function testsuite() {
   timeRangeQuickTest();
   timeRangeUIFullTest();
   timeRangeLogicTest();
+  appBlockingTest();
 }

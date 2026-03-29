@@ -10,6 +10,7 @@ import {
   LanternLawState
 } from '../managers/LanternLawStateManager';
 import { LanternLawConfig } from '../models/LanternLawConfig';
+import { TimeRangeManager, TimeRange } from '../models/TimeRange';
 import { DataStatisticsManager } from '../managers/DataStatisticsManager';
 import { AchievementManager } from '../managers/AchievementManager';
 import { LanternLawDatabase } from '../database/LanternLawDatabase';
@@ -33,6 +34,7 @@ export struct HomePage {
   @State lanternLawState: LanternLawState = LanternLawState.IDLE;
   @State currentStreak: number = 0;
   @State lanternlawEnabled: boolean = true;
+  @State remainingTimeStr: string = '';
 
   // 管理器实例
   private stateManager: LanternLawStateManager = LanternLawStateManager.getInstance();
@@ -70,6 +72,37 @@ export struct HomePage {
             this.TitleSection()
             this.ClockSection()
             this.MotivationSection()
+
+            // 倒计时区域
+            if (this.lanternLawState === LanternLawState.ACTIVE) {
+              Column() {
+                Text('距离解锁还有')
+                  .fontSize(14)
+                  .fontColor('rgba(192, 198, 233, 0.7)')
+                  .margin({ bottom: 8 })
+
+                Text(this.remainingTimeStr)
+                  .fontSize(36)
+                  .fontColor('#ffd166')
+                  .fontWeight(FontWeight.Bold)
+                  .fontFamily('monospace')
+                  .margin({ bottom: 4 })
+
+                Text('灯律时段进行中')
+                  .fontSize(12)
+                  .fontColor('rgba(255, 209, 102, 0.6)')
+              }
+              .width('100%')
+              .padding({ top: 20, bottom: 20 })
+            } else if (this.remainingTimeStr.length > 0) {
+              Column() {
+                Text(this.remainingTimeStr)
+                  .fontSize(16)
+                  .fontColor('rgba(192, 198, 233, 0.6)')
+              }
+              .width('100%')
+              .padding({ top: 12 })
+            }
           }
           .width('90%')
           .padding({ bottom: 20 })
@@ -161,6 +194,84 @@ export struct HomePage {
     })
   }
 
+  private updateCountdown(config: LanternLawConfig): void {
+    const now = this.currentTime;
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+    const nowSeconds = now.getSeconds();
+    const enabledRanges = config.timeRanges.filter((r: TimeRange) => r.enabled);
+
+    if (this.lanternLawState === LanternLawState.ACTIVE) {
+      // Find the first enabled timeRange that covers the current time
+      for (const range of enabledRanges) {
+        const startMin = TimeRangeManager.timeToMinutes(range.startTime);
+        const endMin = TimeRangeManager.timeToMinutes(range.endTime);
+
+        let inRange = false;
+        if (endMin >= startMin) {
+          // Normal range (e.g. 08:00-22:00)
+          inRange = nowMinutes >= startMin && nowMinutes < endMin;
+        } else {
+          // Cross-midnight range (e.g. 22:00-06:00)
+          inRange = nowMinutes >= startMin || nowMinutes < endMin;
+        }
+
+        if (inRange) {
+          let remainingMin: number;
+          if (endMin >= startMin) {
+            remainingMin = endMin - nowMinutes;
+          } else {
+            // Cross-midnight: if after start, remaining = (1440 - nowMinutes) + endMin
+            // if before end, remaining = endMin - nowMinutes
+            if (nowMinutes >= startMin) {
+              remainingMin = (1440 - nowMinutes) + endMin;
+            } else {
+              remainingMin = endMin - nowMinutes;
+            }
+          }
+          // Subtract current seconds for precision
+          const totalSeconds = remainingMin * 60 - nowSeconds;
+          const hours = Math.floor(totalSeconds / 3600);
+          const minutes = Math.floor((totalSeconds % 3600) / 60);
+          const seconds = totalSeconds % 60;
+          this.remainingTimeStr = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+          return;
+        }
+      }
+      // If no matching range found (edge case), clear
+      this.remainingTimeStr = '';
+    } else {
+      // IDLE state: calculate time until the next enabled timeRange starts
+      let closestStartMin = -1;
+      for (const range of enabledRanges) {
+        const startMin = TimeRangeManager.timeToMinutes(range.startTime);
+        // How many minutes until this range starts from now?
+        let diff = startMin - nowMinutes;
+        if (diff <= 0) {
+          // It starts tomorrow (add 24h)
+          diff = diff + 1440;
+        }
+        if (closestStartMin === -1 || diff < closestStartMin) {
+          closestStartMin = diff;
+        }
+      }
+
+      if (closestStartMin > 0) {
+        // Subtract seconds for precision
+        const adjustedMin = closestStartMin - 1;
+        const totalSeconds = adjustedMin * 60 + (60 - nowSeconds);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        if (hours > 0) {
+          this.remainingTimeStr = `${hours}小时${minutes.toString().padStart(2, '0')}分后开始`;
+        } else {
+          this.remainingTimeStr = `${minutes}分钟后开始`;
+        }
+      } else {
+        this.remainingTimeStr = '';
+      }
+    }
+  }
+
   private showStopDialog(): void {
     Logger.info('HomePage', '显示停止灯律对话框');
     // TODO: 实现停止灯律确认对话框
@@ -179,6 +290,7 @@ export struct HomePage {
   private startClockTimer(): void {
     setInterval(() => {
       this.currentTime = new Date();
+      this.updateCountdown(this.stateManager.getConfig());
     }, 1000);
   }
 
@@ -213,6 +325,9 @@ export struct HomePage {
 
       const stats = await this.statsManager.getOverallStatistics(7);
       this.currentStreak = stats.consecutiveSuccessDays;
+
+      // 更新倒计时
+      this.updateCountdown(config);
     } catch (error) {
       Logger.exception('HomePage', error instanceof Error ? error : new Error(String(error)), '状态更新失败');
     }

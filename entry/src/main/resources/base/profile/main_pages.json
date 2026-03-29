@@ -5,6 +5,7 @@
     "pages/SettingsPage",
     "pages/StatsPage",
     "pages/BlockingOverlayPage",
-    "pages/DiagnosticsPage"
+    "pages/DiagnosticsPage",
+    "pages/WidgetPage"
   ]
 }

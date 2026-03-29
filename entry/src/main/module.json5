@@ -18,6 +18,22 @@
           "abilities": ["EntryAbility"],
           "when": "inuse"
         }
+      },
+      {
+        "name": "ohos.permission.KEEP_BACKGROUND_RUNNING",
+        "reason": "$string:permission_keep_background_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "inuse"
+        }
+      },
+      {
+        "name": "ohos.permission.MANAGE_SCREEN_TIME_GUARD",
+        "reason": "$string:permission_screen_time_guard_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "inuse"
+        }
       }
     ],
     "abilities": [
@@ -30,6 +46,7 @@
         "startWindowIcon": "$media:startIcon",
         "startWindowBackground": "$color:start_window_background",
         "exported": true,
+        "backgroundModes": ["dataTransfer"],
         "skills": [
           {
             "entities": [
@@ -54,6 +71,42 @@
             "resource": "$profile:backup_config"
           }
         ]
+      },
+      {
+        "name": "LanternLawAccessibilityAbility",
+        "srcEntry": "./ets/accessibility/LanternLawAccessibilityAbility.ets",
+        "label": "$string:accessibility_service_label",
+        "description": "$string:accessibility_service_desc",
+        "type": "accessibility",
+        "exported": true,
+        "metadata": [
+          {
+            "name": "ohos.accessibleability",
+            "resource": "$profile:accessibility_config"
+          }
+        ]
+      },
+      {
+        "name": "LanternLawFormAbility",
+        "srcEntry": "./ets/form/LanternLawFormAbility.ets",
+        "label": "$string:widget_label",
+        "description": "$string:widget_desc",
+        "type": "form",
+        "exported": true,
+        "metadata": [
+          {
+            "name": "ohos.extension.form",
+            "resource": "$profile:form_config"
+          }
+        ]
+      },
+      {
+        "name": "TimeGuardExtension",
+        "srcEntry": "./ets/timeguard/TimeGuardExtension.ets",
+        "label": "$string:timeguard_extension_label",
+        "description": "$string:timeguard_extension_desc",
+        "type": "screenTimeGuard",
+        "exported": true
       }
     ]
   }

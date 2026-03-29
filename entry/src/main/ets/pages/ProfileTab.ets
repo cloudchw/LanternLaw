@@ -6,8 +6,16 @@ import { Logger } from '../utils/Logger';
 import { LanternLawStateManager } from '../managers/LanternLawStateManager';
 import { LanternLawConfig } from '../models/LanternLawConfig';
 import { WhitelistApp } from '../models/WhitelistApp';
-import { AppListManager, AppInfo } from '../managers/AppListManager';
 import { TimeRange, TimeRangeManager } from '../models/TimeRange';
+import { ScreenTimeGuardManager } from '../services/ScreenTimeGuardManager';
+import { appPicker, guardService } from '@kit.ScreenTimeGuardKit';
+import common from '@ohos.app.ability.common';
+import dataPreferences from '@ohos.data.preferences';
+
+interface BusinessError {
+  code: number;
+  message: string;
+}
 
 interface ProfileColorScheme {
   background: string;
@@ -34,18 +42,12 @@ export struct ProfileTab {
   @State timePickerError: string = '';
   // 白名单应用状态
   @State whitelistApps: WhitelistApp[] = [];
-  @State showAppPicker: boolean = false;
-  @State installedApps: AppInfo[] = [];
-  @State appSearchQuery: string = '';
-  @State filteredApps: AppInfo[] = [];
   @State showDeleteConfirm: boolean = false;
   @State deleteAppIndex: number = -1;
   @State showDeleteTimeRangeConfirm: boolean = false;
   @State deleteTimeRangeId: string = '';
-  @State loadingApps: boolean = false;
 
   private stateManager: LanternLawStateManager = LanternLawStateManager.getInstance();
-  private appListManager: AppListManager = AppListManager.getInstance();
   private static readonly COLORS: ProfileColorScheme = {
     background: '#0f1529',
     card: 'rgba(26, 31, 58, 0.8)',
@@ -109,22 +111,6 @@ export struct ProfileTab {
       .width('100%')
       .height('100%')
       .padding({ bottom: 60 })
-
-      // 应用选择对话框
-      if (this.showAppPicker) {
-        Column() {
-          Column() {
-            this.AppPickerDialog()
-          }
-        }
-        .width('100%')
-        .height('100%')
-        .backgroundColor('rgba(0, 0, 0, 0.6)')
-        .justifyContent(FlexAlign.Center)
-        .onClick(() => {
-          this.closeAppPicker();
-        })
-      }
 
       // 删除确认对话框
       if (this.showDeleteConfirm) {
@@ -503,7 +489,11 @@ export struct ProfileTab {
           .fontColor(ProfileTab.COLORS.text)
           .fontWeight(FontWeight.Medium)
         Blank()
-        Button('+ 添加')
+        Text(`已选 ${this.whitelistApps.length} 个`)
+          .fontSize(13)
+          .fontColor(ProfileTab.COLORS.gold)
+          .margin({ right: 12 })
+        Button('管理')
           .fontSize(12)
           .height(28)
           .backgroundColor(ProfileTab.COLORS.accent)
@@ -518,26 +508,31 @@ export struct ProfileTab {
 
       // 白名单列表
       if (this.whitelistApps.length === 0) {
-        Text('暂无白名单应用')
-          .fontSize(13)
-          .fontColor(ProfileTab.COLORS.textDim)
-          .margin({ top: 8, bottom: 8 })
+        Column() {
+          Text('暂无白名单应用')
+            .fontSize(13)
+            .fontColor(ProfileTab.COLORS.textDim)
+            .margin({ top: 8, bottom: 8 })
+          Text('点击「管理」按钮选择允许使用的应用')
+            .fontSize(11)
+            .fontColor(ProfileTab.COLORS.textDim)
+        }
+        .width('100%')
+        .alignItems(HorizontalAlign.Center)
+        .padding({ top: 8, bottom: 8 })
       } else {
         ForEach(this.whitelistApps, (app: WhitelistApp, index: number) => {
           Row() {
-            Text('📲')
+            Text(app.enabled ? '✓' : '✗')
               .fontSize(14)
+              .fontColor(app.enabled ? ProfileTab.COLORS.gold : ProfileTab.COLORS.textDim)
               .margin({ right: 10 })
-            Text(app.appName)
+            Text(`应用 ${index + 1}`)
               .fontSize(14)
               .fontColor(app.enabled ? ProfileTab.COLORS.text : ProfileTab.COLORS.textDim)
               .decoration({ type: app.enabled ? TextDecorationType.None : TextDecorationType.LineThrough })
               .layoutWeight(1)
             Blank()
-            Text(app.enabled ? '✓' : '✗')
-              .fontSize(16)
-              .fontColor(app.enabled ? ProfileTab.COLORS.gold : ProfileTab.COLORS.textDim)
-              .margin({ right: 12 })
             Button('删除')
               .fontSize(11)
               .height(24)
@@ -553,10 +548,10 @@ export struct ProfileTab {
           .onClick(() => {
             this.toggleWhitelistApp(index);
           })
-        }, (app: WhitelistApp, index: number) => `${app.bundleName}_${index}`)
+        }, (app: WhitelistApp, index: number) => `${app.appToken}_${index}`)
       }
 
-      Text('点击应用切换启用/禁用，点击删除按钮移除')
+      Text('点击应用切换启用/禁用，点击「管理」修改应用列表')
         .fontSize(11)
         .fontColor(ProfileTab.COLORS.textDim)
         .margin({ top: 8 })
@@ -567,106 +562,6 @@ export struct ProfileTab {
     .borderRadius(12)
     .border({ width: 1, color: ProfileTab.COLORS.border })
     .margin({ bottom: 16 })
-  }
-
-  /**
-   * 应用选择对话框
-   */
-  @Builder
-  private AppPickerDialog(): void {
-    Column() {
-      // 标题栏
-      Row() {
-        Text('选择应用')
-          .fontSize(18)
-          .fontColor(ProfileTab.COLORS.text)
-          .fontWeight(FontWeight.Bold)
-        Blank()
-        Text('✕')
-          .fontSize(20)
-          .fontColor(ProfileTab.COLORS.textDim)
-          .onClick(() => {
-            this.closeAppPicker();
-          })
-      }
-      .width('100%')
-      .margin({ bottom: 16 })
-
-      // 搜索框
-      TextInput({ placeholder: '搜索应用...', text: this.appSearchQuery })
-        .width('100%')
-        .height(40)
-        .backgroundColor(ProfileTab.COLORS.background)
-        .fontColor(ProfileTab.COLORS.text)
-        .borderRadius(8)
-        .onChange((value: string) => {
-          this.searchApps(value);
-        })
-
-      // 应用列表
-      if (this.loadingApps) {
-        Column() {
-          LoadingProgress()
-            .width(40)
-            .height(40)
-            .color(ProfileTab.COLORS.gold)
-          Text('加载中...')
-            .fontSize(14)
-            .fontColor(ProfileTab.COLORS.textDim)
-            .margin({ top: 8 })
-        }
-        .width('100%')
-        .height(200)
-        .justifyContent(FlexAlign.Center)
-      } else if (this.filteredApps.length === 0) {
-        Column() {
-          Text('暂无应用')
-            .fontSize(14)
-            .fontColor(ProfileTab.COLORS.textDim)
-        }
-        .width('100%')
-        .height(200)
-        .justifyContent(FlexAlign.Center)
-      } else {
-        List() {
-          ForEach(this.filteredApps, (appInfo: AppInfo) => {
-            ListItem() {
-              Row() {
-                Text('📲')
-                  .fontSize(16)
-                  .margin({ right: 10 })
-                Column() {
-                  Text(appInfo.appName)
-                    .fontSize(14)
-                    .fontColor(ProfileTab.COLORS.text)
-                  Text(appInfo.bundleName)
-                    .fontSize(11)
-                    .fontColor(ProfileTab.COLORS.textDim)
-                    .margin({ top: 2 })
-                }
-                .alignItems(HorizontalAlign.Start)
-                .layoutWeight(1)
-                Blank()
-                Text('+')
-                  .fontSize(18)
-                  .fontColor(ProfileTab.COLORS.gold)
-              }
-              .width('100%')
-              .padding(12)
-              .onClick(() => {
-                this.addToWhitelist(appInfo);
-              })
-            }
-          })
-        }
-        .width('100%')
-        .height(280)
-      }
-    }
-    .width('85%')
-    .backgroundColor(ProfileTab.COLORS.card)
-    .borderRadius(16)
-    .padding(20)
   }
 
   /**
@@ -999,9 +894,39 @@ export struct ProfileTab {
       config.whitelistApps = JSON.parse(JSON.stringify(this.whitelistApps));
 
       await this.stateManager.saveConfig(config);
+
+      // 同时保存到 SharedPreferences 供无障碍服务读取
+      this.saveConfigToPreferences(config);
+
+      // 同步 Screen Time Guard 策略
+      if (config.lanternlawEnabled) {
+        const guardManager = ScreenTimeGuardManager.getInstance();
+        await guardManager.syncStrategies(config.timeRanges, config.whitelistApps);
+      } else {
+        // 全局关闭时，停止所有策略
+        const guardManager = ScreenTimeGuardManager.getInstance();
+        await guardManager.stopAllStrategies();
+      }
+
       Logger.info('ProfileTab', '配置保存成功');
     } catch (error) {
       Logger.exception('ProfileTab', error instanceof Error ? error : new Error(String(error)), '保存配置失败');
+    }
+  }
+
+  /**
+   * 保存配置到 SharedPreferences（供无障碍服务读取）
+   */
+  private saveConfigToPreferences(config: LanternLawConfig): void {
+    try {
+      const context = getContext(this) as common.UIAbilityContext;
+      dataPreferences.getPreferences(context, 'lanternlaw_config').then((prefs) => {
+        prefs.put('config', config.toJSON());
+        prefs.flush();
+        Logger.info('ProfileTab', '配置已同步到 Preferences');
+      }).catch(() => {});
+    } catch (error) {
+      // 非关键路径，忽略错误
     }
   }
 
@@ -1016,79 +941,50 @@ export struct ProfileTab {
   // ==================== 白名单应用管理方法 ====================
 
   /**
-   * 打开应用选择器
+   * 打开系统应用选择器（Screen Time Guard Kit）
    */
   private async openAppPicker(): Promise<void> {
-    Logger.info('ProfileTab', '打开应用选择器');
-    this.loadingApps = true;
-    this.showAppPicker = true;
-    this.appSearchQuery = '';
-
+    Logger.info('ProfileTab', '打开系统应用选择器');
     try {
-      this.installedApps = await this.appListManager.getInstalledApps();
-      this.filteredApps = [...this.installedApps];
-      Logger.info('ProfileTab', `加载了 ${this.installedApps.length} 个应用`);
+      const context = getContext(this) as common.UIAbilityContext;
+      // 收集已选应用的 appTokens
+      const existingTokens: string[] = [];
+      for (const app of this.whitelistApps) {
+        if (app.appToken && app.appToken.length > 0) {
+          existingTokens.push(app.appToken);
+        }
+      }
+      const appSelection: guardService.AppInfo = { appTokens: existingTokens };
+      const selectedTokens = await appPicker.startAppPicker(context, appSelection);
+      Logger.info('ProfileTab', `系统应用选择器返回 ${selectedTokens.length} 个应用`);
+
+      // 同步白名单：用系统选择器返回的 tokens 宥新构建完整列表
+      const newWhitelist: WhitelistApp[] = [];
+      for (const token of selectedTokens) {
+        const existing = this.whitelistApps.find(app => app.appToken === token);
+        if (existing) {
+          newWhitelist.push(existing);
+        } else {
+          const newApp: WhitelistApp = {
+            bundleName: token,
+            appName: token,
+            appToken: token,
+            enabled: true
+          };
+          newWhitelist.push(newApp);
+        }
+      }
+      this.whitelistApps = newWhitelist;
+      this.saveConfig();
+      Logger.info('ProfileTab', `白名单更新完成: ${this.whitelistApps.length} 个应用`);
     } catch (error) {
-      Logger.exception('ProfileTab', error instanceof Error ? error : new Error(String(error)), '获取应用列表失败');
-      this.installedApps = [];
-      this.filteredApps = [];
-    } finally {
-      this.loadingApps = false;
+      const errCode = (error as BusinessError).code;
+      if (errCode === 1019000003) {
+        Logger.info('ProfileTab', '用户取消了应用选择');
+      } else {
+        Logger.exception('ProfileTab', error instanceof Error ? error : new Error(String(error)), '系统应用选择器失败');
+      }
     }
-  }
-
-  /**
-   * 关闭应用选择器
-   */
-  private closeAppPicker(): void {
-    this.showAppPicker = false;
-    this.appSearchQuery = '';
-    this.filteredApps = [];
-    Logger.info('ProfileTab', '关闭应用选择器');
-  }
-
-  /**
-   * 搜索应用
-   */
-  private searchApps(query: string): void {
-    this.appSearchQuery = query;
-    if (!query || query.trim() === '') {
-      this.filteredApps = [...this.installedApps];
-    } else {
-      const lowerQuery = query.toLowerCase().trim();
-      this.filteredApps = this.installedApps.filter(app =>
-        app.appName.toLowerCase().includes(lowerQuery) ||
-        app.bundleName.toLowerCase().includes(lowerQuery)
-      );
-    }
-    Logger.info('ProfileTab', `搜索 "${query}" 找到 ${this.filteredApps.length} 个应用`);
-  }
-
-  /**
-   * 添加应用到白名单
-   */
-  private addToWhitelist(appInfo: AppInfo): void {
-    Logger.info('ProfileTab', `添加应用到白名单: ${appInfo.appName}`);
-
-    // 检查是否已存在
-    const exists = this.whitelistApps.some(app => app.bundleName === appInfo.bundleName);
-    if (exists) {
-      Logger.warn('ProfileTab', '应用已在白名单中');
-      this.closeAppPicker();
-      return;
-    }
-
-    // 添加新应用
-    const newApp: WhitelistApp = {
-      bundleName: appInfo.bundleName,
-      appName: appInfo.appName,
-      enabled: true
-    };
-
-    this.whitelistApps.push(newApp);
-    this.closeAppPicker();
-    this.saveConfig();
-    Logger.info('ProfileTab', `白名单应用数量: ${this.whitelistApps.length}`);
   }
 
   /**

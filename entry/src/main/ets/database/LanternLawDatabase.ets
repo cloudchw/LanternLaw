@@ -7,6 +7,12 @@ import relationalStore from '@ohos.data.relationalStore';
 import { BusinessError } from '@ohos.base';
 import { DailyRecord } from '../models/DailyRecord';
 
+// 每日逃跑次数统计接口
+export interface DailyEscapeCount {
+  date: string;
+  escapeCount: number;
+}
+
 export class LanternLawDatabase {
   private static instance: LanternLawDatabase;
   private rdbStore: relationalStore.RdbStore | null = null;
@@ -546,6 +552,66 @@ export class LanternLawDatabase {
     } catch (error) {
       console.error(`获取布尔值失败: ${JSON.stringify(error)}`);
       return false;
+    }
+  }
+
+  /**
+   * 获取指定天数内的逃跑总次数
+   */
+  public async getEscapeCountInDays(days: number): Promise<number> {
+    if (!this.rdbStore) {
+      return 0;
+    }
+
+    try {
+      const now = Date.now();
+      const startTime = now - days * 24 * 60 * 60 * 1000;
+      const predicates = new relationalStore.RdbPredicates('escape_attempts');
+      predicates.greaterThan('timestamp', startTime);
+      const resultSet = await this.rdbStore.query(predicates, ['count(*) as cnt']);
+      if (resultSet && await resultSet.goToFirstRow()) {
+        const count = resultSet.getLong(0);
+        resultSet.close();
+        return count;
+      }
+      if (resultSet) {
+        resultSet.close();
+      }
+      return 0;
+    } catch (error) {
+      return 0;
+    }
+  }
+
+  /**
+   * 获取指定天数内每天的逃跑次数
+   * 返回格式: [{ date: '2026-03-28', escapeCount: 3 }, ...]
+   */
+  public async getDailyEscapeCounts(days: number): Promise<DailyEscapeCount[]> {
+    if (!this.rdbStore) {
+      return [];
+    }
+
+    try {
+      const now = Date.now();
+      const startTime = now - days * 24 * 60 * 60 * 1000;
+      const sql = `SELECT date(datetime(timestamp / 1000, 'unixepoch', 'localtime')) as date, count(*) as cnt ` +
+        `FROM escape_attempts WHERE timestamp > ${startTime} GROUP BY date ORDER BY date DESC`;
+      const resultSet = await this.rdbStore.querySql(sql);
+      const result: DailyEscapeCount[] = [];
+
+      if (resultSet) {
+        while (await resultSet.goToNextRow()) {
+          const dateStr = resultSet.getString(0);
+          const count = resultSet.getLong(1);
+          const item: DailyEscapeCount = { date: dateStr, escapeCount: count };
+          result.push(item);
+        }
+        resultSet.close();
+      }
+      return result;
+    } catch (error) {
+      return [];
     }
   }
 

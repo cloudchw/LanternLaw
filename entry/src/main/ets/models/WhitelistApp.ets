@@ -11,6 +11,7 @@ export interface WhitelistApp {
   bundleName: string;    // 应用包名（唯一标识）
   appName: string;       // 应用显示名称
   iconId?: string;       // 图标资源ID（可选）
+  appToken?: string;     // Screen Time Guard Kit 应用令牌（可选）
   enabled: boolean;      // 是否启用
 }
 
@@ -78,6 +79,7 @@ export class WhitelistAppManager {
           bundleName: app.bundleName,
           appName: app.appName,
           iconId: app.iconId,
+          appToken: app.appToken,
           enabled: !app.enabled
         };
         return newApp;

@@ -84,7 +84,7 @@ export default function appBlockingTest() {
       expect(WhitelistAppManager.isDuplicate(nonDup, apps)).assertFalse();
     });
 
-    it('removeByBundleName 正确移除' () => {
+    it('removeByBundleName 正确移除', () => {
       const apps: WhitelistApp[] = [
         WhitelistAppManager.create('com.a', 'A'),
         WhitelistAppManager.create('com.b', 'B')

@@ -13,6 +13,7 @@ import { TimerWorker } from '../utils/TimerWorker';
 import { DelayedTask } from '../utils/DelayedTask';
 import { DeviceLockManager } from './DeviceLockManager';
 import { BackgroundKeepAlive, KeepAliveState } from '../services/BackgroundKeepAlive';
+import { ScreenTimeGuardManager } from '../services/ScreenTimeGuardManager';
 
 export interface LanternLawConfigUpdate {
   bedtime?: string;
@@ -157,6 +158,19 @@ export class LanternLawStateManager {
       // 重新计算状态
       await this.calculateCurrentState();
       console.info('[LanternLawStateManager] calculateCurrentState 完成');
+
+      // 同步 Screen Time Guard 策略
+      try {
+        const guardManager = ScreenTimeGuardManager.getInstance();
+        if (this.config.lanternlawEnabled) {
+          await guardManager.syncStrategies(this.config.timeRanges, this.config.whitelistApps);
+        } else {
+          await guardManager.stopAllStrategies();
+        }
+        console.info('[LanternLawStateManager] Screen Time Guard 策略同步完成');
+      } catch (guardError) {
+        console.error('[LanternLawStateManager] Screen Time Guard 策略同步失败: ' + JSON.stringify(guardError));
+      }
     }, true);
     console.info('[LanternLawStateManager] saveConfig 完成');
   }

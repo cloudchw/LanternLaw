@@ -6,6 +6,7 @@ import { Logger } from '../utils/Logger';
 import { HomePage } from './HomePage';
 import { DataTab } from './DataTab';
 import { ProfileTab } from './ProfileTab';
+import { AppBlockingService, BlockingState } from '../services/AppBlockingService';
 
 export interface TabItem {
   title: string;
@@ -17,6 +18,7 @@ export interface TabItem {
 export struct MainPage {
   @State currentIndex: number = 0;
   @State tabBarHeight: number = 60;
+  @State isBlocking: boolean = false;
 
   private tabs: TabItem[] = [
     {
@@ -32,6 +34,12 @@ export struct MainPage {
       icon: '⚙️'
     }
   ];
+
+  aboutToAppear(): void {
+    const blockingService = AppBlockingService.getInstance();
+    this.isBlocking = blockingService.getState() === BlockingState.BLOCKING;
+    Logger.info('MainPage', `页面加载，拦截状态: ${this.isBlocking}`);
+  }
 
   build() {
     Stack({ alignContent: Alignment.Bottom }) {
@@ -60,6 +68,51 @@ export struct MainPage {
         this.currentIndex = index;
         Logger.info('MainPage', `切换到 Tab ${index}: ${this.tabs[index].title}`);
       })
+
+      // 拦截覆盖层 — 管控时段内切后台被拉回时显示
+      if (this.isBlocking) {
+        Column() {
+          Text('🚫')
+            .fontSize(64)
+            .fontColor('#ff6b6b')
+            .margin({ bottom: 20 })
+
+          Text('应用已被拦截')
+            .fontSize(24)
+            .fontColor('#ffd166')
+            .fontWeight(FontWeight.Bold)
+            .margin({ bottom: 12 })
+
+          Text('灯律时段内，请留在掌灯人应用中')
+            .fontSize(16)
+            .fontColor('#c0c6e9')
+            .textAlign(TextAlign.Center)
+            .margin({ bottom: 32 })
+
+          Button('我知道了')
+            .width('80%')
+            .height(44)
+            .backgroundColor('#ffd166')
+            .fontColor('#0f1529')
+            .fontSize(16)
+            .fontWeight(FontWeight.Medium)
+            .borderRadius(22)
+            .onClick(() => {
+              this.isBlocking = false;
+            })
+        }
+        .width('100%')
+        .height('100%')
+        .justifyContent(FlexAlign.Center)
+        .linearGradient({
+          angle: 135,
+          colors: [
+            ['#0a0e1f', 0.0],
+            ['#0f1529', 0.5],
+            ['#1a1f3a', 1.0]
+          ]
+        })
+      }
     }
     .width('100%')
     .height('100%')

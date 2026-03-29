@@ -27,6 +27,34 @@
     {
       "name": "accessibility_service_desc",
       "value": "检测用户尝试绕过灯律的行为，包括应用切换和卸载尝试"
+    },
+    {
+      "name": "permission_start_ability_background_reason",
+      "value": "灯律时段内检测到切后台时，需要从后台启动应用拉回前台"
+    },
+    {
+      "name": "permission_keep_background_reason",
+      "value": "灯律时段内需要保持后台运行，以便检测并拦截应用切换"
+    },
+    {
+      "name": "widget_label",
+      "value": "掌灯人卡片"
+    },
+    {
+      "name": "widget_desc",
+      "value": "在桌面上显示灯律管控状态和倒计时"
+    },
+    {
+      "name": "permission_screen_time_guard_reason",
+      "value": "用于在灯律管控时段内限制非白名单应用的使用"
+    },
+    {
+      "name": "timeguard_extension_label",
+      "value": "掌灯人时间守护"
+    },
+    {
+      "name": "timeguard_extension_desc",
+      "value": "管控策略生效和停止的回调服务"
     }
   ]
 }

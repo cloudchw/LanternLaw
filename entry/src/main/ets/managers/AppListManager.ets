@@ -68,28 +68,25 @@ export class AppListManager {
       const selfBundleName = selfBundleInfo.name;
       Logger.info('AppListManager', `当前应用包名: ${selfBundleName}`);
 
-      // 使用默认应用列表作为示例
-      // 在实际应用中，需要使用正确的 HarmonyOS API 获取已安装应用
-      const defaultApps: AppInfo[] = [
-        new AppInfo('com.huawei.contacts', '电话'),
-        new AppInfo('com.huawei.mms', '短信'),
-        new AppInfo('com.huawei.photos', '相册'),
-        new AppInfo('com.huawei.clock', '闹钟'),
-        new AppInfo('com.huawei.calendar', '日历'),
-        new AppInfo('com.huawei.notepad', '备忘录'),
-        new AppInfo('com.huawei.calculator', '计算器'),
-        new AppInfo('com.huawei.weather', '天气'),
-        new AppInfo('com.huawei.browser', '浏览器'),
-        new AppInfo('com.huawei.email', '邮箱'),
-        new AppInfo('com.huawei.music', '音乐'),
-        new AppInfo('com.huawei.video', '视频'),
-        new AppInfo('com.huawei.files', '文件管理'),
-        new AppInfo('com.huawei.settings', '设置'),
-        new AppInfo('com.huawei.camera', '相机')
-      ];
+      // 查询系统所有已安装应用
+      const bundleInfos = await bundleManager.getAllBundleInfo(
+        bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION
+      );
+      Logger.info('AppListManager', `系统返回 ${bundleInfos.length} 个应用`);
 
-      // 过滤掉当前应用
-      const appList = defaultApps.filter(app => app.bundleName !== selfBundleName);
+      const appList: AppInfo[] = [];
+      for (const info of bundleInfos) {
+        // 过滤掉当前应用自身和系统框架类包
+        if (info.name === selfBundleName) continue;
+        if (info.name.startsWith('com.huawei.system.') || info.name.startsWith('com.ohos.')) continue;
+
+        const appName = info.appInfo?.label ?? info.name.split('.').pop() ?? info.name;
+        const iconId = info.appInfo?.iconId ?? '';
+        appList.push(new AppInfo(info.name, appName, iconId, info.versionName));
+      }
+
+      // 按名称排序
+      appList.sort((a, b) => a.appName.localeCompare(b.appName));
 
       // 更新缓存
       this.appListCache = appList;

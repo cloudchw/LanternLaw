@@ -6,37 +6,47 @@
 @Component
 export struct TimeDisplay {
   @Prop currentTime: Date = new Date();
-  @Prop showRemainingTime: boolean = false;
+  @Prop isInManagedTime: boolean = false;
   @Prop remainingMinutes: number = 0;
+  @Prop nextRangeLabel: string = '';
   @Prop fontSize: number = 32;
   @Prop textColor: string = '#c0c6e9';
 
   build() {
     Column() {
-      if (this.showRemainingTime && this.remainingMinutes > 0) {
-        // 显示剩余时间
+      if (this.remainingMinutes > 0) {
         Column() {
-          Text('剩余解锁时间')
-            .fontSize(14)
-            .fontColor('#ff9e6d')
-            .margin({ bottom: 4 })
+          if (this.isInManagedTime) {
+            Text('距离管控结束')
+              .fontSize(14)
+              .fontColor('#ff9e6d')
+              .margin({ bottom: 4 })
+          } else {
+            Text(`距离「${this.nextRangeLabel || '管控'}」开始`)
+              .fontSize(14)
+              .fontColor('#ffd166')
+              .margin({ bottom: 4 })
+          }
 
           Row() {
-            this.TimeUnit(this.getRemainingHours(), '小时')
+            this.TimeUnit(this.getHours(), '小时')
             Text(':')
               .fontSize(this.fontSize)
               .fontColor(this.textColor)
               .margin({ left: 4, right: 4 })
-            this.TimeUnit(this.getRemainingMinutes(), '小时')
+            this.TimeUnit(this.getMins(), '分钟')
           }
           .justifyContent(FlexAlign.Center)
         }
         .padding({ left: 16, right: 16, top: 8, bottom: 8 })
         .backgroundColor('rgba(26, 31, 58, 0.8)')
         .borderRadius(8)
-        .border({ width: 1, color: '#ff9e6d' })
+        .border({
+          width: 1,
+          color: this.isInManagedTime ? '#ff9e6d' : '#ffd166'
+        })
       } else {
-        // 显示当前时间
+        // 无管控时段，显示当前时间
         Column() {
           Text(this.formatTime(this.currentTime))
             .fontSize(this.fontSize)
@@ -96,17 +106,11 @@ export struct TimeDisplay {
     return Math.floor(num).toString().padStart(2, '0');
   }
 
-  /**
-   * 获取剩余小时数
-   */
-  private getRemainingHours(): number {
+  private getHours(): number {
     return Math.floor(this.remainingMinutes / 60);
   }
 
-  /**
-   * 获取剩余分钟数
-   */
-  private getRemainingMinutes(): number {
+  private getMins(): number {
     return this.remainingMinutes % 60;
   }
 }

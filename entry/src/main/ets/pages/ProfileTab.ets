@@ -8,14 +8,8 @@ import { LanternLawConfig } from '../models/LanternLawConfig';
 import { WhitelistApp } from '../models/WhitelistApp';
 import { TimeRange, TimeRangeManager } from '../models/TimeRange';
 import { ScreenTimeGuardManager } from '../services/ScreenTimeGuardManager';
-import { appPicker, guardService } from '@kit.ScreenTimeGuardKit';
 import common from '@ohos.app.ability.common';
 import dataPreferences from '@ohos.data.preferences';
-
-interface BusinessError {
-  code: number;
-  message: string;
-}
 
 interface ProfileColorScheme {
   background: string;
@@ -898,16 +892,6 @@ export struct ProfileTab {
       // 同时保存到 SharedPreferences 供无障碍服务读取
       this.saveConfigToPreferences(config);
 
-      // 同步 Screen Time Guard 策略
-      if (config.lanternlawEnabled) {
-        const guardManager = ScreenTimeGuardManager.getInstance();
-        await guardManager.syncStrategies(config.timeRanges, config.whitelistApps);
-      } else {
-        // 全局关闭时，停止所有策略
-        const guardManager = ScreenTimeGuardManager.getInstance();
-        await guardManager.stopAllStrategies();
-      }
-
       Logger.info('ProfileTab', '配置保存成功');
     } catch (error) {
       Logger.exception('ProfileTab', error instanceof Error ? error : new Error(String(error)), '保存配置失败');
@@ -930,60 +914,43 @@ export struct ProfileTab {
     }
   }
 
-  /**
-   * 显示旧版时间选择器（已弃用）
-   */
-  private showLegacyTimePicker(type: string): void {
-    Logger.info('ProfileTab', `显示时间选择器: ${type}`);
-    // 已被新的时间段管理功能替代
-  }
-
   // ==================== 白名单应用管理方法 ====================
 
   /**
    * 打开系统应用选择器（Screen Time Guard Kit）
    */
   private async openAppPicker(): Promise<void> {
-    Logger.info('ProfileTab', '打开系统应用选择器');
     try {
       const context = getContext(this) as common.UIAbilityContext;
-      // 收集已选应用的 appTokens
-      const existingTokens: string[] = [];
-      for (const app of this.whitelistApps) {
-        if (app.appToken && app.appToken.length > 0) {
-          existingTokens.push(app.appToken);
-        }
-      }
-      const appSelection: guardService.AppInfo = { appTokens: existingTokens };
-      const selectedTokens = await appPicker.startAppPicker(context, appSelection);
-      Logger.info('ProfileTab', `系统应用选择器返回 ${selectedTokens.length} 个应用`);
+      const existingTokens = this.whitelistApps
+        .filter(app => app.appToken && app.appToken.length > 0)
+        .map(app => app.appToken!);
 
-      // 同步白名单：用系统选择器返回的 tokens 宥新构建完整列表
-      const newWhitelist: WhitelistApp[] = [];
-      for (const token of selectedTokens) {
+      const guardManager = ScreenTimeGuardManager.getInstance();
+      const selectedTokens = await guardManager.openAppPicker(context, existingTokens);
+
+      if (selectedTokens.length === 0) {
+        return;
+      }
+
+      // 用系统选择器返回的 tokens 重新构建白名单
+      const newWhitelist: WhitelistApp[] = selectedTokens.map(token => {
         const existing = this.whitelistApps.find(app => app.appToken === token);
         if (existing) {
-          newWhitelist.push(existing);
-        } else {
-          const newApp: WhitelistApp = {
-            bundleName: token,
-            appName: token,
-            appToken: token,
-            enabled: true
-          };
-          newWhitelist.push(newApp);
+          return existing;
         }
-      }
+        return {
+          bundleName: '',
+          appName: '应用',
+          appToken: token,
+          enabled: true
+        };
+      });
+
       this.whitelistApps = newWhitelist;
       this.saveConfig();
-      Logger.info('ProfileTab', `白名单更新完成: ${this.whitelistApps.length} 个应用`);
     } catch (error) {
-      const errCode = (error as BusinessError).code;
-      if (errCode === 1019000003) {
-        Logger.info('ProfileTab', '用户取消了应用选择');
-      } else {
-        Logger.exception('ProfileTab', error instanceof Error ? error : new Error(String(error)), '系统应用选择器失败');
-      }
+      Logger.exception('ProfileTab', error instanceof Error ? error : new Error(String(error)), '系统应用选择器失败');
     }
   }
 

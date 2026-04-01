@@ -7,6 +7,7 @@
  */
 import { guardService, appPicker } from '@kit.ScreenTimeGuardKit';
 import common from '@ohos.app.ability.common';
+import { BusinessError } from '@ohos.base';
 import { Logger } from '../utils/Logger';
 import { TimeRange } from '../models/TimeRange';
 import { WhitelistApp } from '../models/WhitelistApp';
@@ -254,10 +255,4 @@ export class ScreenTimeGuardManager {
       Logger.exception(TAG, error instanceof Error ? error : new Error(String(error)), '停止所有策略失败');
     }
   }
-}
-
-// BusinessError type for error code access
-interface BusinessError {
-  code: number;
-  message: string;
 }

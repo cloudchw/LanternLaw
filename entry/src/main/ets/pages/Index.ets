@@ -14,6 +14,7 @@ import {
   LanternLawState
 } from '../managers/LanternLawStateManager';
 import { LanternLawConfig } from '../models/LanternLawConfig';
+import { TimeRange, TimeRangeManager } from '../models/TimeRange';
 import { DataStatisticsManager } from '../managers/DataStatisticsManager';
 import { AchievementManager } from '../managers/AchievementManager';
 import { LanternLawDatabase } from '../database/LanternLawDatabase';
@@ -37,6 +38,9 @@ struct Index {
   @State currentTime: Date = new Date();
   @State lanternLawState: LanternLawState = LanternLawState.IDLE;
   @State isStatsExpanded: boolean = false;
+  @State isInManagedTime: boolean = false;       // 当前是否在管控时段内
+  @State remainingMinutes: number = 0;           // 距离管控结束/开始的分钟数
+  @State nextRangeLabel: string = '';             // 下一个管控时段的标签
   @State currentStreak: number = 0;
   @State successRate: number = 0;
   @State todayDuration: number = 0;
@@ -191,7 +195,7 @@ struct Index {
       ClockComponent({
         currentTime: this.currentTime,
         isLanternLawActive: this.lanternLawState === LanternLawState.ACTIVE,
-        remainingMinutes: this.getRemainingMinutes(),
+        remainingMinutes: this.remainingMinutes,
         clockSize: 260
       })
         .margin({ bottom: 24 })
@@ -199,8 +203,9 @@ struct Index {
       // 时间显示组件
       TimeDisplay({
         currentTime: this.currentTime,
-        showRemainingTime: this.lanternLawState === LanternLawState.ACTIVE,
-        remainingMinutes: this.getRemainingMinutes(),
+        isInManagedTime: this.isInManagedTime,
+        remainingMinutes: this.remainingMinutes,
+        nextRangeLabel: this.nextRangeLabel,
         fontSize: 24
       })
     }
@@ -236,7 +241,7 @@ struct Index {
     MotivationText({
       lanternLawState: this.lanternLawState,
       currentStreak: this.currentStreak,
-      timeUntilWakeup: this.getRemainingMinutes(),
+      timeUntilWakeup: this.remainingMinutes,
       animated: true
     })
   }
@@ -319,8 +324,14 @@ struct Index {
    * 启动时钟定时器
    */
   private startClockTimer(): void {
+    let lastMinute = -1;
     setInterval(() => {
       this.currentTime = new Date();
+      const currentMinute = this.currentTime.getHours() * 60 + this.currentTime.getMinutes();
+      if (currentMinute !== lastMinute) {
+        lastMinute = currentMinute;
+        this.updateRemainingTimeInfo();
+      }
     }, 1000);
   }
 
@@ -347,6 +358,7 @@ struct Index {
 
       // 加载初始数据
       await this.updateStatus();
+      this.updateRemainingTimeInfo();
 
       Logger.info('Index', '管理器初始化完成');
     } catch (error) {
@@ -488,23 +500,71 @@ struct Index {
   }
 
   /**
-   * 获取剩余分钟数
+   * 计算管控时间倒计时信息
+   * 如果在管控时段内：计算距离结束的剩余分钟
+   * 如果不在管控时段内：计算距离最近一个管控时段开始的分钟数
    */
-  private getRemainingMinutes(): number {
+  private updateRemainingTimeInfo(): void {
     const config = this.stateManager.getConfig();
-    const now = new Date();
-    const wakeupHour = parseInt(config.wakeupTime.split(':')[0]);
-    const wakeupMinute = parseInt(config.wakeupTime.split(':')[1]);
-
-    let wakeupTime = new Date();
-    wakeupTime.setHours(wakeupHour, wakeupMinute, 0, 0);
-
-    // 如果现在已经是第二天，则计算到第三天的起床时间
-    if (now > wakeupTime) {
-      wakeupTime.setDate(wakeupTime.getDate() + 1);
+    if (!config.lanternlawEnabled || config.timeRanges.length === 0) {
+      this.isInManagedTime = false;
+      this.remainingMinutes = 0;
+      this.nextRangeLabel = '';
+      return;
     }
 
-    return Math.floor((wakeupTime.getTime() - now.getTime()) / (1000 * 60));
+    const nowMinutes = this.currentTime.getHours() * 60 + this.currentTime.getMinutes();
+
+    // 检查当前是否在某个启用的管控时段内
+    let currentEndMinutes = -1;
+    let currentLabel = '';
+    for (const range of config.timeRanges) {
+      if (!range.enabled) continue;
+      const start = TimeRangeManager.timeToMinutes(range.startTime);
+      const end = TimeRangeManager.timeToMinutes(range.endTime);
+
+      const inRange = end > start
+        ? (nowMinutes >= start && nowMinutes < end)
+        : (nowMinutes >= start || nowMinutes < end);
+
+      if (inRange) {
+        let remaining: number;
+        if (end > start) {
+          remaining = end - nowMinutes;
+        } else {
+          // 跨天：endTime < startTime
+          remaining = nowMinutes < end ? end - nowMinutes : (24 * 60 - nowMinutes + end);
+        }
+        if (currentEndMinutes === -1 || remaining < currentEndMinutes) {
+          currentEndMinutes = remaining;
+          currentLabel = range.label;
+        }
+      }
+    }
+
+    if (currentEndMinutes >= 0) {
+      this.isInManagedTime = true;
+      this.remainingMinutes = currentEndMinutes;
+      this.nextRangeLabel = currentLabel;
+      return;
+    }
+
+    // 不在任何管控时段，计算距离最近一个管控时段开始的分钟数
+    this.isInManagedTime = false;
+    let minWait = -1;
+    let closestLabel = '';
+    for (const range of config.timeRanges) {
+      if (!range.enabled) continue;
+      const start = TimeRangeManager.timeToMinutes(range.startTime);
+      const wait = start >= nowMinutes ? start - nowMinutes : (24 * 60 - nowMinutes + start);
+      if (minWait === -1 || wait < minWait) {
+        minWait = wait;
+        closestLabel = range.label;
+      }
+    }
+
+    this.remainingMinutes = minWait >= 0 ? minWait : 0;
+    this.nextRangeLabel = closestLabel;
   }
 
   /**

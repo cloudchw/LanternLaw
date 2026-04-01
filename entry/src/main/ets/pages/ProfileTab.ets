@@ -34,6 +34,11 @@ export struct ProfileTab {
   @State newStartTime: string = '22:00';
   @State newEndTime: string = '06:00';
   @State timePickerError: string = '';
+  // TimePicker 选中值
+  @State startHour: number = 22;
+  @State startMinute: number = 0;
+  @State endHour: number = 6;
+  @State endMinute: number = 0;
   // 白名单应用状态
   @State whitelistApps: WhitelistApp[] = [];
   @State showDeleteConfirm: boolean = false;
@@ -315,19 +320,23 @@ export struct ProfileTab {
   @Builder
   private TimePickerDialog(): void {
     Column() {
-      Text(this.editingTimeRange ? '编辑时间段' : '添加时间段')
+      // 标题
+      Text(this.editingTimeRange ? '编辑时间段' : '添加管控时间段')
         .fontSize(18)
         .fontColor(ProfileTab.COLORS.text)
         .fontWeight(FontWeight.Bold)
-        .margin({ bottom: 20 })
+        .width('100%')
+        .textAlign(TextAlign.Center)
+        .margin({ bottom: 24 })
 
       // 标签输入
-      Column({ space: 8 }) {
+      Row() {
         Text('标签')
           .fontSize(14)
           .fontColor(ProfileTab.COLORS.text)
+          .width(60)
         TextInput({ placeholder: '如: 夜间休息', text: this.newTimeRangeLabel })
-          .width('100%')
+          .layoutWeight(1)
           .height(40)
           .backgroundColor(ProfileTab.COLORS.background)
           .fontColor(ProfileTab.COLORS.text)
@@ -337,62 +346,84 @@ export struct ProfileTab {
           })
       }
       .width('100%')
-      .alignItems(HorizontalAlign.Start)
-      .margin({ bottom: 16 })
+      .alignItems(VerticalAlign.Center)
+      .margin({ bottom: 24 })
 
-      // 开始时间
-      Column({ space: 8 }) {
-        Text('开始时间')
-          .fontSize(14)
-          .fontColor(ProfileTab.COLORS.text)
-        TextInput({ text: this.newStartTime })
-          .width('100%')
-          .height(40)
-          .backgroundColor(ProfileTab.COLORS.background)
-          .fontColor(ProfileTab.COLORS.gold)
-          .borderRadius(8)
-          .type(InputType.Normal)
-          .onChange((value: string) => {
-            this.newStartTime = value;
+      // 时间选择器区域 — 双列滚轮
+      Row() {
+        // 开始时间列
+        Column() {
+          Text('开始时间')
+            .fontSize(16)
+            .fontColor(ProfileTab.COLORS.text)
+            .margin({ bottom: 8 })
+          TimePicker({
+            selected: new Date(1970, 0, 1, this.startHour, this.startMinute)
           })
+            .useMilitaryTime(true)
+            .selectedTextStyle({ color: ProfileTab.COLORS.gold })
+            .disappearTextStyle({ color: ProfileTab.COLORS.textDim })
+            .textStyle({ color: ProfileTab.COLORS.text })
+            .onChange((value: TimePickerResult) => {
+              this.startHour = value.hour;
+              this.startMinute = value.minute;
+              this.newStartTime = `${value.hour.toString().padStart(2, '0')}:${value.minute.toString().padStart(2, '0')}`;
+            })
+        }
+        .layoutWeight(1)
+        .alignItems(HorizontalAlign.Center)
+
+        // 分隔线
+        Column()
+          .width(1)
+          .height(120)
+          .backgroundColor(ProfileTab.COLORS.border)
+          .margin({ left: 12, right: 12 })
+
+        // 结束时间列
+        Column() {
+          Text('结束时间')
+            .fontSize(16)
+            .fontColor(ProfileTab.COLORS.text)
+            .margin({ bottom: 8 })
+          TimePicker({
+            selected: new Date(1970, 0, 1, this.endHour, this.endMinute)
+          })
+            .useMilitaryTime(true)
+            .selectedTextStyle({ color: ProfileTab.COLORS.gold })
+            .disappearTextStyle({ color: ProfileTab.COLORS.textDim })
+            .textStyle({ color: ProfileTab.COLORS.text })
+            .onChange((value: TimePickerResult) => {
+              this.endHour = value.hour;
+              this.endMinute = value.minute;
+              this.newEndTime = `${value.hour.toString().padStart(2, '0')}:${value.minute.toString().padStart(2, '0')}`;
+            })
+        }
+        .layoutWeight(1)
+        .alignItems(HorizontalAlign.Center)
       }
       .width('100%')
-      .alignItems(HorizontalAlign.Start)
-      .margin({ bottom: 16 })
+      .padding({ top: 8, bottom: 8 })
 
-      // 结束时间
-      Column({ space: 8 }) {
-        Text('结束时间')
-          .fontSize(14)
-          .fontColor(ProfileTab.COLORS.text)
-        TextInput({ text: this.newEndTime })
-          .width('100%')
-          .height(40)
-          .backgroundColor(ProfileTab.COLORS.background)
-          .fontColor(ProfileTab.COLORS.gold)
-          .borderRadius(8)
-          .type(InputType.Normal)
-          .onChange((value: string) => {
-            this.newEndTime = value;
-          })
-      }
-      .width('100%')
-      .alignItems(HorizontalAlign.Start)
-      .margin({ bottom: 16 })
+      // 管控时长提示
+      Text(this.getDurationHint())
+        .fontSize(16)
+        .fontColor(ProfileTab.COLORS.text)
+        .margin({ top: 8, bottom: 4 })
 
       // 错误提示
       if (this.timePickerError) {
         Text(this.timePickerError)
           .fontSize(12)
           .fontColor(ProfileTab.COLORS.orange)
-          .margin({ bottom: 16 })
+          .margin({ top: 8, bottom: 8 })
       }
 
       // 按钮行
       Row() {
         Button('取消')
           .layoutWeight(1)
-          .height(40)
+          .height(44)
           .backgroundColor(ProfileTab.COLORS.background)
           .fontColor(ProfileTab.COLORS.text)
           .borderRadius(8)
@@ -400,24 +431,63 @@ export struct ProfileTab {
             this.closeTimePicker();
           })
 
-        Button(this.editingTimeRange ? '保存' : '添加')
+        Button('确认')
           .layoutWeight(1)
-          .height(40)
+          .height(44)
           .backgroundColor(ProfileTab.COLORS.gold)
           .fontColor(ProfileTab.COLORS.background)
+          .fontWeight(FontWeight.Medium)
           .borderRadius(8)
-          .margin({ left: 12 })
+          .margin({ left: 16 })
           .onClick(() => {
             this.saveTimeRange();
           })
       }
       .width('100%')
-      .justifyContent(FlexAlign.SpaceBetween)
+      .margin({ top: 24 })
     }
-    .width('85%')
+    .width('88%')
     .backgroundColor(ProfileTab.COLORS.card)
-    .borderRadius(16)
-    .padding(20)
+    .borderRadius(20)
+    .padding(24)
+  }
+
+  /**
+   * 计算管控时长提示文本
+   */
+  private getDurationHint(): string {
+    const startTotal = this.startHour * 60 + this.startMinute;
+    const endTotal = this.endHour * 60 + this.endMinute;
+    const isCrossDay = endTotal <= startTotal;
+
+    let durationMin: number;
+    if (isCrossDay) {
+      durationMin = (24 * 60 - startTotal) + endTotal;
+    } else {
+      durationMin = endTotal - startTotal;
+    }
+
+    if (durationMin === 0) {
+      return '管控时长：0 分钟';
+    }
+
+    const hours = Math.floor(durationMin / 60);
+    const mins = durationMin % 60;
+
+    let hint = '管控时长：';
+    if (hours > 0) {
+      hint += `${hours} 小时`;
+    }
+    if (mins > 0) {
+      if (hours > 0) hint += ' ';
+      hint += `${mins} 分钟`;
+    }
+
+    if (isCrossDay && hours > 0) {
+      hint += '（跨天）';
+    }
+
+    return hint;
   }
 
   /**
@@ -741,6 +811,10 @@ export struct ProfileTab {
     this.newTimeRangeLabel = '';
     this.newStartTime = '22:00';
     this.newEndTime = '06:00';
+    this.startHour = 22;
+    this.startMinute = 0;
+    this.endHour = 6;
+    this.endMinute = 0;
     this.timePickerError = '';
     this.showTimePicker = true;
   }
@@ -764,6 +838,10 @@ export struct ProfileTab {
     this.newTimeRangeLabel = timeRange.label;
     this.newStartTime = timeRange.startTime;
     this.newEndTime = timeRange.endTime;
+    this.startHour = parseInt(timeRange.startTime.split(':')[0]);
+    this.startMinute = parseInt(timeRange.startTime.split(':')[1]);
+    this.endHour = parseInt(timeRange.endTime.split(':')[0]);
+    this.endMinute = parseInt(timeRange.endTime.split(':')[1]);
     this.timePickerError = '';
     this.showTimePicker = true;
   }

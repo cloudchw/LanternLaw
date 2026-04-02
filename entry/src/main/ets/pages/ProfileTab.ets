@@ -11,7 +11,7 @@ import { ScreenTimeGuardManager } from '../services/ScreenTimeGuardManager';
 import common from '@ohos.app.ability.common';
 import dataPreferences from '@ohos.data.preferences';
 import { UserAccount } from '../models/UserAccount';
-import { PasswordHelper, hashPassword, verifyPassword } from '../utils/PasswordHelper';
+import { PasswordHelper, hashPassword, verifyPassword, validateUsername, validatePassword } from '../utils/PasswordHelper';
 import userAuth from '@ohos.userAuthentication';
 
 interface ProfileColorScheme {
@@ -192,6 +192,83 @@ export struct ProfileTab {
         .onClick(() => {
           this.showDeleteTimeRangeConfirm = false;
           this.deleteTimeRangeId = '';
+        })
+      }
+
+      // 创建账号对话框
+      if (this.showCreateAccount) {
+        Column() {
+          Column() {
+            this.CreateAccountDialog()
+          }
+        }
+        .width('100%')
+        .height('100%')
+        .backgroundColor('rgba(0, 0, 0, 0.6)')
+        .justifyContent(FlexAlign.Center)
+      }
+
+      // 头像选择对话框
+      if (this.showAvatarPicker) {
+        Column() {
+          Column() {
+            this.AvatarPickerDialog()
+          }
+        }
+        .width('100%')
+        .height('100%')
+        .backgroundColor('rgba(0, 0, 0, 0.6)')
+        .justifyContent(FlexAlign.Center)
+        .onClick(() => {
+          this.showAvatarPicker = false;
+        })
+      }
+
+      // 修改用户名对话框
+      if (this.showEditUsername) {
+        Column() {
+          Column() {
+            this.EditUsernameDialog()
+          }
+        }
+        .width('100%')
+        .height('100%')
+        .backgroundColor('rgba(0, 0, 0, 0.6)')
+        .justifyContent(FlexAlign.Center)
+        .onClick(() => {
+          this.showEditUsername = false;
+        })
+      }
+
+      // 修改密码对话框
+      if (this.showChangePassword) {
+        Column() {
+          Column() {
+            this.ChangePasswordDialog()
+          }
+        }
+        .width('100%')
+        .height('100%')
+        .backgroundColor('rgba(0, 0, 0, 0.6)')
+        .justifyContent(FlexAlign.Center)
+        .onClick(() => {
+          this.showChangePassword = false;
+        })
+      }
+
+      // 找回密码对话框
+      if (this.showResetPassword) {
+        Column() {
+          Column() {
+            this.ResetPasswordDialog()
+          }
+        }
+        .width('100%')
+        .height('100%')
+        .backgroundColor('rgba(0, 0, 0, 0.6)')
+        .justifyContent(FlexAlign.Center)
+        .onClick(() => {
+          this.showResetPassword = false;
         })
       }
     }

@@ -99,6 +99,34 @@ export class ScreenTimeGuardManager {
   }
 
   /**
+   * 打开系统应用展示页
+   * 由系统原生页面展示已选应用的名称和图标，用户可点击图标跳转
+   * @returns true 成功打开，false 失败（模拟器不支持）
+   */
+  async openAppForm(context: common.Context, tokens: string[]): Promise<boolean> {
+    try {
+      const appSelection: guardService.AppInfo = {
+        appTokens: tokens
+      };
+      await appPicker.startAppForm(context, appSelection, '管控应用', true);
+      Logger.info(TAG, `应用展示页已打开`);
+      return true;
+    } catch (error) {
+      const errCode = (error as BusinessError).code;
+      if (errCode === 1019000003) {
+        Logger.info(TAG, '用户关闭了应用展示页');
+        return false;
+      } else if (errCode === 1019000001) {
+        Logger.warn(TAG, '应用展示页不可用（模拟器可能不支持此功能）');
+        return false;
+      } else {
+        Logger.exception(TAG, error instanceof Error ? error : new Error(String(error)), '打开应用展示页失败');
+        return false;
+      }
+    }
+  }
+
+  /**
    * 同步所有管控策略
    * 根据当前配置（时间段 + 白名单应用）创建/更新/删除系统策略
    */

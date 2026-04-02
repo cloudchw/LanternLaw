@@ -152,7 +152,8 @@ struct DiagnosticsPage {
       // 测试5: 检查白名单
       this.testResults.push(`白名单应用数量: ${config.whitelistApps.length}`);
       for (const app of config.whitelistApps) {
-        this.testResults.push(`白名单: ${app.appName} (${app.enabled ? '已启用' : '已禁用'})`);
+        const maskedToken = app.appToken ? `${app.appToken.substring(0, 4)}****` : '未知';
+        this.testResults.push(`白名单: ${maskedToken} (${app.enabled ? '已启用' : '已禁用'})`);
       }
 
       // 更新状态

@@ -276,15 +276,6 @@ export struct ProfileTab {
 
             Blank()
 
-            // 启用/禁用开关
-            Text(timeRange.enabled ? '✓' : '✗')
-              .fontSize(16)
-              .fontColor(timeRange.enabled ? ProfileTab.COLORS.gold : ProfileTab.COLORS.textDim)
-              .margin({ right: 12 })
-              .onClick(() => {
-                this.toggleTimeRangeEnabled(timeRange.id);
-              })
-
             // 删除按钮
             Text('删除')
               .fontSize(11)
@@ -298,7 +289,7 @@ export struct ProfileTab {
           .onClick(() => {
             this.editTimeRange(timeRange);
           })
-        }, (timeRange: TimeRange, index: number) => timeRange.id)
+        }, (timeRange: TimeRange, index: number) => `${timeRange.id}_${timeRange.startTime}_${timeRange.endTime}_${timeRange.label}`)
       }
 
       Text('点击时间段编辑，左键切换启用状态')
@@ -553,72 +544,64 @@ export struct ProfileTab {
           .fontColor(ProfileTab.COLORS.text)
           .fontWeight(FontWeight.Medium)
         Blank()
-        Text(`已选 ${this.whitelistApps.length} 个`)
-          .fontSize(13)
-          .fontColor(ProfileTab.COLORS.gold)
-          .margin({ right: 12 })
         Button('管理')
           .fontSize(12)
           .height(28)
           .backgroundColor(ProfileTab.COLORS.accent)
           .fontColor(ProfileTab.COLORS.gold)
           .borderRadius(14)
+          .margin({ right: 8 })
           .onClick(() => {
             this.openAppPicker();
           })
+        if (this.whitelistApps.length > 0) {
+          Button('查看')
+            .fontSize(12)
+            .height(28)
+            .backgroundColor('rgba(255, 158, 109, 0.15)')
+            .fontColor(ProfileTab.COLORS.orange)
+            .borderRadius(14)
+            .onClick(() => {
+              this.viewSelectedApps();
+            })
+        }
       }
       .width('100%')
-      .padding({ bottom: 16 })
+      .padding({ bottom: 12 })
 
-      // 白名单列表
-      if (this.whitelistApps.length === 0) {
+      // 白名单统计
+      if (this.whitelistApps.length > 0) {
+        Column() {
+          Text(`管控时段内，${this.whitelistApps.length}个白名单应用可用`)
+            .fontSize(13)
+            .fontColor(ProfileTab.COLORS.text)
+            .margin({ bottom: 10 })
+
+          Text('点击「管理」选择/修改白名单应用')
+            .fontSize(11)
+            .fontColor(ProfileTab.COLORS.textDim)
+            .margin({ top: 8 })
+          Text('点击「查看」预览已选应用详情')
+            .fontSize(11)
+            .fontColor(ProfileTab.COLORS.textDim)
+            .margin({ top: 8 })
+        }
+        .width('100%')
+        .padding({ top: 4, bottom: 8 })
+      } else {
         Column() {
           Text('暂无白名单应用')
             .fontSize(13)
             .fontColor(ProfileTab.COLORS.textDim)
-            .margin({ top: 8, bottom: 8 })
+            .margin({ bottom: 4 })
           Text('点击「管理」按钮选择允许使用的应用')
             .fontSize(11)
             .fontColor(ProfileTab.COLORS.textDim)
         }
         .width('100%')
         .alignItems(HorizontalAlign.Center)
-        .padding({ top: 8, bottom: 8 })
-      } else {
-        ForEach(this.whitelistApps, (app: WhitelistApp, index: number) => {
-          Row() {
-            Text(app.enabled ? '✓' : '✗')
-              .fontSize(14)
-              .fontColor(app.enabled ? ProfileTab.COLORS.gold : ProfileTab.COLORS.textDim)
-              .margin({ right: 10 })
-            Text(`应用 ${index + 1}`)
-              .fontSize(14)
-              .fontColor(app.enabled ? ProfileTab.COLORS.text : ProfileTab.COLORS.textDim)
-              .decoration({ type: app.enabled ? TextDecorationType.None : TextDecorationType.LineThrough })
-              .layoutWeight(1)
-            Blank()
-            Button('删除')
-              .fontSize(11)
-              .height(24)
-              .backgroundColor('rgba(255, 107, 107, 0.2)')
-              .fontColor('#ff6b6b')
-              .borderRadius(12)
-              .onClick(() => {
-                this.showDeleteConfirmDialog(index);
-              })
-          }
-          .width('100%')
-          .padding({ top: 10, bottom: 10 })
-          .onClick(() => {
-            this.toggleWhitelistApp(index);
-          })
-        }, (app: WhitelistApp, index: number) => `${app.appToken}_${index}`)
+        .padding({ top: 4, bottom: 8 })
       }
-
-      Text('点击应用切换启用/禁用，点击「管理」修改应用列表')
-        .fontSize(11)
-        .fontColor(ProfileTab.COLORS.textDim)
-        .margin({ top: 8 })
     }
     .width('100%')
     .padding(16)
@@ -640,7 +623,7 @@ export struct ProfileTab {
         .fontWeight(FontWeight.Bold)
         .margin({ bottom: 16 })
 
-      Text(`确定要从白名单中移除 "${this.deleteAppIndex >= 0 && this.deleteAppIndex < this.whitelistApps.length ? this.whitelistApps[this.deleteAppIndex].appName : '该应用'}" 吗？`)
+      Text(`确定要从白名单中移除 "应用 ${this.deleteAppIndex + 1}" 吗？`)
         .fontSize(14)
         .fontColor(ProfileTab.COLORS.textDim)
         .margin({ bottom: 20 })
@@ -850,6 +833,10 @@ export struct ProfileTab {
    * 保存时间段
    */
   private saveTimeRange(): void {
+    // 从 TimePicker 状态变量同步时间字符串（onChange 在未滚动时不触发）
+    this.newStartTime = `${this.startHour.toString().padStart(2, '0')}:${this.startMinute.toString().padStart(2, '0')}`;
+    this.newEndTime = `${this.endHour.toString().padStart(2, '0')}:${this.endMinute.toString().padStart(2, '0')}`;
+
     // 验证时间格式
     const timeRegex = /^([01]?[0-9]|2[0-3]):([0-5][0-9])$/;
     if (!timeRegex.test(this.newStartTime) || !timeRegex.test(this.newEndTime)) {
@@ -874,15 +861,25 @@ export struct ProfileTab {
     }
 
     if (this.editingTimeRange) {
-      // 更新现有时间段
-      const index = this.timeRanges.findIndex(tr => tr.id === this.editingTimeRange!.id);
-      if (index >= 0) {
-        this.timeRanges[index] = newTimeRange;
-        Logger.info('ProfileTab', `更新时间段: ${newTimeRange.label}`);
+      // 更新现有时间段 — 用新数组替换以触发 @State 响应式更新
+      const updated: TimeRange[] = [];
+      for (const tr of this.timeRanges) {
+        if (tr.id === this.editingTimeRange!.id) {
+          updated.push(newTimeRange);
+        } else {
+          updated.push({ id: tr.id, label: tr.label, startTime: tr.startTime, endTime: tr.endTime, enabled: tr.enabled });
+        }
       }
+      this.timeRanges = updated;
+      Logger.info('ProfileTab', `更新时间段: ${newTimeRange.label}`);
     } else {
       // 添加新时间段
-      this.timeRanges.push(newTimeRange);
+      const added: TimeRange[] = [];
+      for (const tr of this.timeRanges) {
+        added.push({ id: tr.id, label: tr.label, startTime: tr.startTime, endTime: tr.endTime, enabled: tr.enabled });
+      }
+      added.push(newTimeRange);
+      this.timeRanges = added;
       Logger.info('ProfileTab', `添加时间段: ${newTimeRange.label}`);
     }
 
@@ -894,12 +891,17 @@ export struct ProfileTab {
    * 切换时间段启用状态
    */
   private toggleTimeRangeEnabled(id: string): void {
-    const index = this.timeRanges.findIndex(tr => tr.id === id);
-    if (index >= 0) {
-      this.timeRanges[index].enabled = !this.timeRanges[index].enabled;
-      Logger.info('ProfileTab', `切换时间段状态: ${this.timeRanges[index].label} -> ${this.timeRanges[index].enabled}`);
-      this.saveConfig();
+    const updated: TimeRange[] = [];
+    for (const tr of this.timeRanges) {
+      if (tr.id === id) {
+        updated.push({ id: tr.id, label: tr.label, startTime: tr.startTime, endTime: tr.endTime, enabled: !tr.enabled });
+      } else {
+        updated.push({ id: tr.id, label: tr.label, startTime: tr.startTime, endTime: tr.endTime, enabled: tr.enabled });
+      }
     }
+    this.timeRanges = updated;
+    Logger.info('ProfileTab', `切换时间段状态`);
+    this.saveConfig();
   }
 
   /**
@@ -914,12 +916,15 @@ export struct ProfileTab {
    * 确认删除时间段
    */
   private confirmDeleteTimeRange(): void {
-    const index = this.timeRanges.findIndex(tr => tr.id === this.deleteTimeRangeId);
-    if (index >= 0) {
-      const label = this.timeRanges[index].label;
-      this.timeRanges.splice(index, 1);
-      Logger.info('ProfileTab', `删除时间段: ${label}`);
+    const label = this.timeRanges.find(tr => tr.id === this.deleteTimeRangeId)?.label ?? '';
+    const remaining: TimeRange[] = [];
+    for (const tr of this.timeRanges) {
+      if (tr.id !== this.deleteTimeRangeId) {
+        remaining.push({ id: tr.id, label: tr.label, startTime: tr.startTime, endTime: tr.endTime, enabled: tr.enabled });
+      }
     }
+    this.timeRanges = remaining;
+    Logger.info('ProfileTab', `删除时间段: ${label}`);
     this.showDeleteTimeRangeConfirm = false;
     this.deleteTimeRangeId = '';
     this.saveConfig();
@@ -1018,8 +1023,6 @@ export struct ProfileTab {
           return existing;
         }
         return {
-          bundleName: '',
-          appName: '应用',
           appToken: token,
           enabled: true
         };
@@ -1033,6 +1036,30 @@ export struct ProfileTab {
   }
 
   /**
+   * 打开系统应用展示页（查看已选应用的名称和图标）
+   */
+  private async viewSelectedApps(): Promise<void> {
+    try {
+      const context = getContext(this) as common.UIAbilityContext;
+      const tokens = this.whitelistApps
+        .filter(app => app.appToken && app.appToken.length > 0)
+        .map(app => app.appToken!);
+
+      if (tokens.length === 0) {
+        return;
+      }
+
+      const guardManager = ScreenTimeGuardManager.getInstance();
+      const opened = await guardManager.openAppForm(context, tokens);
+      if (!opened) {
+        Logger.warn('ProfileTab', '应用展示页打开失败，可能需要在真机上使用');
+      }
+    } catch (error) {
+      Logger.exception('ProfileTab', error instanceof Error ? error : new Error(String(error)), '打开应用展示页失败');
+    }
+  }
+
+  /**
    * 切换白名单应用启用状态
    */
   private toggleWhitelistApp(index: number): void {
@@ -1040,7 +1067,7 @@ export struct ProfileTab {
       return;
     }
     this.whitelistApps[index].enabled = !this.whitelistApps[index].enabled;
-    Logger.info('ProfileTab', `切换白名单应用: ${this.whitelistApps[index].appName} -> ${this.whitelistApps[index].enabled}`);
+    Logger.info('ProfileTab', `切换白名单应用: ${this.whitelistApps[index].appToken} -> ${this.whitelistApps[index].enabled}`);
     this.saveConfig();
   }
 
@@ -1060,9 +1087,9 @@ export struct ProfileTab {
       this.showDeleteConfirm = false;
       return;
     }
-    const appName = this.whitelistApps[this.deleteAppIndex].appName;
+    const appToken = this.whitelistApps[this.deleteAppIndex].appToken;
     this.whitelistApps.splice(this.deleteAppIndex, 1);
-    Logger.info('ProfileTab', `已从白名单删除: ${appName}`);
+    Logger.info('ProfileTab', `已从白名单删除: ${appToken}`);
     this.showDeleteConfirm = false;
     this.deleteAppIndex = -1;
     this.saveConfig();

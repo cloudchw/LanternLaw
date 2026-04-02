@@ -10,6 +10,9 @@ import { TimeRange, TimeRangeManager } from '../models/TimeRange';
 import { ScreenTimeGuardManager } from '../services/ScreenTimeGuardManager';
 import common from '@ohos.app.ability.common';
 import dataPreferences from '@ohos.data.preferences';
+import { UserAccount } from '../models/UserAccount';
+import { PasswordHelper, hashPassword, verifyPassword } from '../utils/PasswordHelper';
+import userAuth from '@ohos.userAuthentication';
 
 interface ProfileColorScheme {
   background: string;
@@ -45,6 +48,35 @@ export struct ProfileTab {
   @State deleteAppIndex: number = -1;
   @State showDeleteTimeRangeConfirm: boolean = false;
   @State deleteTimeRangeId: string = '';
+  // 账号管理状态
+  @State currentAccount: UserAccount | null = null;
+  @State showCreateAccount: boolean = false;
+  @State showAvatarPicker: boolean = false;
+  @State showEditUsername: boolean = false;
+  @State showChangePassword: boolean = false;
+  @State showResetPassword: boolean = false;
+  // 创建账号表单
+  @State createUsername: string = '';
+  @State createAvatar: string = '😊';
+  @State createPassword: string = '';
+  @State createConfirmPassword: string = '';
+  @State createAccountError: string = '';
+  // 修改用户名表单
+  @State editUsernameInput: string = '';
+  // 修改密码表单
+  @State oldPassword: string = '';
+  @State newPassword: string = '';
+  @State confirmNewPassword: string = '';
+  @State changePasswordError: string = '';
+  // 找回密码表单
+  @State resetPassword: string = '';
+  @State resetConfirmPassword: string = '';
+  @State resetPasswordError: string = '';
+  @State resetAuthPassed: boolean = false;
+  // 头像选择
+  @State selectedAvatar: string = '😊';
+  // 头像弹窗来源: 'create' | 'edit'
+  @State avatarPickerSource: string = 'create';
 
   private stateManager: LanternLawStateManager = LanternLawStateManager.getInstance();
   private static readonly COLORS: ProfileColorScheme = {
@@ -61,6 +93,7 @@ export struct ProfileTab {
   aboutToAppear() {
     Logger.info('ProfileTab', '我的 Tab 初始化');
     this.loadConfig();
+    this.loadAccount();
   }
 
   build() {

@@ -14,6 +14,7 @@ import { DelayedTask } from '../utils/DelayedTask';
 import { DeviceLockManager } from './DeviceLockManager';
 import { BackgroundKeepAlive, KeepAliveState } from '../services/BackgroundKeepAlive';
 import { ScreenTimeGuardManager } from '../services/ScreenTimeGuardManager';
+import { UserAccount } from '../models/UserAccount';
 
 export interface LanternLawConfigUpdate {
   bedtime?: string;
@@ -605,5 +606,36 @@ export class LanternLawStateManager {
 
       return true;
     }, false) || false;
+  }
+
+  // ==================== 用户账号管理 ====================
+
+  /**
+   * 获取用户账号
+   */
+  public async getUserAccount(): Promise<UserAccount | null> {
+    try {
+      const json = await this.database.getUserAccount();
+      if (json) {
+        return UserAccount.fromJSON(json);
+      }
+      return null;
+    } catch (error) {
+      console.error(`获取用户账号失败: ${JSON.stringify(error)}`);
+      return null;
+    }
+  }
+
+  /**
+   * 保存用户账号
+   */
+  public async saveUserAccount(account: UserAccount): Promise<void> {
+    try {
+      account.updatedAt = Date.now();
+      await this.database.saveUserAccount(account.toJSON());
+    } catch (error) {
+      console.error(`保存用户账号失败: ${JSON.stringify(error)}`);
+      throw new Error(`保存用户账号失败: ${error instanceof Error ? error.message : String(error)}`);
+    }
   }
 }

@@ -130,6 +130,7 @@ export struct ProfileTab {
             this.TimeManagementCard()
             this.WhitelistCard()
             this.NotificationCard()
+            this.AccountCard()
             this.AboutCard()
           }
           .width('90%')
@@ -755,6 +756,130 @@ export struct ProfileTab {
     }
     .width('100%')
     .padding({ top: 12, bottom: 12 })
+  }
+
+  /**
+   * 账号管理卡片
+   */
+  @Builder
+  private AccountCard(): void {
+    Column() {
+      Row() {
+        Text('👤')
+          .fontSize(18)
+          .margin({ right: 12 })
+        Text('账号管理')
+          .fontSize(16)
+          .fontColor(ProfileTab.COLORS.text)
+          .fontWeight(FontWeight.Medium)
+      }
+      .width('100%')
+      .padding({ bottom: 16 })
+
+      // 操作列表
+      Column() {
+        Row() {
+          Text('修改用户名')
+            .fontSize(14)
+            .fontColor(ProfileTab.COLORS.text)
+          Blank()
+          Text('>')
+            .fontSize(14)
+            .fontColor(ProfileTab.COLORS.textDim)
+        }
+        .width('100%')
+        .padding({ top: 14, bottom: 14 })
+        .onClick(() => {
+          if (this.currentAccount) {
+            this.editUsernameInput = this.currentAccount!.username;
+            this.showEditUsername = true;
+          }
+        })
+
+        // 分割线
+        Column()
+          .width('100%')
+          .height(0.5)
+          .backgroundColor(ProfileTab.COLORS.border)
+
+        Row() {
+          Text('修改头像')
+            .fontSize(14)
+            .fontColor(ProfileTab.COLORS.text)
+          Blank()
+          Row() {
+            Text(this.currentAccount?.avatar ?? '😊')
+              .fontSize(18)
+              .margin({ right: 4 })
+            Text('>')
+              .fontSize(14)
+              .fontColor(ProfileTab.COLORS.textDim)
+          }
+        }
+        .width('100%')
+        .padding({ top: 14, bottom: 14 })
+        .onClick(() => {
+          this.selectedAvatar = this.currentAccount?.avatar ?? '😊';
+          this.avatarPickerSource = 'edit';
+          this.showAvatarPicker = true;
+        })
+
+        Column()
+          .width('100%')
+          .height(0.5)
+          .backgroundColor(ProfileTab.COLORS.border)
+
+        Row() {
+          Text('修改密码')
+            .fontSize(14)
+            .fontColor(ProfileTab.COLORS.text)
+          Blank()
+          Text('>')
+            .fontSize(14)
+            .fontColor(ProfileTab.COLORS.textDim)
+        }
+        .width('100%')
+        .padding({ top: 14, bottom: 14 })
+        .onClick(() => {
+          this.oldPassword = '';
+          this.newPassword = '';
+          this.confirmNewPassword = '';
+          this.changePasswordError = '';
+          this.showChangePassword = true;
+        })
+
+        Column()
+          .width('100%')
+          .height(0.5)
+          .backgroundColor(ProfileTab.COLORS.border)
+
+        Row() {
+          Text('找回密码')
+            .fontSize(14)
+            .fontColor(ProfileTab.COLORS.text)
+          Blank()
+          Text('>')
+            .fontSize(14)
+            .fontColor(ProfileTab.COLORS.textDim)
+        }
+        .width('100%')
+        .padding({ top: 14, bottom: 14 })
+        .onClick(() => {
+          this.resetPassword = '';
+          this.resetConfirmPassword = '';
+          this.resetPasswordError = '';
+          this.resetAuthPassed = false;
+          this.showResetPassword = true;
+        })
+      }
+      .width('100%')
+    }
+    .width('100%')
+    .padding(16)
+    .backgroundColor(ProfileTab.COLORS.card)
+    .borderRadius(12)
+    .border({ width: 1, color: ProfileTab.COLORS.border })
+    .margin({ bottom: 16 })
   }
 
   /**

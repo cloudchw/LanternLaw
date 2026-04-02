@@ -615,6 +615,25 @@ export class LanternLawDatabase {
     }
   }
 
+  // ==================== 用户账号管理 ====================
+
+  private static readonly KEY_USER_ACCOUNT = 'user_account';
+
+  /**
+   * 保存用户账号
+   */
+  public async saveUserAccount(accountJson: string): Promise<void> {
+    await this.saveConfig(LanternLawDatabase.KEY_USER_ACCOUNT, accountJson);
+  }
+
+  /**
+   * 获取用户账号
+   * @returns 账号 JSON 字符串，不存在时返回 null
+   */
+  public async getUserAccount(): Promise<string | null> {
+    return await this.getConfig(LanternLawDatabase.KEY_USER_ACCOUNT);
+  }
+
   // 关闭数据库
   public async close(): Promise<void> {
     if (this.rdbStore) {

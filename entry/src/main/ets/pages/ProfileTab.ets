@@ -1009,6 +1009,480 @@ export struct ProfileTab {
     .width('100%')
   }
 
+  // ==================== 账号管理弹窗 ====================
+
+  private readonly AVATAR_LIST: string[] = [
+    '😊', '😄', '😎', '🤓', '😇', '🥳',
+    '🦊', '🐱', '🐶', '🐼', '🦁', '🐯',
+    '🌙', '⭐', '🔥', '💪', '🎯', '🏆',
+    '🌸', '🍀', '🎨', '📚', '🧘', '💡'
+  ];
+
+  /**
+   * 创建账号弹窗
+   */
+  @Builder
+  private CreateAccountDialog(): void {
+    Column() {
+      Text('创建你的账号')
+        .fontSize(18)
+        .fontColor(ProfileTab.COLORS.text)
+        .fontWeight(FontWeight.Bold)
+        .width('100%')
+        .textAlign(TextAlign.Center)
+        .margin({ bottom: 24 })
+
+      // 头像选择区域
+      Column()
+        .width(64)
+        .height(64)
+        .borderRadius(32)
+        .backgroundColor(ProfileTab.COLORS.background)
+        .justifyContent(FlexAlign.Center)
+        .alignItems(HorizontalAlign.Center)
+        .onClick(() => {
+          this.selectedAvatar = this.createAvatar;
+          this.avatarPickerSource = 'create';
+          this.showAvatarPicker = true;
+        }) {
+          Text(this.createAvatar)
+            .fontSize(32)
+          Text('点击选择')
+            .fontSize(10)
+            .fontColor(ProfileTab.COLORS.textDim)
+        }
+        .margin({ bottom: 20 })
+
+      // 用户名
+      Text('用户名')
+        .fontSize(14)
+        .fontColor(ProfileTab.COLORS.text)
+        .width('100%')
+        .margin({ bottom: 6 })
+      TextInput({ placeholder: '请输入用户名', text: this.createUsername })
+        .width('100%')
+        .height(40)
+        .backgroundColor(ProfileTab.COLORS.background)
+        .fontColor(ProfileTab.COLORS.text)
+        .borderRadius(8)
+        .onChange((value: string) => {
+          this.createUsername = value;
+          this.createAccountError = '';
+        })
+
+      // 密码
+      Text('设置密码')
+        .fontSize(14)
+        .fontColor(ProfileTab.COLORS.text)
+        .width('100%')
+        .margin({ top: 16, bottom: 6 })
+      TextInput({ placeholder: '请设置密码(6-20位)', text: this.createPassword })
+        .width('100%')
+        .height(40)
+        .type(InputType.Password)
+        .backgroundColor(ProfileTab.COLORS.background)
+        .fontColor(ProfileTab.COLORS.text)
+        .borderRadius(8)
+        .onChange((value: string) => {
+          this.createPassword = value;
+          this.createAccountError = '';
+        })
+
+      // 确认密码
+      Text('确认密码')
+        .fontSize(14)
+        .fontColor(ProfileTab.COLORS.text)
+        .width('100%')
+        .margin({ top: 16, bottom: 6 })
+      TextInput({ placeholder: '请再次输入密码', text: this.createConfirmPassword })
+        .width('100%')
+        .height(40)
+        .type(InputType.Password)
+        .backgroundColor(ProfileTab.COLORS.background)
+        .fontColor(ProfileTab.COLORS.text)
+        .borderRadius(8)
+        .onChange((value: string) => {
+          this.createConfirmPassword = value;
+          this.createAccountError = '';
+        })
+
+      // 错误提示
+      if (this.createAccountError) {
+        Text(this.createAccountError)
+          .fontSize(12)
+          .fontColor('#ff4444')
+          .margin({ top: 8 })
+      }
+
+      // 按钮
+      Row() {
+        Button('取消')
+          .layoutWeight(1)
+          .height(44)
+          .backgroundColor(ProfileTab.COLORS.background)
+          .fontColor(ProfileTab.COLORS.text)
+          .borderRadius(8)
+          .onClick(() => {
+            this.showCreateAccount = false;
+          })
+
+        Button('创建')
+          .layoutWeight(1)
+          .height(44)
+          .backgroundColor(ProfileTab.COLORS.gold)
+          .fontColor(ProfileTab.COLORS.background)
+          .fontWeight(FontWeight.Medium)
+          .borderRadius(8)
+          .margin({ left: 16 })
+          .onClick(() => {
+            this.handleCreateAccount();
+          })
+      }
+      .width('100%')
+      .margin({ top: 24 })
+    }
+    .width('88%')
+    .backgroundColor(ProfileTab.COLORS.card)
+    .borderRadius(20)
+    .padding(24)
+    .onClick((event: ClickEvent) => {
+      event.stopPropagation();
+    })
+  }
+
+  /**
+   * 选择头像弹窗
+   */
+  @Builder
+  private AvatarPickerDialog(): void {
+    Column() {
+      Text('选择头像')
+        .fontSize(18)
+        .fontColor(ProfileTab.COLORS.text)
+        .fontWeight(FontWeight.Bold)
+        .width('100%')
+        .textAlign(TextAlign.Center)
+        .margin({ bottom: 20 })
+
+      // 4行6列网格
+      Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.SpaceAround }) {
+        ForEach(this.AVATAR_LIST, (emoji: string) => {
+          Column() {
+            Text(emoji)
+              .fontSize(28)
+          }
+          .width('15%')
+          .height(56)
+          .borderRadius(12)
+          .backgroundColor(this.selectedAvatar === emoji ? 'rgba(255, 209, 102, 0.2)' : 'transparent')
+          .border({
+            width: this.selectedAvatar === emoji ? 2 : 0,
+            color: ProfileTab.COLORS.gold,
+            radius: 12
+          })
+          .justifyContent(FlexAlign.Center)
+          .alignItems(HorizontalAlign.Center)
+          .onClick(() => {
+            this.selectedAvatar = emoji;
+          })
+        }, (emoji: string) => emoji)
+      }
+      .width('100%')
+      .margin({ bottom: 20 })
+
+      Row() {
+        Button('取消')
+          .layoutWeight(1)
+          .height(44)
+          .backgroundColor(ProfileTab.COLORS.background)
+          .fontColor(ProfileTab.COLORS.text)
+          .borderRadius(8)
+          .onClick(() => {
+            this.showAvatarPicker = false;
+          })
+
+        Button('确认')
+          .layoutWeight(1)
+          .height(44)
+          .backgroundColor(ProfileTab.COLORS.gold)
+          .fontColor(ProfileTab.COLORS.background)
+          .fontWeight(FontWeight.Medium)
+          .borderRadius(8)
+          .margin({ left: 16 })
+          .onClick(() => {
+            if (this.avatarPickerSource === 'create') {
+              this.createAvatar = this.selectedAvatar;
+            } else {
+              this.handleUpdateAvatar(this.selectedAvatar);
+            }
+            this.showAvatarPicker = false;
+          })
+      }
+      .width('100%')
+    }
+    .width('88%')
+    .backgroundColor(ProfileTab.COLORS.card)
+    .borderRadius(20)
+    .padding(24)
+    .onClick((event: ClickEvent) => {
+      event.stopPropagation();
+    })
+  }
+
+  /**
+   * 修改用户名弹窗
+   */
+  @Builder
+  private EditUsernameDialog(): void {
+    Column() {
+      Text('修改用户名')
+        .fontSize(18)
+        .fontColor(ProfileTab.COLORS.text)
+        .fontWeight(FontWeight.Bold)
+        .width('100%')
+        .textAlign(TextAlign.Center)
+        .margin({ bottom: 24 })
+
+      TextInput({ placeholder: '请输入新用户名', text: this.editUsernameInput })
+        .width('100%')
+        .height(40)
+        .backgroundColor(ProfileTab.COLORS.background)
+        .fontColor(ProfileTab.COLORS.text)
+        .borderRadius(8)
+        .onChange((value: string) => {
+          this.editUsernameInput = value;
+        })
+
+      Row() {
+        Button('取消')
+          .layoutWeight(1)
+          .height(44)
+          .backgroundColor(ProfileTab.COLORS.background)
+          .fontColor(ProfileTab.COLORS.text)
+          .borderRadius(8)
+          .onClick(() => {
+            this.showEditUsername = false;
+          })
+
+        Button('保存')
+          .layoutWeight(1)
+          .height(44)
+          .backgroundColor(ProfileTab.COLORS.gold)
+          .fontColor(ProfileTab.COLORS.background)
+          .fontWeight(FontWeight.Medium)
+          .borderRadius(8)
+          .margin({ left: 16 })
+          .onClick(() => {
+            this.handleUpdateUsername();
+          })
+      }
+      .width('100%')
+      .margin({ top: 24 })
+    }
+    .width('70%')
+    .backgroundColor(ProfileTab.COLORS.card)
+    .borderRadius(16)
+    .padding(20)
+    .onClick((event: ClickEvent) => {
+      event.stopPropagation();
+    })
+  }
+
+  /**
+   * 修改密码弹窗
+   */
+  @Builder
+  private ChangePasswordDialog(): void {
+    Column() {
+      Text('修改密码')
+        .fontSize(18)
+        .fontColor(ProfileTab.COLORS.text)
+        .fontWeight(FontWeight.Bold)
+        .width('100%')
+        .textAlign(TextAlign.Center)
+        .margin({ bottom: 24 })
+
+      TextInput({ placeholder: '请输入旧密码', text: this.oldPassword })
+        .width('100%')
+        .height(40)
+        .type(InputType.Password)
+        .backgroundColor(ProfileTab.COLORS.background)
+        .fontColor(ProfileTab.COLORS.text)
+        .borderRadius(8)
+        .margin({ bottom: 16 })
+        .onChange((value: string) => {
+          this.oldPassword = value;
+          this.changePasswordError = '';
+        })
+
+      TextInput({ placeholder: '请输入新密码(6-20位)', text: this.newPassword })
+        .width('100%')
+        .height(40)
+        .type(InputType.Password)
+        .backgroundColor(ProfileTab.COLORS.background)
+        .fontColor(ProfileTab.COLORS.text)
+        .borderRadius(8)
+        .margin({ bottom: 16 })
+        .onChange((value: string) => {
+          this.newPassword = value;
+          this.changePasswordError = '';
+        })
+
+      TextInput({ placeholder: '请再次输入新密码', text: this.confirmNewPassword })
+        .width('100%')
+        .height(40)
+        .type(InputType.Password)
+        .backgroundColor(ProfileTab.COLORS.background)
+        .fontColor(ProfileTab.COLORS.text)
+        .borderRadius(8)
+        .onChange((value: string) => {
+          this.confirmNewPassword = value;
+          this.changePasswordError = '';
+        })
+
+      if (this.changePasswordError) {
+        Text(this.changePasswordError)
+          .fontSize(12)
+          .fontColor('#ff4444')
+          .margin({ top: 8 })
+      }
+
+      Row() {
+        Button('取消')
+          .layoutWeight(1)
+          .height(44)
+          .backgroundColor(ProfileTab.COLORS.background)
+          .fontColor(ProfileTab.COLORS.text)
+          .borderRadius(8)
+          .onClick(() => {
+            this.showChangePassword = false;
+          })
+
+        Button('保存')
+          .layoutWeight(1)
+          .height(44)
+          .backgroundColor(ProfileTab.COLORS.gold)
+          .fontColor(ProfileTab.COLORS.background)
+          .fontWeight(FontWeight.Medium)
+          .borderRadius(8)
+          .margin({ left: 16 })
+          .onClick(() => {
+            this.handleChangePassword();
+          })
+      }
+      .width('100%')
+      .margin({ top: 24 })
+    }
+    .width('88%')
+    .backgroundColor(ProfileTab.COLORS.card)
+    .borderRadius(20)
+    .padding(24)
+    .onClick((event: ClickEvent) => {
+      event.stopPropagation();
+    })
+  }
+
+  /**
+   * 找回密码弹窗
+   */
+  @Builder
+  private ResetPasswordDialog(): void {
+    Column() {
+      Text('找回密码')
+        .fontSize(18)
+        .fontColor(ProfileTab.COLORS.text)
+        .fontWeight(FontWeight.Bold)
+        .width('100%')
+        .textAlign(TextAlign.Center)
+        .margin({ bottom: 16 })
+
+      Text('忘记密码？将通过系统锁屏验证你的身份后重置密码。')
+        .fontSize(14)
+        .fontColor(ProfileTab.COLORS.textDim)
+        .width('100%')
+        .margin({ bottom: 20 })
+
+      if (!this.resetAuthPassed) {
+        Button('🔐 验证系统锁屏密码')
+          .width('100%')
+          .height(44)
+          .backgroundColor(ProfileTab.COLORS.gold)
+          .fontColor(ProfileTab.COLORS.background)
+          .fontWeight(FontWeight.Medium)
+          .borderRadius(8)
+          .onClick(() => {
+            this.handleSystemAuth();
+          })
+      } else {
+        // 验证通过后显示重置密码表单
+        TextInput({ placeholder: '请设置新密码(6-20位)', text: this.resetPassword })
+          .width('100%')
+          .height(40)
+          .type(InputType.Password)
+          .backgroundColor(ProfileTab.COLORS.background)
+          .fontColor(ProfileTab.COLORS.text)
+          .borderRadius(8)
+          .margin({ bottom: 16 })
+          .onChange((value: string) => {
+            this.resetPassword = value;
+            this.resetPasswordError = '';
+          })
+
+        TextInput({ placeholder: '请再次输入新密码', text: this.resetConfirmPassword })
+          .width('100%')
+          .height(40)
+          .type(InputType.Password)
+          .backgroundColor(ProfileTab.COLORS.background)
+          .fontColor(ProfileTab.COLORS.text)
+          .borderRadius(8)
+          .onChange((value: string) => {
+            this.resetConfirmPassword = value;
+            this.resetPasswordError = '';
+          })
+
+        if (this.resetPasswordError) {
+          Text(this.resetPasswordError)
+            .fontSize(12)
+            .fontColor('#ff4444')
+            .margin({ top: 8 })
+        }
+
+        Row() {
+          Button('取消')
+            .layoutWeight(1)
+            .height(44)
+            .backgroundColor(ProfileTab.COLORS.background)
+            .fontColor(ProfileTab.COLORS.text)
+            .borderRadius(8)
+            .onClick(() => {
+              this.showResetPassword = false;
+            })
+
+          Button('重置密码')
+            .layoutWeight(1)
+            .height(44)
+            .backgroundColor(ProfileTab.COLORS.gold)
+            .fontColor(ProfileTab.COLORS.background)
+            .fontWeight(FontWeight.Medium)
+            .borderRadius(8)
+            .margin({ left: 16 })
+            .onClick(() => {
+              this.handleResetPassword();
+            })
+        }
+        .width('100%')
+        .margin({ top: 24 })
+      }
+    }
+    .width('88%')
+    .backgroundColor(ProfileTab.COLORS.card)
+    .borderRadius(20)
+    .padding(24)
+    .onClick((event: ClickEvent) => {
+      event.stopPropagation();
+    })
+  }
+
   /**
    * 切换全局开关
    */

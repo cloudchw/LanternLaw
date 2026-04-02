@@ -11,7 +11,7 @@ import { ScreenTimeGuardManager } from '../services/ScreenTimeGuardManager';
 import common from '@ohos.app.ability.common';
 import dataPreferences from '@ohos.data.preferences';
 import { UserAccount } from '../models/UserAccount';
-import { PasswordHelper, hashPassword, verifyPassword, validateUsername, validatePassword } from '../utils/PasswordHelper';
+import { hashPassword, verifyPassword, validateUsername, validatePassword } from '../utils/PasswordHelper';
 import userAuth from '@ohos.userAuthentication';
 
 interface ProfileColorScheme {
@@ -269,6 +269,7 @@ export struct ProfileTab {
         .justifyContent(FlexAlign.Center)
         .onClick(() => {
           this.showResetPassword = false;
+          this.resetAuthPassed = false;
         })
       }
     }
@@ -1456,6 +1457,7 @@ export struct ProfileTab {
             .borderRadius(8)
             .onClick(() => {
               this.showResetPassword = false;
+              this.resetAuthPassed = false;
             })
 
           Button('重置密码')

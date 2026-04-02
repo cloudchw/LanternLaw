@@ -1803,4 +1803,205 @@ export struct ProfileTab {
     this.deleteAppIndex = -1;
     this.saveConfig();
   }
+
+  // ==================== 账号管理方法 ====================
+
+  /**
+   * 加载用户账号
+   */
+  private async loadAccount(): Promise<void> {
+    try {
+      const account = await this.stateManager.getUserAccount();
+      this.currentAccount = account;
+      if (account) {
+        Logger.info('ProfileTab', `账号已加载: ${account.username}`);
+      } else {
+        Logger.info('ProfileTab', '尚未创建账号');
+        this.showCreateAccount = true;
+      }
+    } catch (error) {
+      Logger.exception('ProfileTab', error instanceof Error ? error : new Error(String(error)), '加载账号失败');
+    }
+  }
+
+  /**
+   * 处理创建账号
+   */
+  private async handleCreateAccount(): Promise<void> {
+    // 验证
+    const usernameError = validateUsername(this.createUsername);
+    if (usernameError) {
+      this.createAccountError = usernameError;
+      return;
+    }
+
+    const passwordError = validatePassword(this.createPassword);
+    if (passwordError) {
+      this.createAccountError = passwordError;
+      return;
+    }
+
+    if (this.createPassword !== this.createConfirmPassword) {
+      this.createAccountError = '两次输入的密码不一致';
+      return;
+    }
+
+    try {
+      const account = new UserAccount();
+      account.username = this.createUsername.trim();
+      account.avatar = this.createAvatar;
+      account.passwordHash = await hashPassword(this.createPassword);
+      account.createdAt = Date.now();
+      account.updatedAt = Date.now();
+
+      await this.stateManager.saveUserAccount(account);
+      this.currentAccount = account;
+      this.showCreateAccount = false;
+      Logger.info('ProfileTab', `账号创建成功: ${account.username}`);
+    } catch (error) {
+      this.createAccountError = '创建账号失败，请重试';
+      Logger.exception('ProfileTab', error instanceof Error ? error : new Error(String(error)), '创建账号失败');
+    }
+  }
+
+  /**
+   * 处理修改用户名
+   */
+  private async handleUpdateUsername(): Promise<void> {
+    const error = validateUsername(this.editUsernameInput);
+    if (error) {
+      return;
+    }
+
+    try {
+      if (!this.currentAccount) {
+        return;
+      }
+      const account = this.currentAccount.clone();
+      account.username = this.editUsernameInput.trim();
+      await this.stateManager.saveUserAccount(account);
+      this.currentAccount = account;
+      this.showEditUsername = false;
+      Logger.info('ProfileTab', `用户名已更新: ${account.username}`);
+    } catch (err) {
+      Logger.exception('ProfileTab', err instanceof Error ? err : new Error(String(err)), '修改用户名失败');
+    }
+  }
+
+  /**
+   * 处理修改头像
+   */
+  private async handleUpdateAvatar(avatar: string): Promise<void> {
+    try {
+      if (!this.currentAccount) {
+        return;
+      }
+      const account = this.currentAccount.clone();
+      account.avatar = avatar;
+      await this.stateManager.saveUserAccount(account);
+      this.currentAccount = account;
+      Logger.info('ProfileTab', `头像已更新: ${avatar}`);
+    } catch (err) {
+      Logger.exception('ProfileTab', err instanceof Error ? err : new Error(String(err)), '修改头像失败');
+    }
+  }
+
+  /**
+   * 处理修改密码
+   */
+  private async handleChangePassword(): Promise<void> {
+    if (!this.currentAccount) {
+      return;
+    }
+
+    const passwordError = validatePassword(this.newPassword);
+    if (passwordError) {
+      this.changePasswordError = passwordError;
+      return;
+    }
+
+    if (this.newPassword !== this.confirmNewPassword) {
+      this.changePasswordError = '两次输入的密码不一致';
+      return;
+    }
+
+    try {
+      const oldMatch = await verifyPassword(this.oldPassword, this.currentAccount.passwordHash);
+      if (!oldMatch) {
+        this.changePasswordError = '旧密码不正确';
+        return;
+      }
+
+      const account = this.currentAccount.clone();
+      account.passwordHash = await hashPassword(this.newPassword);
+      await this.stateManager.saveUserAccount(account);
+      this.currentAccount = account;
+      this.showChangePassword = false;
+      Logger.info('ProfileTab', '密码已修改');
+    } catch (err) {
+      this.changePasswordError = '修改密码失败，请重试';
+      Logger.exception('ProfileTab', err instanceof Error ? err : new Error(String(err)), '修改密码失败');
+    }
+  }
+
+  /**
+   * 处理系统锁屏验证
+   */
+  private handleSystemAuth(): void {
+    try {
+      const authInstance = userAuth.getUserAuthInstance({
+        challenge: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]),
+        authType: [userAuth.UserAuthType.PIN, userAuth.UserAuthType.FINGERPRINT, userAuth.UserAuthType.FACE],
+        trustLevel: userAuth.AuthTrustLevel.ATL3
+      });
+
+      authInstance.start();
+      authInstance.on('result', (result: userAuth.UserAuthResult) => {
+        try {
+          if (result.result === userAuth.UserAuthResultCode.SUCCESS) {
+            this.resetAuthPassed = true;
+            Logger.info('ProfileTab', '系统锁屏验证通过');
+          } else {
+            Logger.warn('ProfileTab', `系统锁屏验证失败: ${result.result}`);
+          }
+        } finally {
+          authInstance.off('result');
+          authInstance.cancel();
+        }
+      });
+    } catch (error) {
+      Logger.exception('ProfileTab', error instanceof Error ? error : new Error(String(error)), '系统锁屏验证失败');
+    }
+  }
+
+  /**
+   * 处理找回密码（重置密码）
+   */
+  private async handleResetPassword(): Promise<void> {
+    const passwordError = validatePassword(this.resetPassword);
+    if (passwordError) {
+      this.resetPasswordError = passwordError;
+      return;
+    }
+
+    if (this.resetPassword !== this.resetConfirmPassword) {
+      this.resetPasswordError = '两次输入的密码不一致';
+      return;
+    }
+
+    try {
+      if (!this.currentAccount) {
+        return;
+      }
+      const account = this.currentAccount.clone();
+      account.passwordHash = await hashPassword(this.resetPassword);
+      await this.stateManager.saveUserAccount(account);
+      this.currentAccount = account;
+      this.showResetPassword = false;
+      Logger.info('ProfileTab', '密码已重置');
+    } catch (err) {
+      this.resetPasswordError = '重置密码失败，请重试';
+      Logger.exception('ProfileTab', err instanceof Error ? err : new Error(String(err)), '重置密码失败');
+    }
+  }
 }

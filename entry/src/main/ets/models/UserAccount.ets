@@ -23,13 +23,13 @@ export class UserAccount {
   }
 
   static fromJSON(json: string): UserAccount {
-    const obj = JSON.parse(json);
+    const obj: Record<string, Object> = JSON.parse(json);
     const account = new UserAccount();
-    account.username = obj.username || '';
-    account.avatar = obj.avatar || '😊';
-    account.passwordHash = obj.passwordHash || '';
-    account.createdAt = obj.createdAt || 0;
-    account.updatedAt = obj.updatedAt || 0;
+    account.username = (obj['username'] as string) ?? '';
+    account.avatar = (obj['avatar'] as string) ?? '😊';
+    account.passwordHash = (obj['passwordHash'] as string) ?? '';
+    account.createdAt = (obj['createdAt'] as number) ?? 0;
+    account.updatedAt = (obj['updatedAt'] as number) ?? 0;
     return account;
   }
 

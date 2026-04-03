@@ -12,7 +12,7 @@ import common from '@ohos.app.ability.common';
 import dataPreferences from '@ohos.data.preferences';
 import { UserAccount } from '../models/UserAccount';
 import { hashPassword, verifyPassword, validateUsername, validatePassword } from '../utils/PasswordHelper';
-import userAuth from '@ohos.userAuthentication';
+import { userAuth } from '@kit.UserAuthenticationKit';
 
 interface ProfileColorScheme {
   background: string;
@@ -1041,6 +1041,7 @@ export struct ProfileTab {
         .backgroundColor(ProfileTab.COLORS.background)
         .justifyContent(FlexAlign.Center)
         .alignItems(HorizontalAlign.Center)
+        .margin({ bottom: 20 })
         .onClick(() => {
           this.selectedAvatar = this.createAvatar;
           this.avatarPickerSource = 'create';
@@ -1052,7 +1053,6 @@ export struct ProfileTab {
             .fontSize(10)
             .fontColor(ProfileTab.COLORS.textDim)
         }
-        .margin({ bottom: 20 })
 
       // 用户名
       Text('用户名')
@@ -1146,8 +1146,7 @@ export struct ProfileTab {
     .backgroundColor(ProfileTab.COLORS.card)
     .borderRadius(20)
     .padding(24)
-    .onClick((event: ClickEvent) => {
-      event.stopPropagation();
+    .onClick(() => {
     })
   }
 
@@ -1225,8 +1224,7 @@ export struct ProfileTab {
     .backgroundColor(ProfileTab.COLORS.card)
     .borderRadius(20)
     .padding(24)
-    .onClick((event: ClickEvent) => {
-      event.stopPropagation();
+    .onClick(() => {
     })
   }
 
@@ -1284,8 +1282,7 @@ export struct ProfileTab {
     .backgroundColor(ProfileTab.COLORS.card)
     .borderRadius(16)
     .padding(20)
-    .onClick((event: ClickEvent) => {
-      event.stopPropagation();
+    .onClick(() => {
     })
   }
 
@@ -1378,8 +1375,7 @@ export struct ProfileTab {
     .backgroundColor(ProfileTab.COLORS.card)
     .borderRadius(20)
     .padding(24)
-    .onClick((event: ClickEvent) => {
-      event.stopPropagation();
+    .onClick(() => {
     })
   }
 
@@ -1480,8 +1476,7 @@ export struct ProfileTab {
     .backgroundColor(ProfileTab.COLORS.card)
     .borderRadius(20)
     .padding(24)
-    .onClick((event: ClickEvent) => {
-      event.stopPropagation();
+    .onClick(() => {
     })
   }
 
@@ -1951,26 +1946,28 @@ export struct ProfileTab {
    */
   private handleSystemAuth(): void {
     try {
-      const authInstance = userAuth.getUserAuthInstance({
+      const authParam: userAuth.AuthParam = {
         challenge: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]),
         authType: [userAuth.UserAuthType.PIN, userAuth.UserAuthType.FINGERPRINT, userAuth.UserAuthType.FACE],
-        trustLevel: userAuth.AuthTrustLevel.ATL3
-      });
+        authTrustLevel: userAuth.AuthTrustLevel.ATL3
+      };
+      const widgetParam: userAuth.WidgetParam = {
+        title: '掌灯人身份验证'
+      };
+      const authInstance = userAuth.getUserAuthInstance(authParam, widgetParam);
 
       authInstance.start();
-      authInstance.on('result', (result: userAuth.UserAuthResult) => {
-        try {
+      const authCallback: userAuth.IAuthCallback = {
+        onResult: (result: userAuth.UserAuthResult) => {
           if (result.result === userAuth.UserAuthResultCode.SUCCESS) {
             this.resetAuthPassed = true;
             Logger.info('ProfileTab', '系统锁屏验证通过');
           } else {
             Logger.warn('ProfileTab', `系统锁屏验证失败: ${result.result}`);
           }
-        } finally {
-          authInstance.off('result');
-          authInstance.cancel();
         }
-      });
+      };
+      authInstance.on('result', authCallback);
     } catch (error) {
       Logger.exception('ProfileTab', error instanceof Error ? error : new Error(String(error)), '系统锁屏验证失败');
     }

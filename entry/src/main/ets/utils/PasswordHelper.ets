@@ -5,18 +5,20 @@
  * Password Helper - SHA-256 哈希与验证
  */
 import { cryptoFramework } from '@kit.CryptoArchitectureKit';
-import { buffer } from '@kit.ArkTS';
+import { util } from '@kit.ArkTS';
 
 const SALT = 'LanternLaw_2026_Salt';
+const textEncoder = new util.TextEncoder();
 
 /**
  * 对密码进行 SHA-256 哈希
  */
 export async function hashPassword(password: string): Promise<string> {
-  const data = buffer.from(password + SALT, 'utf-8').buffer;
   const md = cryptoFramework.createMd('SHA256');
-  const hashData = await md.compute({ data: new Uint8Array(data) });
-  return Array.from(new Uint8Array(hashData.data)).map(b => b.toString(16).padStart(2, '0')).join('');
+  const data = textEncoder.encodeInto(password + SALT);
+  await md.update({ data: data });
+  const hashData = await md.digest();
+  return Array.from(hashData.data).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 /**

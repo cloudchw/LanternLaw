@@ -561,7 +561,208 @@ await ConfigSyncService.getInstance().registerPushToken(token);
 
 ---
 
-## 八、实施步骤（按依赖顺序）
+## 八、AGC Cloud Functions 详细设计
+
+### 8.1 概述
+
+AGC Cloud Functions 是华为 AppGallery Connect 提供的无服务器计算服务。掌灯人使用云函数实现**事件驱动的推送通知**，无需自建后端服务器。
+
+**费用**：免费档提供 100 万次调用/月，掌灯人预估月调用量 < 1 万次，完全在免费额度内。
+
+**运行方式**：云函数部署在 AGC 控制台，通过 Cloud DB 数据变更触发器自动执行，或通过客户端 SDK 直接调用。
+
+### 8.2 云函数清单
+
+#### 8.2.1 `onChildConfigUpdate` — 儿童配置变更通知
+
+**触发方式**：Cloud DB `ChildConfigObj` 表 INSERT/UPDATE 触发器
+**调用方**：家长客户端上传儿童配置时自动触发
+**职责**：检测到儿童配置变更后，向儿童设备发送推送通知
+
+```javascript
+// 云函数入口（AGC 控制台编写）
+const cloud = require('agconnect-clouddb');
+
+exports.myHandler = async function(event, context, callback) {
+  // event.data 包含变更的 ChildConfigObj 数据
+  const changedRecord = event.data;
+
+  // 查询儿童设备的 pushToken
+  // 从 AccountObj 表中根据 accountId 查找 deviceToken
+  const pushToken = await queryChildPushToken(changedRecord.accountId);
+
+  if (pushToken) {
+    // 调用 Push Kit REST API 发送推送
+    await sendPushNotification({
+      token: pushToken,
+      title: '灯律设置更新',
+      body: '家长更新了你的灯律设置',
+      data: {
+        type: 'config_update',
+        accountId: changedRecord.accountId
+      },
+      foregroundShow: false  // 前台时由 receiveMessage 接收，不显示系统通知
+    });
+  }
+
+  callback({ code: 0, msg: 'success' });
+};
+```
+
+**触发流程**：
+```
+家长客户端
+  → ConfigSyncService.uploadChildConfig()
+  → 写入 Cloud DB ChildConfigObj
+  → 触发器自动调用 onChildConfigUpdate 云函数
+  → 云函数查询儿童 pushToken
+  → 云函数调用 Push API 发送推送
+  → 儿童客户端 PushMessageAbility.receiveMessage() 接收
+  → ConfigSyncService.pullLatestConfig() 拉取最新配置
+```
+
+#### 8.2.2 `onNewMessage` — 新消息通知
+
+**触发方式**：Cloud DB `MessageObj` 表 INSERT 触发器
+**调用方**：家长或儿童发送消息时自动触发
+**职责**：向接收方设备发送推送通知
+
+```javascript
+exports.myHandler = async function(event, context, callback) {
+  const message = event.data;
+
+  // 查询接收方的 pushToken
+  const receiverToken = await queryPushToken(message.receiverAccountId);
+
+  if (receiverToken) {
+    await sendPushNotification({
+      token: receiverToken,
+      title: getSenderName(message.senderAccountId),
+      body: message.content,
+      data: {
+        type: 'new_message',
+        messageId: message.id,
+        senderAccountId: message.senderAccountId
+      },
+      foregroundShow: message.messageType === 'system'  // 系统消息前台也显示通知
+    });
+  }
+
+  callback({ code: 0, msg: 'success' });
+};
+```
+
+#### 8.2.3 `onChildJoinRequest` — 儿童加入请求通知
+
+**触发方式**：Cloud DB `AccountObj` 表 INSERT 触发器（当 accountMode='child' 且 familyGroupId 非空时）
+**调用方**：儿童加入沟通组时自动触发
+**职责**：通知家长设备有儿童请求加入
+
+```javascript
+exports.myHandler = async function(event, context, callback) {
+  const childAccount = event.data;
+
+  if (childAccount.accountMode !== 'child' || !childAccount.familyGroupId) {
+    callback({ code: 0, msg: 'not a child join event' });
+    return;
+  }
+
+  // 查询家长的 pushToken
+  const parentToken = await queryPushToken(childAccount.parentAccountId);
+
+  if (parentToken) {
+    await sendPushNotification({
+      token: parentToken,
+      title: '加入请求',
+      body: `${childAccount.username} 请求加入沟通组`,
+      data: {
+        type: 'child_join_request',
+        childAccountId: childAccount.accountId,
+        childUsername: childAccount.username
+      }
+    });
+  }
+
+  callback({ code: 0, msg: 'success' });
+};
+```
+
+#### 8.2.4 `registerPushToken` — 注册推送令牌
+
+**触发方式**：客户端 SDK 直接调用（非触发器）
+**调用方**：应用启动时 EntryAbility 调用
+**职责**：将设备 pushToken 与 accountId 关联存入 Cloud DB
+
+```javascript
+exports.myHandler = async function(event, context, callback) {
+  const { accountId, pushToken } = event.data;
+
+  // 更新 AccountObj 中该帐号的 deviceToken 字段
+  await cloud.database().collection('AccountObj')
+    .doc(accountId)
+    .update({ deviceToken: pushToken, updatedAt: Date.now() });
+
+  callback({ code: 0, msg: 'success' });
+};
+```
+
+### 8.3 触发器配置
+
+在 AGC 控制台为每个云函数配置 Cloud DB 触发器：
+
+| 触发器名称 | 云函数 | 监听表 | 事件类型 |
+|-----------|--------|--------|---------|
+| `trigger_config_update` | `onChildConfigUpdate` | `ChildConfigObj` | INSERT, UPDATE |
+| `trigger_new_message` | `onNewMessage` | `MessageObj` | INSERT |
+| `trigger_child_join` | `onChildJoinRequest` | `AccountObj` | INSERT（条件过滤） |
+
+### 8.4 AGC 控制台配置步骤
+
+1. **创建项目**：登录 [AppGallery Connect](https://developer.huawei.com/consumer/cn/service/josp/agc/index.html)，创建项目，选择 HarmonyOS 平台
+2. **下载配置文件**：项目设置 → 常规信息 → 下载 `agconnect-services.json`，放入 `entry/` 目录
+3. **启用 Cloud DB**：
+   - 开发与服务 → Cloud DB → 立即开通
+   - 创建存储区 `lanternlaw_family`
+   - 创建对象类型：`AccountObj`、`FamilyGroupObj`、`ChildConfigObj`、`MessageObj`（见第六节定义）
+4. **启用云函数**：
+   - 开发与服务 → Cloud Functions → 立即开通
+   - 创建函数 `onChildConfigUpdate`、`onNewMessage`、`onChildJoinRequest`、`registerPushToken`
+   - 编写函数代码并部署
+5. **配置触发器**：每个云函数 → 触发器 → 创建 Cloud DB 触发器，关联对应的表和事件
+6. **启用 Push Kit**：
+   - 开发与服务 → Push Kit → 立即开通
+   - 记录 `projectId` 和 `pushToken`（云函数调用推送 API 时需要）
+
+### 8.5 客户端调用云函数的方式
+
+客户端通过 `@kit.CloudFoundationKit` 调用云函数：
+
+```typescript
+import { cloudDatabase } from '@kit.CloudFoundationKit';
+
+// 调用 registerPushToken 云函数
+const zone = cloudDatabase.zone('lanternlaw_family');
+const result = await zone.callFunction('registerPushToken', {
+  accountId: this.activeAccountId,
+  pushToken: pushToken
+});
+```
+
+### 8.6 免费额度评估
+
+| 计费项 | 免费配额 | 掌灯人预估用量 |
+|--------|---------|--------------|
+| 云函数调用次数 | 100 万次/月 | < 1 万次/月（家庭日均几十次事件） |
+| Cloud DB 存储 | 1 GB | < 1 MB/月 |
+| Cloud DB 读操作 | 5 万次/天 | < 5000 次/天 |
+| Cloud DB 写操作 | 10 次/秒 | < 1 次/秒 |
+| Push Kit 推送 | 免费 | < 100 条/天 |
+
+**结论**：掌灯人作为家庭级应用，所有 AGC 服务用量远低于免费额度，无需付费。
+
+---
+
+## 九、实施步骤（按依赖顺序）
 
 ### Step 1: 数据层基础改造
 **文件**:
@@ -622,7 +823,7 @@ await ConfigSyncService.getInstance().registerPushToken(token);
 
 ---
 
-## 九、关键文件清单
+## 十、关键文件清单
 
 ### 新建文件（12个）
 
@@ -657,7 +858,7 @@ await ConfigSyncService.getInstance().registerPushToken(token);
 
 ---
 
-## 十、验证方案
+## 十一、验证方案
 
 ### Phase 1 验证（本地多帐号）
 

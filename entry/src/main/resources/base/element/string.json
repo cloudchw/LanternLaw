@@ -55,6 +55,10 @@
     {
       "name": "timeguard_extension_desc",
       "value": "管控策略生效和停止的回调服务"
+    },
+    {
+      "name": "permission_access_biometric_reason",
+      "value": "找回密码时需要验证系统锁屏密码"
     }
   ]
 }

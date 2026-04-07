@@ -108,7 +108,7 @@ export class ScreenTimeGuardManager {
       const appSelection: guardService.AppInfo = {
         appTokens: tokens
       };
-      await appPicker.startAppForm(context, appSelection, '管控应用', true);
+      await appPicker.startAppForm(context, appSelection, '放通应用', true);
       Logger.info(TAG, `应用展示页已打开`);
       return true;
     } catch (error) {

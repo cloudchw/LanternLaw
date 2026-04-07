@@ -48,6 +48,13 @@ export struct ProfileTab {
   @State deleteAppIndex: number = -1;
   @State showDeleteTimeRangeConfirm: boolean = false;
   @State deleteTimeRangeId: string = '';
+  // 密码验证（通用）
+  @State showPasswordDialog: boolean = false;
+  @State passwordInput: string = '';
+  @State passwordError: string = '';
+  @State pendingAction: string = '';
+  @State pendingSwitchState: boolean = false;
+  @State pendingDeleteTimeRangeId: string = '';
   // 账号管理状态
   @State currentAccount: UserAccount | null = null;
   @State showCreateAccount: boolean = false;
@@ -73,6 +80,7 @@ export struct ProfileTab {
   @State resetConfirmPassword: string = '';
   @State resetPasswordError: string = '';
   @State resetAuthPassed: boolean = false;
+  @State resetAuthLoading: boolean = false;
   // 头像选择
   @State selectedAvatar: string = '😊';
   // 头像弹窗来源: 'create' | 'edit'
@@ -272,6 +280,22 @@ export struct ProfileTab {
           this.resetAuthPassed = false;
         })
       }
+
+      // 通用密码验证对话框
+      if (this.showPasswordDialog) {
+        Column() {
+          Column() {
+            this.PasswordDialog()
+          }
+        }
+        .width('100%')
+        .height('100%')
+        .backgroundColor('rgba(0, 0, 0, 0.6)')
+        .justifyContent(FlexAlign.Center)
+        .onClick(() => {
+          this.showPasswordDialog = false;
+        })
+      }
     }
     .width('100%')
     .height('100%')
@@ -351,7 +375,10 @@ export struct ProfileTab {
           .fontColor(ProfileTab.COLORS.gold)
           .fontWeight(FontWeight.Bold)
           .onClick(() => {
-            this.openTimePicker();
+            this.pendingAction = 'addTimeRange';
+            this.passwordInput = '';
+            this.passwordError = '';
+            this.showPasswordDialog = true;
           })
       }
       .width('100%')
@@ -393,7 +420,11 @@ export struct ProfileTab {
               .fontSize(11)
               .fontColor('#ff6b6b')
               .onClick(() => {
-                this.showDeleteTimeRangeDialog(timeRange.id);
+                this.pendingAction = 'deleteTimeRange';
+                this.pendingDeleteTimeRangeId = timeRange.id;
+                this.passwordInput = '';
+                this.passwordError = '';
+                this.showPasswordDialog = true;
               })
           }
           .width('100%')
@@ -664,7 +695,10 @@ export struct ProfileTab {
           .borderRadius(14)
           .margin({ right: 8 })
           .onClick(() => {
-            this.openAppPicker();
+            this.pendingAction = 'manageWhitelist';
+            this.passwordInput = '';
+            this.passwordError = '';
+            this.showPasswordDialog = true;
           })
         if (this.whitelistApps.length > 0) {
           Button('查看')
@@ -1146,8 +1180,6 @@ export struct ProfileTab {
     .backgroundColor(ProfileTab.COLORS.card)
     .borderRadius(20)
     .padding(24)
-    .onClick(() => {
-    })
   }
 
   /**
@@ -1224,8 +1256,6 @@ export struct ProfileTab {
     .backgroundColor(ProfileTab.COLORS.card)
     .borderRadius(20)
     .padding(24)
-    .onClick(() => {
-    })
   }
 
   /**
@@ -1282,8 +1312,6 @@ export struct ProfileTab {
     .backgroundColor(ProfileTab.COLORS.card)
     .borderRadius(16)
     .padding(20)
-    .onClick(() => {
-    })
   }
 
   /**
@@ -1375,8 +1403,6 @@ export struct ProfileTab {
     .backgroundColor(ProfileTab.COLORS.card)
     .borderRadius(20)
     .padding(24)
-    .onClick(() => {
-    })
   }
 
   /**
@@ -1407,6 +1433,7 @@ export struct ProfileTab {
           .fontColor(ProfileTab.COLORS.background)
           .fontWeight(FontWeight.Medium)
           .borderRadius(8)
+          .enabled(!this.resetAuthLoading)
           .onClick(() => {
             this.handleSystemAuth();
           })
@@ -1476,17 +1503,161 @@ export struct ProfileTab {
     .backgroundColor(ProfileTab.COLORS.card)
     .borderRadius(20)
     .padding(24)
-    .onClick(() => {
-    })
   }
 
   /**
    * 切换全局开关
    */
+  /**
+   * 全局开关密码验证弹窗
+   */
+  @Builder
+  /**
+   * 通用密码验证对话框
+   */
+  private PasswordDialog(): void {
+    Column() {
+      Text(this.getPasswordDialogTitle())
+        .fontSize(18)
+        .fontColor(ProfileTab.COLORS.text)
+        .fontWeight(FontWeight.Bold)
+        .width('100%')
+        .textAlign(TextAlign.Center)
+        .margin({ bottom: 16 })
+
+      Text(this.getPasswordDialogDesc())
+        .fontSize(14)
+        .fontColor(ProfileTab.COLORS.textDim)
+        .width('100%')
+        .textAlign(TextAlign.Center)
+        .margin({ bottom: 24 })
+
+      TextInput({ placeholder: '请输入密码', text: this.passwordInput })
+        .width('100%')
+        .height(40)
+        .type(InputType.Password)
+        .backgroundColor(ProfileTab.COLORS.background)
+        .fontColor(ProfileTab.COLORS.text)
+        .borderRadius(8)
+        .onChange((value: string) => {
+          this.passwordInput = value;
+          this.passwordError = '';
+        })
+
+      if (this.passwordError) {
+        Text(this.passwordError)
+          .fontSize(12)
+          .fontColor('#ff4444')
+          .margin({ top: 8 })
+      }
+
+      Row() {
+        Button('取消')
+          .layoutWeight(1)
+          .height(44)
+          .backgroundColor(ProfileTab.COLORS.background)
+          .fontColor(ProfileTab.COLORS.text)
+          .borderRadius(8)
+          .onClick(() => {
+            this.showPasswordDialog = false;
+          })
+
+        Button('确认')
+          .layoutWeight(1)
+          .height(44)
+          .backgroundColor(ProfileTab.COLORS.gold)
+          .fontColor(ProfileTab.COLORS.background)
+          .fontWeight(FontWeight.Medium)
+          .borderRadius(8)
+          .margin({ left: 16 })
+          .onClick(() => {
+            this.handlePasswordVerify();
+          })
+      }
+      .width('100%')
+      .margin({ top: 24 })
+    }
+    .width('70%')
+    .backgroundColor(ProfileTab.COLORS.card)
+    .borderRadius(16)
+    .padding(20)
+  }
+
   private toggleGlobalSwitch(): void {
-    this.lanternlawEnabled = !this.lanternlawEnabled;
-    Logger.info('ProfileTab', '全局开关切换为: ' + (this.lanternlawEnabled ? '启用' : '停用'));
-    this.saveConfig();
+    this.pendingAction = 'toggleSwitch';
+    this.pendingSwitchState = !this.lanternlawEnabled;
+    this.passwordInput = '';
+    this.passwordError = '';
+    this.showPasswordDialog = true;
+  }
+
+  /**
+   * 密码对话框标题
+   */
+  private getPasswordDialogTitle(): string {
+    if (this.pendingAction === 'toggleSwitch') {
+      return this.pendingSwitchState ? '确认启用' : '确认停用';
+    } else if (this.pendingAction === 'addTimeRange') {
+      return '添加时间段';
+    } else if (this.pendingAction === 'deleteTimeRange') {
+      return '删除时间段';
+    } else if (this.pendingAction === 'manageWhitelist') {
+      return '管理白名单';
+    }
+    return '密码验证';
+  }
+
+  /**
+   * 密码对话框描述
+   */
+  private getPasswordDialogDesc(): string {
+    if (this.pendingAction === 'toggleSwitch') {
+      return this.pendingSwitchState ? '启用掌灯人需要验证密码' : '停用掌灯人需要验证密码';
+    } else if (this.pendingAction === 'addTimeRange') {
+      return '添加灯律时间段需要验证密码';
+    } else if (this.pendingAction === 'deleteTimeRange') {
+      return '删除灯律时间段需要验证密码';
+    } else if (this.pendingAction === 'manageWhitelist') {
+      return '管理白名单应用需要验证密码';
+    }
+    return '请输入密码以继续操作';
+  }
+
+  /**
+   * 通用密码验证
+   */
+  private async handlePasswordVerify(): Promise<void> {
+    if (!this.currentAccount) {
+      return;
+    }
+    const passwordError = validatePassword(this.passwordInput);
+    if (passwordError) {
+      this.passwordError = passwordError;
+      return;
+    }
+    const match = await verifyPassword(this.passwordInput, this.currentAccount.passwordHash);
+    if (!match) {
+      this.passwordError = '密码不正确';
+      return;
+    }
+    this.showPasswordDialog = false;
+
+    switch (this.pendingAction) {
+      case 'toggleSwitch':
+        this.lanternlawEnabled = this.pendingSwitchState;
+        Logger.info('ProfileTab', '全局开关切换为: ' + (this.lanternlawEnabled ? '启用' : '停用'));
+        this.saveConfig();
+        break;
+      case 'addTimeRange':
+        this.doOpenTimePicker();
+        break;
+      case 'deleteTimeRange':
+        this.doShowDeleteTimeRangeDialog(this.pendingDeleteTimeRangeId);
+        break;
+      case 'manageWhitelist':
+        this.openAppPicker();
+        break;
+    }
   }
 
   // ==================== 时间段管理方法 ====================
@@ -1494,7 +1665,10 @@ export struct ProfileTab {
   /**
    * 打开时间段选择器
    */
-  private openTimePicker(): void {
+  /**
+   * 打开时间段选择器（密码验证后调用）
+   */
+  private doOpenTimePicker(): void {
     Logger.info('ProfileTab', '打开时间段选择器');
     this.editingTimeRange = null;
     this.newTimeRangeLabel = '';
@@ -1611,9 +1785,9 @@ export struct ProfileTab {
   }
 
   /**
-   * 显示删除时间段确认对话框
+   * 显示删除时间段确认对话框（密码验证后调用）
    */
-  private showDeleteTimeRangeDialog(id: string): void {
+  private doShowDeleteTimeRangeDialog(id: string): void {
     this.deleteTimeRangeId = id;
     this.showDeleteTimeRangeConfirm = true;
   }
@@ -1945,10 +2119,15 @@ export struct ProfileTab {
    * 处理系统锁屏验证
    */
   private handleSystemAuth(): void {
+    if (this.resetAuthLoading) {
+      return;
+    }
+    this.resetAuthLoading = true;
+    this.resetPasswordError = '';
     try {
       const authParam: userAuth.AuthParam = {
         challenge: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]),
-        authType: [userAuth.UserAuthType.PIN, userAuth.UserAuthType.FINGERPRINT, userAuth.UserAuthType.FACE],
+        authType: [userAuth.UserAuthType.PIN],
         authTrustLevel: userAuth.AuthTrustLevel.ATL3
       };
       const widgetParam: userAuth.WidgetParam = {
@@ -1956,20 +2135,30 @@ export struct ProfileTab {
       };
       const authInstance = userAuth.getUserAuthInstance(authParam, widgetParam);
 
-      authInstance.start();
       const authCallback: userAuth.IAuthCallback = {
         onResult: (result: userAuth.UserAuthResult) => {
+          this.resetAuthLoading = false;
           if (result.result === userAuth.UserAuthResultCode.SUCCESS) {
             this.resetAuthPassed = true;
             Logger.info('ProfileTab', '系统锁屏验证通过');
           } else {
+            const errCode = result.result as number;
+            if (errCode === 12500010) {
+              this.resetPasswordError = '设备未设置锁屏密码，请先在系统设置中设置锁屏PIN';
+            } else {
+              this.resetPasswordError = `验证失败(错误码: ${errCode})`;
+            }
             Logger.warn('ProfileTab', `系统锁屏验证失败: ${result.result}`);
           }
         }
       };
       authInstance.on('result', authCallback);
+      authInstance.start();
     } catch (error) {
+      this.resetAuthLoading = false;
+      const errMsg = error instanceof Error ? error.message : String(error);
       Logger.exception('ProfileTab', error instanceof Error ? error : new Error(String(error)), '系统锁屏验证失败');
+      this.resetPasswordError = `验证失败: ${errMsg}`;
     }
   }
 

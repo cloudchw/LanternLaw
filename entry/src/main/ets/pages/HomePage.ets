@@ -124,7 +124,7 @@ export struct HomePage {
       }
       .width('100%')
       .height('100%')
-      .padding({ top: 40, bottom: 80 })
+      .padding({ top: 16, bottom: 8 })
     }
     .width('100%')
     .height('100%')
@@ -160,7 +160,7 @@ export struct HomePage {
     }
     .width('100%')
     .alignItems(HorizontalAlign.Center)
-    .margin({ bottom: 40 })
+    .margin({ bottom: 32 })
   }
 
   @Builder
@@ -191,7 +191,7 @@ export struct HomePage {
     }
     .width('100%')
     .alignItems(HorizontalAlign.Center)
-    .margin({ bottom: 32 })
+    .margin({ bottom: 20 })
   }
 
   @Builder

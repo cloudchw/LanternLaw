@@ -17,7 +17,7 @@ export interface TabItem {
 @Component
 export struct MainPage {
   @State currentIndex: number = 0;
-  @State tabBarHeight: number = 60;
+  @State tabBarHeight: number = 45;
   @State isBlocking: boolean = false;
   @Provide profileRefreshTrigger: number = 0;
 

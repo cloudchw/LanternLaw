@@ -8,11 +8,20 @@ import { LanternLawConfig } from '../models/LanternLawConfig';
 import { WhitelistApp } from '../models/WhitelistApp';
 import { TimeRange, TimeRangeManager } from '../models/TimeRange';
 import { ScreenTimeGuardManager } from '../services/ScreenTimeGuardManager';
+import { router } from '@kit.ArkUI';
 import common from '@ohos.app.ability.common';
 import dataPreferences from '@ohos.data.preferences';
 import { UserAccount } from '../models/UserAccount';
+import { AccountMode } from '../models/AccountMode';
+import { FamilyGroup } from '../models/FamilyGroup';
 import { hashPassword, verifyPassword, validateUsername, validatePassword } from '../utils/PasswordHelper';
 import { userAuth } from '@kit.UserAuthenticationKit';
+import { AccountService } from '../services/AccountService';
+import { FamilyGroupService } from '../services/FamilyGroupService';
+import { ConfigSyncService } from '../services/ConfigSyncService';
+import { MessageService, PARENT_TEMPLATES, CHILD_TEMPLATES } from '../services/MessageService';
+import { FamilyMessage } from '../models/Message';
+import { LanternLawDatabase } from '../database/LanternLawDatabase';
 
 interface ProfileColorScheme {
   background: string;
@@ -27,8 +36,8 @@ interface ProfileColorScheme {
 
 @Component
 export struct ProfileTab {
+  @Consume @Watch('onProfileRefresh') profileRefreshTrigger: number;
   @State lanternlawEnabled: boolean = true;
-  @State vibrationEnabled: boolean = true;
   // 时间段状态
   @State timeRanges: TimeRange[] = [];
   @State showTimePicker: boolean = false;
@@ -48,6 +57,19 @@ export struct ProfileTab {
   @State deleteAppIndex: number = -1;
   @State showDeleteTimeRangeConfirm: boolean = false;
   @State deleteTimeRangeId: string = '';
+  // 白名单审批状态（儿童模式）
+  @State whitelistPendingStatus: string = '';   // '' | 'pending' | 'approved' | 'rejected'
+  @State pendingAppCount: number = 0;
+  @State whitelistRejected: boolean = false;
+  private pendingRequestId: string = '';
+  private pendingTokens: string[] = [];
+  private whitelistPollTimerId: number = -1;
+  // 消息状态 (Phase 5)
+  @State recentMessages: FamilyMessage[] = [];
+  @State unreadCount: number = 0;
+  @State showSendDialog: boolean = false;
+  @State sendDialogTarget: UserAccount | null = null;
+  @State customMessage: string = '';
   // 密码验证（通用）
   @State showPasswordDialog: boolean = false;
   @State passwordInput: string = '';
@@ -85,6 +107,13 @@ export struct ProfileTab {
   @State selectedAvatar: string = '😊';
   // 头像弹窗来源: 'create' | 'edit'
   @State avatarPickerSource: string = 'create';
+  // 多帐号体系状态
+  @State accountMode: AccountMode = AccountMode.PARENT;
+  @State familyGroup: FamilyGroup | null = null;
+  @State familyMembers: UserAccount[] = [];
+  @State childJoinStatus: string = '';
+  @State childFamilyGroupId: string = '';
+  private familyGroupService: FamilyGroupService = FamilyGroupService.getInstance();
 
   private stateManager: LanternLawStateManager = LanternLawStateManager.getInstance();
   private static readonly COLORS: ProfileColorScheme = {
@@ -102,6 +131,20 @@ export struct ProfileTab {
     Logger.info('ProfileTab', '我的 Tab 初始化');
     this.loadConfig();
     this.loadAccount();
+    this.loadAccountMode();
+    // 儿童模式：检查是否有待审批的白名单请求
+    this.checkPendingWhitelistRequest();
+  }
+
+  aboutToDisappear(): void {
+    if (this.whitelistPollTimerId !== -1) {
+      clearInterval(this.whitelistPollTimerId);
+      this.whitelistPollTimerId = -1;
+    }
+  }
+
+  onProfileRefresh(): void {
+    this.loadAccountMode();
   }
 
   build() {
@@ -135,9 +178,13 @@ export struct ProfileTab {
         Scroll() {
           Column() {
             this.GlobalSwitchCard()
+            this.ParentManagedHintCard()
+            this.JoinFamilyGroupCard()
+            this.ParentMessageCard()
+            this.FamilyGroupCard()
+            this.ChildManagementCard()
             this.TimeManagementCard()
             this.WhitelistCard()
-            this.NotificationCard()
             this.AccountCard()
             this.AboutCard()
           }
@@ -232,6 +279,85 @@ export struct ProfileTab {
         })
       }
 
+      // 发送消息弹窗 (Phase 5)
+      if (this.showSendDialog) {
+        Column() {
+          Column() {
+            Text(`发送消息给 ${this.sendDialogTarget?.username ?? ''}`)
+              .fontSize(18)
+              .fontColor(ProfileTab.COLORS.text)
+              .fontWeight(FontWeight.Bold)
+              .width('100%')
+              .textAlign(TextAlign.Center)
+              .margin({ bottom: 16 })
+
+            Column() {
+              ForEach(PARENT_TEMPLATES, (tpl: string) => {
+                Text(tpl)
+                  .fontSize(14)
+                  .fontColor(ProfileTab.COLORS.text)
+                  .width('100%')
+                  .padding(12)
+                  .backgroundColor(ProfileTab.COLORS.accent)
+                  .borderRadius(8)
+                  .margin({ bottom: 8 })
+                  .onClick(() => {
+                    this.doSendMessage(tpl);
+                  })
+              }, (tpl: string) => tpl.substring(0, 10))
+            }
+
+            TextInput({ placeholder: '或输入自定义消息', text: this.customMessage })
+              .width('100%')
+              .height(40)
+              .backgroundColor(ProfileTab.COLORS.background)
+              .fontColor(ProfileTab.COLORS.text)
+              .borderRadius(8)
+              .margin({ top: 8 })
+              .onChange((value: string) => {
+                this.customMessage = value;
+              })
+
+            Row() {
+              Button('取消')
+                .layoutWeight(1)
+                .height(40)
+                .backgroundColor(ProfileTab.COLORS.background)
+                .fontColor(ProfileTab.COLORS.text)
+                .borderRadius(8)
+                .onClick(() => {
+                  this.showSendDialog = false;
+                })
+
+              Button('发送')
+                .layoutWeight(1)
+                .height(40)
+                .backgroundColor(ProfileTab.COLORS.gold)
+                .fontColor(ProfileTab.COLORS.background)
+                .fontWeight(FontWeight.Medium)
+                .borderRadius(8)
+                .margin({ left: 16 })
+                .onClick(() => {
+                  this.doSendMessage(this.customMessage);
+                })
+            }
+            .width('100%')
+            .margin({ top: 16 })
+          }
+          .width('85%')
+          .backgroundColor(ProfileTab.COLORS.card)
+          .borderRadius(16)
+          .padding(20)
+        }
+        .width('100%')
+        .height('100%')
+        .backgroundColor('rgba(0, 0, 0, 0.6)')
+        .justifyContent(FlexAlign.Center)
+        .onClick(() => {
+          this.showSendDialog = false;
+        })
+      }
+
       // 修改用户名对话框
       if (this.showEditUsername) {
         Column() {
@@ -309,40 +435,42 @@ export struct ProfileTab {
     Column() {
       Row() {
         Column({ space: 4 }) {
-          Text(this.lanternlawEnabled ? '启用掌灯人' : '停用掌灯人')
+          Text(this.lanternlawEnabled ? '管控中' : '未管控')
             .fontSize(16)
             .fontColor(this.lanternlawEnabled ? ProfileTab.COLORS.gold : ProfileTab.COLORS.textDim)
             .fontWeight(FontWeight.Medium)
-          Text(this.lanternlawEnabled ? '灯律保护已开启' : '点击右侧开关启用')
+          Text(this.lanternlawEnabled ? '灯律保护已开启' : '灯律保护已关闭')
             .fontSize(12)
             .fontColor(ProfileTab.COLORS.textDim)
         }
         .alignItems(HorizontalAlign.Start)
         .layoutWeight(1)
 
-        // 开关按钮
-        Row() {
-          Column()
-            .width(24)
-            .height(24)
-            .borderRadius(12)
-            .backgroundColor(this.lanternlawEnabled ? ProfileTab.COLORS.gold : ProfileTab.COLORS.textDim)
-            .justifyContent(FlexAlign.Center)
-            .alignItems(HorizontalAlign.Center)
-            Text(this.lanternlawEnabled ? '✓' : '')
-              .fontSize(14)
-              .fontColor(ProfileTab.COLORS.background)
-              .fontWeight(FontWeight.Bold)
+        if (this.accountMode === AccountMode.PARENT) {
+          // 开关按钮（仅家长模式）
+          Row() {
+            Column()
+              .width(24)
+              .height(24)
+              .borderRadius(12)
+              .backgroundColor(this.lanternlawEnabled ? ProfileTab.COLORS.gold : ProfileTab.COLORS.textDim)
+              .justifyContent(FlexAlign.Center)
+              .alignItems(HorizontalAlign.Center)
+              Text(this.lanternlawEnabled ? '✓' : '')
+                .fontSize(14)
+                .fontColor(ProfileTab.COLORS.background)
+                .fontWeight(FontWeight.Bold)
+          }
+          .width(50)
+          .height(28)
+          .borderRadius(14)
+          .backgroundColor(this.lanternlawEnabled ? 'rgba(255, 209, 102, 0.2)' : 'rgba(192, 198, 233, 0.1)')
+          .justifyContent(FlexAlign.End)
+          .padding({ right: 2 })
+          .onClick(() => {
+            this.toggleGlobalSwitch();
+          })
         }
-        .width(50)
-        .height(28)
-        .borderRadius(14)
-        .backgroundColor(this.lanternlawEnabled ? 'rgba(255, 209, 102, 0.2)' : 'rgba(192, 198, 233, 0.1)')
-        .justifyContent(FlexAlign.End)
-        .padding({ right: 2 })
-        .onClick(() => {
-          this.toggleGlobalSwitch();
-        })
       }
       .width('100%')
     }
@@ -369,17 +497,19 @@ export struct ProfileTab {
           .fontColor(ProfileTab.COLORS.text)
           .fontWeight(FontWeight.Medium)
         Blank()
-        // 添加时间段按钮
-        Text('+')
-          .fontSize(24)
-          .fontColor(ProfileTab.COLORS.gold)
-          .fontWeight(FontWeight.Bold)
-          .onClick(() => {
-            this.pendingAction = 'addTimeRange';
-            this.passwordInput = '';
-            this.passwordError = '';
-            this.showPasswordDialog = true;
-          })
+        if (this.accountMode === AccountMode.PARENT) {
+          // 添加时间段按钮（仅家长模式）
+          Text('+')
+            .fontSize(24)
+            .fontColor(ProfileTab.COLORS.gold)
+            .fontWeight(FontWeight.Bold)
+            .onClick(() => {
+              this.pendingAction = 'addTimeRange';
+              this.passwordInput = '';
+              this.passwordError = '';
+              this.showPasswordDialog = true;
+            })
+        }
       }
       .width('100%')
       .padding({ bottom: 16 })
@@ -413,29 +543,32 @@ export struct ProfileTab {
             .alignItems(HorizontalAlign.Start)
             .layoutWeight(1)
 
-            Blank()
-
-            // 删除按钮
-            Text('删除')
-              .fontSize(11)
-              .fontColor('#ff6b6b')
-              .onClick(() => {
-                this.pendingAction = 'deleteTimeRange';
-                this.pendingDeleteTimeRangeId = timeRange.id;
-                this.passwordInput = '';
-                this.passwordError = '';
-                this.showPasswordDialog = true;
-              })
+            if (this.accountMode === AccountMode.PARENT) {
+              Blank()
+              // 删除按钮（仅家长模式）
+              Text('删除')
+                .fontSize(11)
+                .fontColor('#ff6b6b')
+                .onClick(() => {
+                  this.pendingAction = 'deleteTimeRange';
+                  this.pendingDeleteTimeRangeId = timeRange.id;
+                  this.passwordInput = '';
+                  this.passwordError = '';
+                  this.showPasswordDialog = true;
+                })
+            }
           }
           .width('100%')
           .padding({ top: 12, bottom: 12 })
           .onClick(() => {
-            this.editTimeRange(timeRange);
+            if (this.accountMode === AccountMode.PARENT) {
+              this.editTimeRange(timeRange);
+            }
           })
         }, (timeRange: TimeRange, index: number) => `${timeRange.id}_${timeRange.startTime}_${timeRange.endTime}_${timeRange.label}`)
       }
 
-      Text('点击时间段编辑，左键切换启用状态')
+      Text(this.accountMode === AccountMode.PARENT ? '点击时间段编辑，左键切换启用状态' : '灯律时段由家长设置')
         .fontSize(11)
         .fontColor(ProfileTab.COLORS.textDim)
         .margin({ top: 8 })
@@ -687,50 +820,91 @@ export struct ProfileTab {
           .fontColor(ProfileTab.COLORS.text)
           .fontWeight(FontWeight.Medium)
         Blank()
-        Button('管理')
-          .fontSize(12)
-          .height(28)
-          .backgroundColor(ProfileTab.COLORS.accent)
-          .fontColor(ProfileTab.COLORS.gold)
-          .borderRadius(14)
-          .margin({ right: 8 })
-          .onClick(() => {
-            this.pendingAction = 'manageWhitelist';
-            this.passwordInput = '';
-            this.passwordError = '';
-            this.showPasswordDialog = true;
-          })
-        if (this.whitelistApps.length > 0) {
-          Button('查看')
+        if (this.accountMode === AccountMode.PARENT) {
+          Button('管理')
             .fontSize(12)
             .height(28)
-            .backgroundColor('rgba(255, 158, 109, 0.15)')
-            .fontColor(ProfileTab.COLORS.orange)
+            .backgroundColor(ProfileTab.COLORS.accent)
+            .fontColor(ProfileTab.COLORS.gold)
+            .borderRadius(14)
+            .margin({ right: 8 })
+            .onClick(() => {
+              this.pendingAction = 'manageWhitelist';
+              this.passwordInput = '';
+              this.passwordError = '';
+              this.showPasswordDialog = true;
+            })
+          if (this.whitelistApps.length > 0) {
+            Button('查看')
+              .fontSize(12)
+              .height(28)
+              .backgroundColor('rgba(255, 158, 109, 0.15)')
+              .fontColor(ProfileTab.COLORS.orange)
+              .borderRadius(14)
+              .onClick(() => {
+                this.viewSelectedApps();
+              })
+          }
+        } else if (this.accountMode === AccountMode.CHILD && this.whitelistPendingStatus === '') {
+          Button('修改')
+            .fontSize(12)
+            .height(28)
+            .backgroundColor(ProfileTab.COLORS.accent)
+            .fontColor(ProfileTab.COLORS.gold)
             .borderRadius(14)
             .onClick(() => {
-              this.viewSelectedApps();
+              this.openAppPickerForChild();
             })
         }
       }
       .width('100%')
       .padding({ bottom: 12 })
 
-      // 白名单统计
-      if (this.whitelistApps.length > 0) {
+      if (this.accountMode === AccountMode.CHILD && this.whitelistPendingStatus === 'pending') {
+        // 儿童模式 — 等待审批
+        Column() {
+          Text(`已提交白名单修改请求（${this.pendingAppCount}个应用）`)
+            .fontSize(13)
+            .fontColor(ProfileTab.COLORS.gold)
+            .margin({ bottom: 4 })
+          Text('等待家长审批中...')
+            .fontSize(12)
+            .fontColor(ProfileTab.COLORS.textDim)
+        }
+        .width('100%')
+        .alignItems(HorizontalAlign.Center)
+        .padding({ top: 4, bottom: 8 })
+      } else if (this.accountMode === AccountMode.CHILD && this.whitelistRejected) {
+        // 儿童模式 — 被拒绝
+        Column() {
+          Text('家长拒绝了白名单修改请求')
+            .fontSize(13)
+            .fontColor('#ff6b6b')
+            .margin({ bottom: 4 })
+          Text('可重新提交修改请求')
+            .fontSize(12)
+            .fontColor(ProfileTab.COLORS.textDim)
+        }
+        .width('100%')
+        .alignItems(HorizontalAlign.Center)
+        .padding({ top: 4, bottom: 8 })
+      } else if (this.whitelistApps.length > 0) {
         Column() {
           Text(`管控时段内，${this.whitelistApps.length}个白名单应用可用`)
             .fontSize(13)
             .fontColor(ProfileTab.COLORS.text)
             .margin({ bottom: 10 })
 
-          Text('点击「管理」选择/修改白名单应用')
-            .fontSize(11)
-            .fontColor(ProfileTab.COLORS.textDim)
-            .margin({ top: 8 })
-          Text('点击「查看」预览已选应用详情')
-            .fontSize(11)
-            .fontColor(ProfileTab.COLORS.textDim)
-            .margin({ top: 8 })
+          if (this.accountMode === AccountMode.PARENT) {
+            Text('点击「管理」选择/修改白名单应用')
+              .fontSize(11)
+              .fontColor(ProfileTab.COLORS.textDim)
+              .margin({ top: 8 })
+            Text('点击「查看」预览已选应用详情')
+              .fontSize(11)
+              .fontColor(ProfileTab.COLORS.textDim)
+              .margin({ top: 8 })
+          }
         }
         .width('100%')
         .padding({ top: 4, bottom: 8 })
@@ -740,9 +914,15 @@ export struct ProfileTab {
             .fontSize(13)
             .fontColor(ProfileTab.COLORS.textDim)
             .margin({ bottom: 4 })
-          Text('点击「管理」按钮选择允许使用的应用')
-            .fontSize(11)
-            .fontColor(ProfileTab.COLORS.textDim)
+          if (this.accountMode === AccountMode.PARENT) {
+            Text('点击「管理」按钮选择允许使用的应用')
+              .fontSize(11)
+              .fontColor(ProfileTab.COLORS.textDim)
+          } else {
+            Text('点击「修改」按钮选择希望放通的应用')
+              .fontSize(11)
+              .fontColor(ProfileTab.COLORS.textDim)
+          }
         }
         .width('100%')
         .alignItems(HorizontalAlign.Center)
@@ -753,7 +933,7 @@ export struct ProfileTab {
     .padding(16)
     .backgroundColor(ProfileTab.COLORS.card)
     .borderRadius(12)
-    .border({ width: 1, color: ProfileTab.COLORS.border })
+    .border({ width: 1, color: this.whitelistPendingStatus === 'pending' ? ProfileTab.COLORS.gold : ProfileTab.COLORS.border })
     .margin({ bottom: 16 })
   }
 
@@ -806,71 +986,6 @@ export struct ProfileTab {
   }
 
   /**
-   * 提醒设置卡片
-   */
-  @Builder
-  private NotificationCard(): void {
-    Column() {
-      Row() {
-        Text('🔔')
-          .fontSize(18)
-          .margin({ right: 12 })
-        Text('提醒设置')
-          .fontSize(16)
-          .fontColor(ProfileTab.COLORS.text)
-          .fontWeight(FontWeight.Medium)
-      }
-      .width('100%')
-      .padding({ bottom: 16 })
-
-      // 睡前提醒
-      this.SwitchItem('睡前提醒', '15 分钟', true)
-      // 起床后提醒
-      this.SwitchItem('起床后提醒', '自动', true)
-      // 越狱通知
-      this.SwitchItem('越狱通知', '即时', false)
-    }
-    .width('100%')
-    .padding(16)
-    .backgroundColor(ProfileTab.COLORS.card)
-    .borderRadius(12)
-    .border({ width: 1, color: ProfileTab.COLORS.border })
-    .margin({ bottom: 16 })
-  }
-
-  /**
-   * 开关设置项
-   */
-  @Builder
-  private SwitchItem(label: string, description: string, enabled: boolean): void {
-    Row() {
-      Column({ space: 4 }) {
-        Text(label)
-          .fontSize(14)
-          .fontColor(ProfileTab.COLORS.text)
-        Text(description)
-          .fontSize(11)
-          .fontColor(ProfileTab.COLORS.textDim)
-      }
-      .alignItems(HorizontalAlign.Start)
-      .layoutWeight(1)
-      // 模拟开关
-      Column()
-        .width(44)
-        .height(24)
-        .backgroundColor(enabled ? ProfileTab.COLORS.gold : ProfileTab.COLORS.textDim)
-        .borderRadius(12)
-        .justifyContent(FlexAlign.Start)
-        .padding({ left: 2 })
-        .onClick(() => {
-          Logger.info('ProfileTab', `切换开关: ${label}`);
-        })
-    }
-    .width('100%')
-    .padding({ top: 12, bottom: 12 })
-  }
-
-  /**
    * 账号管理卡片
    */
   @Builder
@@ -890,29 +1005,31 @@ export struct ProfileTab {
 
       // 操作列表
       Column() {
-        Row() {
-          Text('修改用户名')
-            .fontSize(14)
-            .fontColor(ProfileTab.COLORS.text)
-          Blank()
-          Text('>')
-            .fontSize(14)
-            .fontColor(ProfileTab.COLORS.textDim)
-        }
-        .width('100%')
-        .padding({ top: 14, bottom: 14 })
-        .onClick(() => {
-          if (this.currentAccount) {
-            this.editUsernameInput = this.currentAccount!.username;
-            this.showEditUsername = true;
+        if (this.accountMode === AccountMode.PARENT) {
+          Row() {
+            Text('修改用户名')
+              .fontSize(14)
+              .fontColor(ProfileTab.COLORS.text)
+            Blank()
+            Text('>')
+              .fontSize(14)
+              .fontColor(ProfileTab.COLORS.textDim)
           }
-        })
-
-        // 分割线
-        Column()
           .width('100%')
-          .height(0.5)
-          .backgroundColor(ProfileTab.COLORS.border)
+          .padding({ top: 14, bottom: 14 })
+          .onClick(() => {
+            if (this.currentAccount) {
+              this.editUsernameInput = this.currentAccount!.username;
+              this.showEditUsername = true;
+            }
+          })
+
+          // 分割线
+          Column()
+            .width('100%')
+            .height(0.5)
+            .backgroundColor(ProfileTab.COLORS.border)
+        }
 
         Row() {
           Text('修改头像')
@@ -1042,6 +1159,257 @@ export struct ProfileTab {
         .fontColor(ProfileTab.COLORS.text)
     }
     .width('100%')
+  }
+
+  // ==================== 儿童模式提示卡片 (Phase 3) ====================
+
+  /**
+   * 加入沟通组卡片（仅儿童模式且未加入沟通组时显示）
+   */
+  @Builder
+  private JoinFamilyGroupCard(): void {
+    if (this.accountMode === AccountMode.CHILD && !this.childFamilyGroupId && this.childJoinStatus !== 'pending') {
+      Column() {
+        Row() {
+          Text('🏠')
+            .fontSize(18)
+            .margin({ right: 12 })
+          Column({ space: 4 }) {
+            Text('加入家庭沟通组')
+              .fontSize(15)
+              .fontColor(ProfileTab.COLORS.gold)
+              .fontWeight(FontWeight.Medium)
+            Text('输入家长的邀请码，加入家庭沟通组')
+              .fontSize(12)
+              .fontColor(ProfileTab.COLORS.textDim)
+          }
+          .alignItems(HorizontalAlign.Start)
+          .layoutWeight(1)
+          Text('>')
+            .fontSize(18)
+            .fontColor(ProfileTab.COLORS.textDim)
+        }
+        .width('100%')
+        .padding({ top: 14, bottom: 14 })
+      }
+      .width('100%')
+      .padding(16)
+      .backgroundColor('rgba(255, 209, 102, 0.08)')
+      .borderRadius(12)
+      .border({ width: 1, color: 'rgba(255, 209, 102, 0.25)' })
+      .margin({ bottom: 16 })
+      .hitTestBehavior(HitTestMode.Default)
+      .onClick(() => {
+        router.pushUrl({ url: 'pages/JoinFamilyGroupPage' });
+      })
+    }
+  }
+
+  /**
+   * 儿童模式提示卡片（仅儿童模式显示）
+   */
+  @Builder
+  private ParentManagedHintCard(): void {
+    if (this.accountMode === AccountMode.CHILD) {
+      Column() {
+        Row() {
+          Text('🔒')
+            .fontSize(18)
+            .margin({ right: 12 })
+          Column({ space: 4 }) {
+            Text('灯律由家长管理')
+              .fontSize(15)
+              .fontColor(ProfileTab.COLORS.gold)
+              .fontWeight(FontWeight.Medium)
+            Text('管控设置由家长配置，如需调整请联系家长')
+              .fontSize(12)
+              .fontColor(ProfileTab.COLORS.textDim)
+          }
+          .alignItems(HorizontalAlign.Start)
+          .layoutWeight(1)
+        }
+        .width('100%')
+      }
+      .width('100%')
+      .padding(16)
+      .backgroundColor('rgba(255, 209, 102, 0.08)')
+      .borderRadius(12)
+      .border({ width: 1, color: 'rgba(255, 209, 102, 0.2)' })
+      .margin({ bottom: 16 })
+    }
+  }
+
+  // ==================== 家长留言卡片 (Phase 5) ====================
+
+  /**
+   * 家长留言卡片（仅儿童模式显示）
+   */
+  @Builder
+  private ParentMessageCard(): void {
+    if (this.accountMode === AccountMode.CHILD && this.recentMessages.length > 0) {
+      Column() {
+        Row() {
+          Text('✉')
+            .fontSize(18)
+            .margin({ right: 12 })
+          Text('家长留言')
+            .fontSize(16)
+            .fontColor(ProfileTab.COLORS.text)
+            .fontWeight(FontWeight.Medium)
+          Blank()
+          if (this.unreadCount > 0) {
+            Text(`${this.unreadCount}`)
+              .fontSize(12)
+              .fontColor(ProfileTab.COLORS.background)
+              .backgroundColor('#ff6b6b')
+              .borderRadius(10)
+              .padding({ left: 8, right: 8, top: 2, bottom: 2 })
+          }
+        }
+        .width('100%')
+        .padding({ bottom: 12 })
+
+        ForEach(this.recentMessages, (msg: FamilyMessage) => {
+          Column() {
+            Text(msg.content)
+              .fontSize(14)
+              .fontColor(msg.isRead ? ProfileTab.COLORS.textDim : ProfileTab.COLORS.text)
+              .fontWeight(msg.isRead ? FontWeight.Normal : FontWeight.Medium)
+              .maxLines(2)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+              .width('100%')
+          }
+          .width('100%')
+          .padding({ top: 8, bottom: 8 })
+          .borderRadius(8)
+          .backgroundColor(msg.isRead ? 'transparent' : 'rgba(255, 209, 102, 0.06)')
+        }, (msg: FamilyMessage) => msg.id)
+      }
+      .width('100%')
+      .padding(16)
+      .backgroundColor(ProfileTab.COLORS.card)
+      .borderRadius(12)
+      .border({ width: 1, color: ProfileTab.COLORS.border })
+      .margin({ bottom: 16 })
+    }
+  }
+
+  // ==================== 沟通组管理卡片 (Phase 2) ====================
+
+  /**
+   * 沟通组管理卡片（仅家长模式显示）
+   */
+  @Builder
+  private FamilyGroupCard(): void {
+    if (this.accountMode === AccountMode.PARENT) {
+      Column() {
+        Row() {
+          Text('🏠')
+            .fontSize(18)
+            .margin({ right: 12 })
+          Text('沟通组管理')
+            .fontSize(16)
+            .fontColor(ProfileTab.COLORS.text)
+            .fontWeight(FontWeight.Medium)
+          Blank()
+          Text('>')
+            .fontSize(14)
+            .fontColor(ProfileTab.COLORS.textDim)
+        }
+        .width('100%')
+        .padding({ bottom: 16 })
+
+        if (this.familyGroup) {
+          // 已有沟通组
+          Row() {
+            Text(`🏠 ${this.familyGroup.groupName}`)
+              .fontSize(14)
+              .fontColor(ProfileTab.COLORS.gold)
+              .fontWeight(FontWeight.Medium)
+          }
+          .width('100%')
+          .padding({ top: 4, bottom: 8 })
+
+          Text(`邀请码: ${this.familyGroup.invitationCode}  |  ${this.familyMembers.length} 位成员`)
+            .fontSize(12)
+            .fontColor(ProfileTab.COLORS.textDim)
+        } else {
+          Text('尚未创建沟通组')
+            .fontSize(13)
+            .fontColor(ProfileTab.COLORS.textDim)
+            .margin({ top: 4, bottom: 8 })
+        }
+      }
+      .width('100%')
+      .padding(16)
+      .backgroundColor(ProfileTab.COLORS.card)
+      .borderRadius(12)
+      .border({ width: 1, color: ProfileTab.COLORS.border })
+      .margin({ bottom: 16 })
+      .onClick(() => {
+        router.pushUrl({ url: 'pages/FamilyGroupPage' });
+      })
+    }
+  }
+
+  /**
+   * 孩子管理卡片（有儿童成员时显示）
+   */
+  @Builder
+  private ChildManagementCard(): void {
+    if (this.accountMode === AccountMode.PARENT && this.familyMembers.length > 0) {
+      Column() {
+        Row() {
+          Text('👧')
+            .fontSize(18)
+            .margin({ right: 12 })
+          Text('孩子管理')
+            .fontSize(16)
+            .fontColor(ProfileTab.COLORS.text)
+            .fontWeight(FontWeight.Medium)
+          Blank()
+          Text(`${this.familyMembers.length} 人`)
+            .fontSize(14)
+            .fontColor(ProfileTab.COLORS.textDim)
+        }
+        .width('100%')
+        .padding({ bottom: 12 })
+
+        ForEach(this.familyMembers, (child: UserAccount) => {
+          Row() {
+            Text(child.avatar)
+              .fontSize(20)
+              .margin({ right: 10 })
+            Text(child.username)
+              .fontSize(14)
+              .fontColor(ProfileTab.COLORS.text)
+            Blank()
+            Text('管理')
+              .fontSize(12)
+              .fontColor(ProfileTab.COLORS.gold)
+              .onClick(() => {
+                router.pushUrl({ url: 'pages/ChildConfigPage', params: { 'accountId': child.accountId } });
+              })
+            Text('发消息')
+              .fontSize(12)
+              .fontColor(ProfileTab.COLORS.orange)
+              .onClick(() => {
+                this.sendDialogTarget = child;
+                this.customMessage = '';
+                this.showSendDialog = true;
+              })
+          }
+          .width('100%')
+          .padding({ top: 10, bottom: 10 })
+        }, (child: UserAccount) => child.accountId)
+      }
+      .width('100%')
+      .padding(16)
+      .backgroundColor(ProfileTab.COLORS.card)
+      .borderRadius(12)
+      .border({ width: 1, color: ProfileTab.COLORS.border })
+      .margin({ bottom: 16 })
+    }
   }
 
   // ==================== 账号管理弹窗 ====================
@@ -1940,26 +2308,6 @@ export struct ProfileTab {
   }
 
   /**
-   * 切换白名单应用启用状态
-   */
-  private toggleWhitelistApp(index: number): void {
-    if (index < 0 || index >= this.whitelistApps.length) {
-      return;
-    }
-    this.whitelistApps[index].enabled = !this.whitelistApps[index].enabled;
-    Logger.info('ProfileTab', `切换白名单应用: ${this.whitelistApps[index].appToken} -> ${this.whitelistApps[index].enabled}`);
-    this.saveConfig();
-  }
-
-  /**
-   * 显示删除确认对话框
-   */
-  private showDeleteConfirmDialog(index: number): void {
-    this.deleteAppIndex = index;
-    this.showDeleteConfirm = true;
-  }
-
-  /**
    * 确认删除应用
    */
   private confirmDeleteApp(): void {
@@ -1972,6 +2320,177 @@ export struct ProfileTab {
     Logger.info('ProfileTab', `已从白名单删除: ${appToken}`);
     this.showDeleteConfirm = false;
     this.deleteAppIndex = -1;
+    this.saveConfig();
+  }
+
+  // ==================== 儿童模式白名单管理 ====================
+
+  /**
+   * 儿童模式：打开系统应用选择器，选择后提交审批请求
+   */
+  private async openAppPickerForChild(): Promise<void> {
+    try {
+      const context = getContext(this) as common.UIAbilityContext;
+      const existingTokens = this.whitelistApps
+        .filter(app => app.appToken && app.appToken.length > 0)
+        .map(app => app.appToken!);
+
+      const guardManager = ScreenTimeGuardManager.getInstance();
+      const selectedTokens = await guardManager.openAppPicker(context, existingTokens);
+
+      if (selectedTokens.length === 0) {
+        return;
+      }
+
+      // 暂存新 token 列表
+      this.pendingTokens = selectedTokens;
+      this.pendingAppCount = selectedTokens.length;
+
+      // 生成请求 ID 并上传到 Cloud DB
+      const requestId = this.generateUUID();
+      this.pendingRequestId = requestId;
+
+      const syncService = ConfigSyncService.getInstance();
+      if (syncService.getIsAvailable()) {
+        await syncService.uploadWhitelistRequest(requestId, this.getAccountService().getActiveAccountId(),
+          selectedTokens, selectedTokens.length);
+        this.whitelistPendingStatus = 'pending';
+        this.whitelistRejected = false;
+        Logger.info('ProfileTab', `白名单修改请求已提交: ${selectedTokens.length}个应用`);
+
+        // 启动轮询
+        this.startWhitelistPolling();
+      } else {
+        Logger.warn('ProfileTab', 'Cloud DB 不可用，无法提交白名单修改请求');
+      }
+    } catch (error) {
+      Logger.exception('ProfileTab', error instanceof Error ? error : new Error(String(error)), '儿童白名单选择器失败');
+    }
+  }
+
+  /**
+   * 启动白名单审批轮询
+   */
+  private startWhitelistPolling(): void {
+    if (this.whitelistPollTimerId !== -1) {
+      clearInterval(this.whitelistPollTimerId);
+    }
+    this.whitelistPollTimerId = setInterval(async () => {
+      await this.checkWhitelistRequestStatus();
+    }, 3000);
+    Logger.info('ProfileTab', '白名单审批轮询已启动');
+  }
+
+  /**
+   * 停止白名单审批轮询
+   */
+  private stopWhitelistPolling(): void {
+    if (this.whitelistPollTimerId !== -1) {
+      clearInterval(this.whitelistPollTimerId);
+      this.whitelistPollTimerId = -1;
+    }
+  }
+
+  /**
+   * 检查白名单请求的审批状态
+   */
+  private async checkWhitelistRequestStatus(): Promise<void> {
+    if (!this.pendingRequestId) {
+      this.stopWhitelistPolling();
+      return;
+    }
+    try {
+      const syncService = ConfigSyncService.getInstance();
+      if (!syncService.getIsAvailable()) {
+        return;
+      }
+      const request = await syncService.queryWhitelistRequest(this.pendingRequestId);
+      if (!request) {
+        return;
+      }
+      if (request.status === 'approved') {
+        this.stopWhitelistPolling();
+        // 应用新的白名单
+        const newWhitelist: WhitelistApp[] = [];
+        for (const token of this.pendingTokens) {
+          const app: WhitelistApp = { appToken: token, enabled: true };
+          newWhitelist.push(app);
+        }
+        this.whitelistApps = newWhitelist;
+        this.whitelistPendingStatus = '';
+        this.whitelistRejected = false;
+        this.pendingRequestId = '';
+        this.pendingTokens = [];
+        this.pendingAppCount = 0;
+        await this.saveConfig();
+        // 同步策略
+        const guardManager = ScreenTimeGuardManager.getInstance();
+        const accountService = this.getAccountService();
+        guardManager.syncStrategies(this.timeRanges, this.whitelistApps, accountService.getActiveAccountId());
+        Logger.info('ProfileTab', '白名单修改已生效');
+      } else if (request.status === 'rejected') {
+        this.stopWhitelistPolling();
+        this.whitelistPendingStatus = '';
+        this.whitelistRejected = true;
+        this.pendingRequestId = '';
+        this.pendingTokens = [];
+        this.pendingAppCount = 0;
+        Logger.info('ProfileTab', '白名单修改被家长拒绝');
+      }
+    } catch (error) {
+      Logger.exception('ProfileTab', error instanceof Error ? error : new Error(String(error)), '检查白名单审批状态失败');
+    }
+  }
+
+  /**
+   * 检查是否有待审批的白名单请求（启动时调用）
+   */
+  private async checkPendingWhitelistRequest(): Promise<void> {
+    if (this.accountMode !== AccountMode.CHILD) {
+      return;
+    }
+    try {
+      const syncService = ConfigSyncService.getInstance();
+      if (!syncService.getIsAvailable()) {
+        return;
+      }
+      const accountService = this.getAccountService();
+      const accountId = accountService.getActiveAccountId();
+      if (!accountId) {
+        return;
+      }
+      // 查询该儿童的所有 pending 请求
+      const requests = await syncService.queryPendingWhitelistRequests([accountId]);
+      if (requests.length > 0) {
+        const request = requests[0];
+        this.pendingRequestId = request.requestId;
+        this.pendingAppCount = request.appCount;
+        this.whitelistPendingStatus = 'pending';
+        this.whitelistRejected = false;
+        try {
+          this.pendingTokens = JSON.parse(request.appTokensText) as string[];
+        } catch (e) {
+          this.pendingTokens = [];
+        }
+        this.startWhitelistPolling();
+        Logger.info('ProfileTab', `发现待审批白名单请求: ${request.requestId.substring(0, 12)}`);
+      }
+    } catch (error) {
+      Logger.exception('ProfileTab', error instanceof Error ? error : new Error(String(error)), '检查待审批白名单请求失败');
+    }
+  }
+
+  private getAccountService(): AccountService {
+    return AccountService.getInstance();
+  }
+
+  /**
+  private toggleWhitelistApp(index: number): void {
+    if (index < 0 || index >= this.whitelistApps.length) {
+      return;
+    }
+    this.whitelistApps[index].enabled = !this.whitelistApps[index].enabled;
+    Logger.info('ProfileTab', `切换白名单应用: ${this.whitelistApps[index].appToken} -> ${this.whitelistApps[index].enabled}`);
     this.saveConfig();
   }
 
@@ -1996,8 +2515,58 @@ export struct ProfileTab {
   }
 
   /**
+   * 加载帐号模式和沟通组信息
+   */
+  private async loadAccountMode(): Promise<void> {
+    try {
+      const accountService = AccountService.getInstance();
+      const account = accountService.getActiveAccount();
+      if (account) {
+        this.accountMode = account.accountMode;
+        this.childJoinStatus = account.joinStatus;
+        this.childFamilyGroupId = account.familyGroupId;
+        // 家长模式加载沟通组信息
+        if (this.accountMode === AccountMode.PARENT) {
+          const group = await this.familyGroupService.getMyGroup(account.accountId);
+          this.familyGroup = group;
+          if (group) {
+            this.familyMembers = await this.familyGroupService.getMembers(group.groupId);
+          }
+        } else {
+          // 儿童模式加载家长消息
+          const msgService = MessageService.getInstance();
+          this.recentMessages = await msgService.getLatestMessages(account.accountId, 3);
+          this.unreadCount = await msgService.getUnreadCount(account.accountId);
+        }
+        Logger.info('ProfileTab', `帐号模式: ${this.accountMode}, 沟通组: ${this.familyGroup?.groupName ?? '无'}, 未读消息: ${this.unreadCount}`);
+      }
+    } catch (error) {
+      Logger.exception('ProfileTab', error instanceof Error ? error : new Error(String(error)), '加载帐号模式失败');
+    }
+  }
+
+  /**
    * 处理创建账号
    */
+  /**
+   * 发送消息给儿童 (Phase 5)
+   */
+  private async doSendMessage(content: string): Promise<void> {
+    if (!content.trim() || !this.sendDialogTarget) {
+      return;
+    }
+    const accountService = AccountService.getInstance();
+    const parent = accountService.getActiveAccount();
+    if (!parent) {
+      return;
+    }
+    const msgService = MessageService.getInstance();
+    await msgService.sendMessage(parent.accountId, this.sendDialogTarget.accountId, content.trim());
+    this.showSendDialog = false;
+    this.customMessage = '';
+    Logger.info('ProfileTab', `已发送消息给 ${this.sendDialogTarget.username}`);
+  }
+
   private async handleCreateAccount(): Promise<void> {
     // 验证
     const usernameError = validateUsername(this.createUsername);
@@ -2019,16 +2588,25 @@ export struct ProfileTab {
 
     try {
       const account = new UserAccount();
+      account.accountId = this.generateUUID();
       account.username = this.createUsername.trim();
       account.avatar = this.createAvatar;
       account.passwordHash = await hashPassword(this.createPassword);
+      account.accountMode = AccountMode.PARENT;
       account.createdAt = Date.now();
       account.updatedAt = Date.now();
+      account.isLocalActive = true;
 
+      // 保存到 accounts 表（新版）
+      const database = LanternLawDatabase.getInstance();
+      await database.saveAccount(account);
+
+      // 同时保存到旧版 user_account key（向后兼容）
       await this.stateManager.saveUserAccount(account);
+
       this.currentAccount = account;
       this.showCreateAccount = false;
-      Logger.info('ProfileTab', `账号创建成功: ${account.username}`);
+      Logger.info('ProfileTab', `账号创建成功: ${account.username} (${account.accountMode})`);
     } catch (error) {
       this.createAccountError = '创建账号失败，请重试';
       Logger.exception('ProfileTab', error instanceof Error ? error : new Error(String(error)), '创建账号失败');
@@ -2191,5 +2769,24 @@ export struct ProfileTab {
       this.resetPasswordError = '重置密码失败，请重试';
       Logger.exception('ProfileTab', err instanceof Error ? err : new Error(String(err)), '重置密码失败');
     }
+  }
+
+  /**
+   * 生成 UUID
+   * @private
+   */
+  private generateUUID(): string {
+    const charArr: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];
+    const sections: number[] = [8, 4, 4, 4, 12];
+    let uuid = '';
+    for (const len of sections) {
+      for (let i = 0; i < len; i++) {
+        uuid += charArr[Math.floor(Math.random() * charArr.length)];
+      }
+      if (len !== 12) {
+        uuid += '-';
+      }
+    }
+    return uuid;
   }
 }

@@ -7,7 +7,7 @@
  * 使用 @kit.CloudFoundationKit 的 cloudDatabase 实现 Cloud DB CRUD
  */
 import { cloudDatabase, cloudCommon } from '@kit.CloudFoundationKit';
-import { FamilyGroupObj, AccountObj, ChildConfigObj, MessageObj } from '../models/cloud/CloudObjectTypes';
+import { FamilyGroupObj, AccountObj, ChildConfigObj, MessageObj, WhitelistRequestObj } from '../models/cloud/CloudObjectTypes';
 import { UserAccount } from '../models/UserAccount';
 import { AccountMode } from '../models/AccountMode';
 import { FamilyGroup } from '../models/FamilyGroup';
@@ -443,6 +443,107 @@ export class ConfigSyncService {
   public async pullMessages(accountId: string, limit: number): Promise<FamilyMessage[]> {
     // 回退到本地
     return await this.database.getMessagesByReceiver(accountId);
+  }
+
+  // ==================== 白名单修改请求同步 ====================
+
+  /**
+   * 上传白名单修改请求
+   */
+  public async uploadWhitelistRequest(requestId: string, childAccountId: string,
+    appTokens: string[], appCount: number): Promise<void> {
+    if (!this.zone) {
+      return;
+    }
+    try {
+      const obj = new WhitelistRequestObj();
+      obj.requestId = requestId;
+      obj.childAccountId = childAccountId;
+      obj.appTokensText = JSON.stringify(appTokens);
+      obj.appCount = appCount;
+      obj.status = 'pending';
+      obj.createdAt = Date.now();
+      obj.respondedAt = 0;
+
+      await this.zone.upsert(obj);
+      Logger.info(TAG, `白名单请求已上传: ${requestId.substring(0, 12)}, ${appCount}个应用`);
+    } catch (error) {
+      Logger.exception(TAG, error instanceof Error ? error : new Error(String(error)), '白名单请求上传失败');
+    }
+  }
+
+  /**
+   * 查询白名单修改请求（按 requestId）
+   */
+  public async queryWhitelistRequest(requestId: string): Promise<WhitelistRequestObj | null> {
+    if (!this.zone) {
+      return null;
+    }
+    try {
+      const query = new cloudDatabase.DatabaseQuery(WhitelistRequestObj)
+        .equalTo('requestId', requestId);
+      const results = await this.zone.query(query);
+
+      if (results && results.length > 0) {
+        return results[0] as WhitelistRequestObj;
+      }
+      return null;
+    } catch (error) {
+      Logger.exception(TAG, error instanceof Error ? error : new Error(String(error)), '白名单请求查询失败');
+      return null;
+    }
+  }
+
+  /**
+   * 查询某沟通组下所有待审批的白名单修改请求
+   */
+  public async queryPendingWhitelistRequests(childAccountIds: string[]): Promise<WhitelistRequestObj[]> {
+    if (!this.zone || childAccountIds.length === 0) {
+      return [];
+    }
+    try {
+      const results: WhitelistRequestObj[] = [];
+      for (const childId of childAccountIds) {
+        const query = new cloudDatabase.DatabaseQuery(WhitelistRequestObj)
+          .equalTo('childAccountId', childId)
+          .equalTo('status', 'pending');
+        const queryResults = await this.zone.query(query);
+        if (queryResults) {
+          for (const obj of queryResults) {
+            results.push(obj as WhitelistRequestObj);
+          }
+        }
+      }
+      Logger.info(TAG, `查询到 ${results.length} 个待审批白名单请求`);
+      return results;
+    } catch (error) {
+      Logger.exception(TAG, error instanceof Error ? error : new Error(String(error)), '待审批白名单请求查询失败');
+      return [];
+    }
+  }
+
+  /**
+   * 更新白名单修改请求的审批状态
+   */
+  public async updateWhitelistRequestStatus(requestId: string, status: string): Promise<void> {
+    if (!this.zone) {
+      return;
+    }
+    try {
+      const query = new cloudDatabase.DatabaseQuery(WhitelistRequestObj)
+        .equalTo('requestId', requestId);
+      const results = await this.zone.query(query);
+
+      if (results && results.length > 0) {
+        const obj = results[0] as WhitelistRequestObj;
+        obj.status = status;
+        obj.respondedAt = Date.now();
+        await this.zone.upsert(obj);
+        Logger.info(TAG, `白名单请求状态已更新: ${requestId.substring(0, 12)} → ${status}`);
+      }
+    } catch (error) {
+      Logger.exception(TAG, error instanceof Error ? error : new Error(String(error)), '白名单请求状态更新失败');
+    }
   }
 
   // ==================== 定时同步 ====================

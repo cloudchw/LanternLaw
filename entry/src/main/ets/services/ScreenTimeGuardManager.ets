@@ -130,7 +130,7 @@ export class ScreenTimeGuardManager {
    * 同步所有管控策略
    * 根据当前配置（时间段 + 白名单应用）创建/更新/删除系统策略
    */
-  async syncStrategies(timeRanges: TimeRange[], whitelistApps: WhitelistApp[]): Promise<void> {
+  async syncStrategies(timeRanges: TimeRange[], whitelistApps: WhitelistApp[], accountId: string = ''): Promise<void> {
     if (!this.isAuthorized) {
       Logger.warn(TAG, '未授权，跳过策略同步');
       return;
@@ -161,7 +161,9 @@ export class ScreenTimeGuardManager {
 
         // 策略名只允许字母、数字、下划线，替换 range.id 中的连字符
         const safeId = range.id.replace(/-/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
-        const strategyName = `${STRATEGY_PREFIX}${safeId}`;
+        // 策略名增加 accountId 前缀，多帐号隔离
+        const accountPrefix = accountId ? `${accountId}_` : '';
+        const strategyName = `${STRATEGY_PREFIX}${accountPrefix}${safeId}`;
         desiredNames.add(strategyName);
 
         const strategy: guardService.GuardStrategy = {
@@ -281,6 +283,33 @@ export class ScreenTimeGuardManager {
       }
     } catch (error) {
       Logger.exception(TAG, error instanceof Error ? error : new Error(String(error)), '停止所有策略失败');
+    }
+  }
+
+  /**
+   * 停止并移除指定帐号的所有策略（多帐号隔离）
+   */
+  async stopAccountStrategies(accountId: string): Promise<void> {
+    if (!this.isAuthorized) {
+      return;
+    }
+
+    try {
+      const prefix = `${STRATEGY_PREFIX}${accountId}_`;
+      const strategies = await guardService.queryGuardStrategies();
+      for (const strategy of strategies) {
+        if (strategy.name.startsWith(prefix)) {
+          try {
+            await guardService.stopGuardStrategy(strategy.name).catch(() => {});
+            await guardService.removeGuardStrategy(strategy.name);
+            Logger.info(TAG, `已移除帐号策略: ${strategy.name}`);
+          } catch (error) {
+            Logger.warn(TAG, `移除帐号策略失败 ${strategy.name}: ${JSON.stringify(error)}`);
+          }
+        }
+      }
+    } catch (error) {
+      Logger.exception(TAG, error instanceof Error ? error : new Error(String(error)), '移除帐号策略失败');
     }
   }
 }

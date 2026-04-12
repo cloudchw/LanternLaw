@@ -7,46 +7,18 @@ import { TimeRange } from './TimeRange';
 import { WhitelistApp } from './WhitelistApp';
 
 export class LanternLawConfig {
-  bedtime: string = '22:00';                  // 就寝时间 HH:mm (向后兼容)
-  wakeupTime: string = '23:00';               // 解锁时间 HH:mm (向后兼容)
   emergencyUnlocks: number = 3;              // 每月紧急解锁次数
   emergencyUsed: number = 0;                 // 已用紧急解锁次数
   lanternlawEnabled: boolean = true;         // 灯律是否启用
-  vibrationEnabled: boolean = true;          // 振动反馈是否启用
-  soundEnabled: boolean = false;             // 声音反馈是否启用
   timeRanges: TimeRange[] = [];              // 时间段列表
   whitelistApps: WhitelistApp[] = [];        // 白名单应用列表
-
-  // 验证配置有效性
-  isValid(): boolean {
-    const bedtimeParts = this.bedtime.split(':');
-    const wakeupParts = this.wakeupTime.split(':');
-
-    if (bedtimeParts.length !== 2 || wakeupParts.length !== 2) {
-      return false;
-    }
-
-    const bedtimeHour = parseInt(bedtimeParts[0]);
-    const bedtimeMinute = parseInt(bedtimeParts[1]);
-    const wakeupHour = parseInt(wakeupParts[0]);
-    const wakeupMinute = parseInt(wakeupParts[1]);
-
-    return bedtimeHour >= 0 && bedtimeHour < 24 &&
-           bedtimeMinute >= 0 && bedtimeMinute < 60 &&
-           wakeupHour >= 0 && wakeupHour < 24 &&
-           wakeupMinute >= 0 && wakeupMinute < 60;
-  }
 
   // 转换为JSON
   toJSON(): string {
     return JSON.stringify({
-      bedtime: this.bedtime,
-      wakeupTime: this.wakeupTime,
       emergencyUnlocks: this.emergencyUnlocks,
       emergencyUsed: this.emergencyUsed,
       lanternlawEnabled: this.lanternlawEnabled,
-      vibrationEnabled: this.vibrationEnabled,
-      soundEnabled: this.soundEnabled,
       timeRanges: this.timeRanges,
       whitelistApps: this.whitelistApps
     });
@@ -57,15 +29,6 @@ export class LanternLawConfig {
     const data = JSON.parse(json) as Record<string, Object | string | number | boolean | null | undefined>;
     const config = new LanternLawConfig();
 
-    // 支持旧字段名向后兼容 - 直接赋值并类型断言
-    const bedtimeValue = data.bedtime;
-    if (bedtimeValue !== undefined && typeof bedtimeValue === 'string') {
-      config.bedtime = bedtimeValue as string;
-    }
-    const wakeupTimeValue = data.wakeupTime;
-    if (wakeupTimeValue !== undefined && typeof wakeupTimeValue === 'string') {
-      config.wakeupTime = wakeupTimeValue as string;
-    }
     const emergencyUnlocksValue = data.emergencyUnlocks;
     if (emergencyUnlocksValue !== undefined && typeof emergencyUnlocksValue === 'number') {
       config.emergencyUnlocks = emergencyUnlocksValue as number;
@@ -81,14 +44,6 @@ export class LanternLawConfig {
       config.lanternlawEnabled = lanternlawEnabledValue as boolean;
     } else if (curfewEnabledValue !== undefined && typeof curfewEnabledValue === 'boolean') {
       config.lanternlawEnabled = curfewEnabledValue as boolean;
-    }
-    const vibrationEnabledValue = data.vibrationEnabled;
-    if (vibrationEnabledValue !== undefined && typeof vibrationEnabledValue === 'boolean') {
-      config.vibrationEnabled = vibrationEnabledValue as boolean;
-    }
-    const soundEnabledValue = data.soundEnabled;
-    if (soundEnabledValue !== undefined && typeof soundEnabledValue === 'boolean') {
-      config.soundEnabled = soundEnabledValue as boolean;
     }
 
     // 加载时间段列表
@@ -110,13 +65,9 @@ export class LanternLawConfig {
   clone(): LanternLawConfig {
     const config = new LanternLawConfig();
 
-    config.bedtime = this.bedtime;
-    config.wakeupTime = this.wakeupTime;
     config.emergencyUnlocks = this.emergencyUnlocks;
     config.emergencyUsed = this.emergencyUsed;
     config.lanternlawEnabled = this.lanternlawEnabled;
-    config.vibrationEnabled = this.vibrationEnabled;
-    config.soundEnabled = this.soundEnabled;
     config.timeRanges = JSON.parse(JSON.stringify(this.timeRanges));
     config.whitelistApps = JSON.parse(JSON.stringify(this.whitelistApps));
 

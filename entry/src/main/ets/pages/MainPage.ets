@@ -19,6 +19,7 @@ export struct MainPage {
   @State currentIndex: number = 0;
   @State tabBarHeight: number = 60;
   @State isBlocking: boolean = false;
+  @Provide profileRefreshTrigger: number = 0;
 
   private tabs: TabItem[] = [
     {
@@ -39,6 +40,10 @@ export struct MainPage {
     const blockingService = AppBlockingService.getInstance();
     this.isBlocking = blockingService.getState() === BlockingState.BLOCKING;
     Logger.info('MainPage', `页面加载，拦截状态: ${this.isBlocking}`);
+  }
+
+  onPageShow(): void {
+    this.profileRefreshTrigger++;
   }
 
   build() {

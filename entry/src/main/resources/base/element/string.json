@@ -59,6 +59,10 @@
     {
       "name": "permission_access_biometric_reason",
       "value": "找回密码时需要验证系统锁屏密码"
+    },
+    {
+      "name": "permission_distributed_datasync_reason",
+      "value": "跨设备同步家庭组和配置数据"
     }
   ]
 }

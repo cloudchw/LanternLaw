@@ -29,11 +29,7 @@ interface SettingsColorScheme {
 @Component
 struct SettingsPage {
   // 状态
-  @State bedtime: string = '22:30';
-  @State wakeupTime: string = '06:30';
   @State lanternlawEnabled: boolean = true;
-  @State vibrationEnabled: boolean = true;
-  @State soundEnabled: boolean = false;
   @State remainingEmergencies: number = 3;
   @State remainingTime: number = 0;
 
@@ -70,9 +66,6 @@ struct SettingsPage {
 
           // 时间配置区域
           this.TimeConfigurationSection()
-
-          // 行为配置区域
-          this.BehaviorConfigurationSection()
 
           // 统计信息区域
           this.StatisticsSection()
@@ -183,12 +176,12 @@ struct SettingsPage {
   }
 
   /**
-   * 时间配置区域
+   * 全局开关区域
    */
   @Builder
   private TimeConfigurationSection(): void {
     Column() {
-      Text('时间配置')
+      Text('灯律设置')
         .fontSize(16)
         .fontColor(this.COLORS.text)
         .fontWeight(FontWeight.Medium)
@@ -196,24 +189,6 @@ struct SettingsPage {
         .margin({ bottom: 12 })
 
       Column() {
-        // 就寝时间
-        this.TimeSettingRow(
-          '就寝时间',
-          this.bedtime,
-          () => {
-            this.showBedtimeSelector();
-          }
-        )
-
-        // 解锁时间
-        this.TimeSettingRow(
-          '解锁时间',
-          this.wakeupTime,
-          () => {
-            this.showWakeTimeSelector();
-          }
-        )
-
         // 启用开关
         Row() {
           Row() {
@@ -238,13 +213,6 @@ struct SettingsPage {
         .width('100%')
         .padding({ top: 12, bottom: 12 })
         .alignItems(VerticalAlign.Center)
-
-        // 底边框
-        Column()
-          .width('100%')
-          .height(1)
-          .backgroundColor(this.COLORS.border)
-          .margin({ top: 12 })
       }
       .width('100%')
       .backgroundColor(this.COLORS.card)
@@ -260,93 +228,6 @@ struct SettingsPage {
   }
 
   /**
-   * 时间设置行
-   */
-  @Builder
-  private TimeSettingRow(label: string, value: string, callback: () => void): void {
-    Column() {
-      Row() {
-        Text(label)
-          .fontSize(15)
-          .fontColor(this.COLORS.text)
-
-        Blank()
-
-        Text(value)
-          .fontSize(15)
-          .fontColor(this.COLORS.gold)
-          .fontWeight(FontWeight.Medium)
-          .margin({ right: 8 })
-
-        Text('→')
-          .fontSize(16)
-          .fontColor(this.COLORS.textDim)
-      }
-      .width('100%')
-      .padding({ top: 12, bottom: 12 })
-      .onClick(callback)
-      .alignItems(VerticalAlign.Center)
-
-      // 底边框
-      Column()
-        .width('100%')
-        .height(1)
-        .backgroundColor(this.COLORS.border)
-        .margin({ top: 12 })
-    }
-    .width('100%')
-  }
-
-  /**
-   * 行为配置区域
-   */
-  @Builder
-  private BehaviorConfigurationSection(): void {
-    Column() {
-      Text('行为配置')
-        .fontSize(16)
-        .fontColor(this.COLORS.text)
-        .fontWeight(FontWeight.Medium)
-        .width('100%')
-        .margin({ bottom: 12 })
-
-      Column() {
-        // 振动提示
-        this.ToggleRow('越狱时震动提示', this.vibrationEnabled, (isOn: boolean) => {
-          this.vibrationEnabled = isOn;
-          this.saveSettings();
-        })
-
-        // 声音提示
-        this.ToggleRow('越狱时声音提示', this.soundEnabled, (isOn: boolean) => {
-          this.soundEnabled = isOn;
-          this.saveSettings();
-        })
-      }
-      .width('100%')
-      .backgroundColor(this.COLORS.card)
-      .borderRadius(12)
-      .padding(16)
-      .border({
-        width: 1,
-        color: this.COLORS.border
-      })
-    }
-    .width('100%')
-    .margin({ bottom: 16 })
-  }
-
-  /**
-   * 开关行
-   */
-  @Builder
-  private ToggleRow(label: string, isOn: boolean, callback: (isOn: boolean) => void): void {
-    Row() {
-      Text(label)
-        .fontSize(15)
-        .fontColor(this.COLORS.text)
-
-      Blank()
 
       Toggle({ type: ToggleType.Switch, isOn: isOn })
         .selectedColor(this.COLORS.gold)
@@ -483,17 +364,13 @@ struct SettingsPage {
   private async loadSettings(): Promise<void> {
     try {
       const config = this.stateManager.getConfig();
-      this.bedtime = config.bedtime;
-      this.wakeupTime = config.wakeupTime;
       this.lanternlawEnabled = config.lanternlawEnabled;
 
       // 获取剩余紧急解锁次数
       this.remainingEmergencies = config.emergencyUnlocks - config.emergencyUsed;
 
       // 获取剩余时间
-      if (this.stateManager.getCurrentState() === LanternLawState.ACTIVE) {
-        this.remainingTime = this.calculateRemainingTime();
-      }
+      this.remainingTime = this.stateManager.getRemainingMinutes();
 
       Logger.info('SettingsPage', '设置加载完成');
     } catch (error) {
@@ -507,8 +384,6 @@ struct SettingsPage {
   private async saveSettings(): Promise<void> {
     try {
       const update: LanternLawConfigUpdate = {
-        bedtime: this.bedtime,
-        wakeupTime: this.wakeupTime,
         lanternlawEnabled: this.lanternlawEnabled
       };
       await this.stateManager.updateConfig(update);
@@ -516,22 +391,6 @@ struct SettingsPage {
     } catch (error) {
       Logger.exception('SettingsPage', error as Error, '设置保存失败');
     }
-  }
-
-  /**
-   * 显示就寝时间选择器
-   */
-  private showBedtimeSelector(): void {
-    Logger.info('SettingsPage', '显示就寝时间选择器');
-    // TODO: 实现时间选择器对话框
-  }
-
-  /**
-   * 显示起床时间选择器
-   */
-  private showWakeTimeSelector(): void {
-    Logger.info('SettingsPage', '显示起床时间选择器');
-    // TODO: 实现时间选择器对话框
   }
 
   /**
@@ -545,25 +404,6 @@ struct SettingsPage {
     } catch (error) {
       Logger.exception('SettingsPage', error as Error, '重置紧急解锁失败');
     }
-  }
-
-  /**
-   * 计算剩余时间
-   */
-  private calculateRemainingTime(): number {
-    const config = this.stateManager.getConfig();
-    const now = new Date();
-    const wakeupHour = parseInt(config.wakeupTime.split(':')[0]);
-    const wakeupMinute = parseInt(config.wakeupTime.split(':')[1]);
-
-    let wakeupTime = new Date();
-    wakeupTime.setHours(wakeupHour, wakeupMinute, 0, 0);
-
-    if (now > wakeupTime) {
-      wakeupTime.setDate(wakeupTime.getDate() + 1);
-    }
-
-    return Math.floor((wakeupTime.getTime() - now.getTime()) / (1000 * 60));
   }
 
   /**

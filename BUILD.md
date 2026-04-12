@@ -35,20 +35,20 @@ entry/build/default/outputs/default/entry-default-unsigned.hap
 
 ### 安装应用到设备
 ```bash
-# 模拟器/真机通用
-/d/ProgramFiles/DevEcoStudio/sdk/default/openharmony/toolchains/hdc.exe app install entry/build/default/outputs/default/entry-default-unsigned.hap
+# 模拟器/真机通用（-t 指定设备，-s 是设置 server 监听端口，不是选择设备）
+/d/ProgramFiles/DevEcoStudio/sdk/default/openharmony/toolchains/hdc.exe -t 127.0.0.1:5557 install entry/build/default/outputs/default/entry-default-signed.hap
 ```
 
 ### 启动应用
 ```bash
 # bundleName: com.cloudchw.lanternlaw
 # abilityName: EntryAbility
-/d/ProgramFiles/DevEcoStudio/sdk/default/openharmony/toolchains/hdc.exe shell aa start -b com.cloudchw.lanternlaw -a EntryAbility
+/d/ProgramFiles/DevEcoStudio/sdk/default/openharmony/toolchains/hdc.exe -t 127.0.0.1:5557 shell aa start -b com.cloudchw.lanternlaw -a EntryAbility
 ```
 
 ### 卸载应用
 ```bash
-/d/ProgramFiles/DevEcoStudio/sdk/default/openharmony/toolchains/hdc.exe shell bm uninstall -n com.cloudchw.lanternlaw
+/d/ProgramFiles/DevEcoStudio/sdk/default/openharmony/toolchains/hdc.exe -t 127.0.0.1:5557 shell bm uninstall -n com.cloudchw.lanternlaw
 ```
 
 ## 日志查看
@@ -56,13 +56,13 @@ entry/build/default/outputs/default/entry-default-unsigned.hap
 ### 查看应用日志
 ```bash
 # 查看所有 LanternLaw 日志
-/d/ProgramFiles/DevEcoStudio/sdk/default/openharmony/toolchains/hdc.exe shell hilog | grep LanternLaw
+/d/ProgramFiles/DevEcoStudio/sdk/default/openharmony/toolchains/hdc.exe -t 127.0.0.1:5557 shell hilog | grep LanternLaw
 
 # 查看错误日志
-/d/ProgramFiles/DevEcoStudio/sdk/default/openharmony/toolchains/hdc.exe shell hilog | grep -i "lanternlaw.*error"
+/d/ProgramFiles/DevEcoStudio/sdk/default/openharmony/toolchains/hdc.exe -t 127.0.0.1:5557 shell hilog | grep -i "lanternlaw.*error"
 
 # 清除历史日志
-/d/ProgramFiles/DevEcoStudio/sdk/default/openharmony/toolchains/hdc.exe shell hilog -r
+/d/ProgramFiles/DevEcoStudio/sdk/default/openharmony/toolchains/hdc.exe -t 127.0.0.1:5557 shell hilog -r
 ```
 
 ### 筛选特定标签

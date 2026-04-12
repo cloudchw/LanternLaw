@@ -9,6 +9,7 @@ import { ScreenTimeGuardManager } from '../services/ScreenTimeGuardManager';
 import { LanternLawStateManager } from '../managers/LanternLawStateManager';
 import { AccountService } from '../services/AccountService';
 import { ConfigSyncService } from '../services/ConfigSyncService';
+import { WhitelistApp } from '../models/WhitelistApp';
 import { setUIAbilityContext } from '../accessibility/LanternLawAccessibilityAbility';
 
 const DOMAIN = 0x0000;
@@ -291,6 +292,36 @@ export default class EntryAbility extends UIAbility {
         if (cloudConfig) {
           await stateManager.saveConfig(cloudConfig);
           hilog.info(DOMAIN, 'testTag', '云端管控配置已同步到本地');
+        }
+
+        // 检查是否有已审批但未应用的白名单修改请求
+        try {
+          const pendingRequests = await syncService.queryPendingWhitelistRequests([accountId]);
+          for (const req of pendingRequests) {
+            // 重新查询获取最新状态（可能已被家长审批）
+            const latestReq = await syncService.queryWhitelistRequest(req.requestId);
+            if (latestReq && latestReq.status === 'approved') {
+              hilog.info(DOMAIN, 'testTag', `发现已审批的白名单请求: ${req.requestId.substring(0, 12)}`);
+              try {
+                const tokens = JSON.parse(latestReq.appTokensText) as string[];
+                const config = stateManager.getConfig();
+                const whitelistApps: WhitelistApp[] = [];
+                for (const token of tokens) {
+                  const app: WhitelistApp = { appToken: token, enabled: true };
+                  whitelistApps.push(app);
+                }
+                config.whitelistApps = whitelistApps;
+                await stateManager.saveConfig(config);
+                // 更新请求状态为已处理（避免重复应用）
+                await syncService.updateWhitelistRequestStatus(req.requestId, 'applied');
+                hilog.info(DOMAIN, 'testTag', `已审批白名单已应用: ${tokens.length}个应用`);
+              } catch (parseErr) {
+                hilog.error(DOMAIN, 'testTag', `白名单请求解析失败: ${JSON.stringify(parseErr)}`);
+              }
+            }
+          }
+        } catch (wlErr) {
+          hilog.error(DOMAIN, 'testTag', `检查白名单请求失败: ${JSON.stringify(wlErr)}`);
         }
       }
 

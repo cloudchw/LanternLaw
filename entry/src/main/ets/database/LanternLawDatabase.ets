@@ -6,6 +6,10 @@
 import relationalStore from '@ohos.data.relationalStore';
 import { BusinessError } from '@ohos.base';
 import { DailyRecord } from '../models/DailyRecord';
+import { UserAccount } from '../models/UserAccount';
+import { FamilyGroup } from '../models/FamilyGroup';
+import { FamilyMessage, MessageType } from '../models/Message';
+import { AccountMode } from '../models/AccountMode';
 
 // 每日逃跑次数统计接口
 export interface DailyEscapeCount {
@@ -24,7 +28,7 @@ export class LanternLawDatabase {
   };
 
   // 数据库版本
-  private readonly DB_VERSION: number = 2;
+  private readonly DB_VERSION: number = 4;
 
   // 表定义（使用新字段名）
   private readonly CREATE_TABLES_SQL = `
@@ -100,6 +104,54 @@ export class LanternLawDatabase {
     );
   `;
 
+  // Phase 1: 多帐号体系新增表
+  private readonly CREATE_ACCOUNTS_TABLE_SQL: string = `
+    CREATE TABLE IF NOT EXISTS accounts (
+      account_id TEXT PRIMARY KEY,
+      username TEXT NOT NULL,
+      avatar TEXT DEFAULT '😊',
+      password_hash TEXT NOT NULL,
+      account_mode TEXT NOT NULL DEFAULT 'parent',
+      family_group_id TEXT,
+      parent_account_id TEXT,
+      is_local_active INTEGER DEFAULT 0,
+      join_status TEXT DEFAULT '',
+      pending_group_id TEXT DEFAULT '',
+      pending_requested_at INTEGER DEFAULT 0,
+      created_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL
+    )`;
+
+  private readonly CREATE_FAMILY_GROUPS_TABLE_SQL: string = `
+    CREATE TABLE IF NOT EXISTS family_groups (
+      group_id TEXT PRIMARY KEY,
+      group_name TEXT NOT NULL,
+      parent_account_id TEXT NOT NULL,
+      invitation_code TEXT,
+      invitation_expires_at INTEGER,
+      pending_members TEXT DEFAULT '',
+      created_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL
+    )`;
+
+  private readonly CREATE_MESSAGES_TABLE_SQL: string = `
+    CREATE TABLE IF NOT EXISTS messages (
+      id TEXT PRIMARY KEY,
+      sender_account_id TEXT NOT NULL,
+      receiver_account_id TEXT NOT NULL,
+      message_type TEXT NOT NULL,
+      content TEXT NOT NULL,
+      is_read INTEGER DEFAULT 0,
+      created_at INTEGER NOT NULL
+    )`;
+
+  private readonly CREATE_ACCOUNT_INDEXES_SQL: string[] = [
+    'CREATE INDEX IF NOT EXISTS idx_messages_receiver ON messages(receiver_account_id, is_read)',
+    'CREATE INDEX IF NOT EXISTS idx_messages_created ON messages(created_at)',
+    'CREATE INDEX IF NOT EXISTS idx_accounts_active ON accounts(is_local_active)',
+    'CREATE INDEX IF NOT EXISTS idx_accounts_family_group ON accounts(family_group_id)'
+  ];
+
   private constructor() {}
 
   // 获取单例实例
@@ -128,6 +180,14 @@ export class LanternLawDatabase {
 
       // 创建表（如果已存在则跳过）
       await this.rdbStore.executeSql(this.CREATE_TABLES_SQL);
+
+      // 创建多帐号体系表（Phase 1）
+      await this.rdbStore.executeSql(this.CREATE_ACCOUNTS_TABLE_SQL);
+      await this.rdbStore.executeSql(this.CREATE_FAMILY_GROUPS_TABLE_SQL);
+      await this.rdbStore.executeSql(this.CREATE_MESSAGES_TABLE_SQL);
+      for (const sql of this.CREATE_ACCOUNT_INDEXES_SQL) {
+        await this.rdbStore.executeSql(sql);
+      }
 
       console.log('灯律数据库初始化成功');
     } catch (error) {
@@ -522,8 +582,15 @@ export class LanternLawDatabase {
   private async migrateDatabase(fromVersion: number, toVersion: number): Promise<void> {
     console.log(`开始数据库迁移: ${fromVersion} -> ${toVersion}`);
 
-    // 这里可以添加具体的迁移逻辑
-    // 例如：根据版本差异执行不同的SQL语句
+    // v2 → v3: 多帐号体系迁移
+    if (fromVersion < 3) {
+      await this.migrateV2ToV3();
+    }
+
+    // v3 → v4: 儿童加入沟通组流程字段
+    if (fromVersion < 4) {
+      await this.migrateV3ToV4();
+    }
 
     // 更新版本记录
     if (this.rdbStore) {
@@ -535,6 +602,124 @@ export class LanternLawDatabase {
     }
 
     console.log(`数据库迁移完成: ${fromVersion} -> ${toVersion}`);
+  }
+
+  /**
+   * v2 → v3 迁移：将现有帐号迁移到 accounts 表，配置 key 添加 accountId 后缀
+   * @private
+   */
+  private async migrateV2ToV3(): Promise<void> {
+    if (!this.rdbStore) {
+      throw new Error('数据库未初始化');
+    }
+
+    console.log('开始 v2 → v3 迁移...');
+
+    // 1. 创建新表
+    await this.rdbStore.executeSql(this.CREATE_ACCOUNTS_TABLE_SQL);
+    await this.rdbStore.executeSql(this.CREATE_FAMILY_GROUPS_TABLE_SQL);
+    await this.rdbStore.executeSql(this.CREATE_MESSAGES_TABLE_SQL);
+    for (const sql of this.CREATE_ACCOUNT_INDEXES_SQL) {
+      await this.rdbStore.executeSql(sql);
+    }
+
+    // 2. 读取现有帐号数据（从 lanternlaw_config 表的 user_account key）
+    const accountJson = await this.getConfig('user_account');
+    if (accountJson) {
+      try {
+        const account = UserAccount.fromJSON(accountJson);
+
+        // 生成 accountId（如果不存在）
+        let accountId = account.accountId;
+        if (!accountId) {
+          accountId = this.generateUUID();
+        }
+
+        // 写入 accounts 表
+        const now = Date.now();
+        const valuesBucket: relationalStore.ValuesBucket = {
+          'account_id': accountId,
+          'username': account.username || '用户',
+          'avatar': account.avatar || '😊',
+          'password_hash': account.passwordHash || '',
+          'account_mode': account.accountMode || AccountMode.PARENT,
+          'family_group_id': '',
+          'parent_account_id': '',
+          'is_local_active': 1,
+          'created_at': account.createdAt || now,
+          'updated_at': now
+        };
+        await this.rdbStore.insert('accounts', valuesBucket);
+
+        // 3. 将现有配置复制到按 accountId 隔离的 key
+        const configJson = await this.getConfig('lanternlaw_config');
+        if (configJson) {
+          await this.saveConfig(`lanternlaw_config_${accountId}`, configJson);
+        }
+
+        // 4. 更新 user_account JSON 中的 accountId 字段
+        account.accountId = accountId;
+        await this.saveConfig('user_account', account.toJSON());
+
+        console.log(`v2 → v3 迁移完成, accountId: ${accountId}`);
+      } catch (error) {
+        console.error(`v2 → v3 迁移帐号数据失败: ${JSON.stringify(error)}`);
+        // 迁移失败不阻止升级
+      }
+    } else {
+      console.log('v2 → v3 迁移: 无现有帐号数据，跳过');
+    }
+  }
+
+  /**
+   * v3 → v4 迁移：accounts 表新增 join_status/pending_group_id/pending_requested_at，
+   * family_groups 表新增 pending_members
+   * @private
+   */
+  private async migrateV3ToV4(): Promise<void> {
+    if (!this.rdbStore) {
+      throw new Error('数据库未初始化');
+    }
+
+    console.log('开始 v3 → v4 迁移...');
+
+    // ALTER TABLE ADD COLUMN（try-catch 防止重复添加）
+    const alterStatements = [
+      'ALTER TABLE accounts ADD COLUMN join_status TEXT DEFAULT \'\'',
+      'ALTER TABLE accounts ADD COLUMN pending_group_id TEXT DEFAULT \'\'',
+      'ALTER TABLE accounts ADD COLUMN pending_requested_at INTEGER DEFAULT 0',
+      'ALTER TABLE family_groups ADD COLUMN pending_members TEXT DEFAULT \'\''
+    ];
+
+    for (const sql of alterStatements) {
+      try {
+        await this.rdbStore.executeSql(sql);
+      } catch (e) {
+        // 列已存在时忽略
+        console.log(`v3→v4 ALTER 跳过（列可能已存在）: ${sql.substring(0, 50)}`);
+      }
+    }
+
+    console.log('v3 → v4 迁移完成');
+  }
+
+  /**
+   * 生成 UUID
+   * @private
+   */
+  private generateUUID(): string {
+    const charArr: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];
+    const sections: number[] = [8, 4, 4, 4, 12];
+    let uuid = '';
+    for (const len of sections) {
+      for (let i = 0; i < len; i++) {
+        uuid += charArr[Math.floor(Math.random() * charArr.length)];
+      }
+      if (len !== 12) {
+        uuid += '-';
+      }
+    }
+    return uuid;
   }
 
   /**
@@ -632,6 +817,484 @@ export class LanternLawDatabase {
    */
   public async getUserAccount(): Promise<string | null> {
     return await this.getConfig(LanternLawDatabase.KEY_USER_ACCOUNT);
+  }
+
+  // ==================== 帐号 CRUD (Phase 1) ====================
+
+  /**
+   * 获取本地活跃帐号
+   */
+  public async getActiveAccount(): Promise<UserAccount | null> {
+    if (!this.rdbStore) {
+      return null;
+    }
+    try {
+      const predicates = new relationalStore.RdbPredicates('accounts');
+      predicates.equalTo('is_local_active', 1);
+      const resultSet = await this.rdbStore.query(predicates, [
+        'account_id', 'username', 'avatar', 'password_hash', 'account_mode',
+        'family_group_id', 'parent_account_id', 'is_local_active',
+        'join_status', 'pending_group_id', 'pending_requested_at',
+        'created_at', 'updated_at'
+      ]);
+      if (resultSet && await resultSet.goToFirstRow()) {
+        const account = this.parseAccountFromResultSet(resultSet);
+        resultSet.close();
+        return account;
+      }
+      if (resultSet) {
+        resultSet.close();
+      }
+      return null;
+    } catch (error) {
+      console.error(`获取活跃帐号失败: ${JSON.stringify(error)}`);
+      return null;
+    }
+  }
+
+  /**
+   * 根据 accountId 获取帐号
+   */
+  public async getAccountByAccountId(accountId: string): Promise<UserAccount | null> {
+    if (!this.rdbStore) {
+      return null;
+    }
+    try {
+      const predicates = new relationalStore.RdbPredicates('accounts');
+      predicates.equalTo('account_id', accountId);
+      const resultSet = await this.rdbStore.query(predicates, [
+        'account_id', 'username', 'avatar', 'password_hash', 'account_mode',
+        'family_group_id', 'parent_account_id', 'is_local_active',
+        'join_status', 'pending_group_id', 'pending_requested_at',
+        'created_at', 'updated_at'
+      ]);
+      if (resultSet && await resultSet.goToFirstRow()) {
+        const account = this.parseAccountFromResultSet(resultSet);
+        resultSet.close();
+        return account;
+      }
+      if (resultSet) {
+        resultSet.close();
+      }
+      return null;
+    } catch (error) {
+      console.error(`根据accountId获取帐号失败: ${JSON.stringify(error)}`);
+      return null;
+    }
+  }
+
+  /**
+   * 保存帐号（INSERT OR REPLACE）
+   */
+  public async saveAccount(account: UserAccount): Promise<void> {
+    if (!this.rdbStore) {
+      throw new Error('数据库未初始化');
+    }
+    try {
+      const now = Date.now();
+      const valuesBucket: relationalStore.ValuesBucket = {
+        'account_id': account.accountId,
+        'username': account.username,
+        'avatar': account.avatar,
+        'password_hash': account.passwordHash,
+        'account_mode': account.accountMode,
+        'family_group_id': account.familyGroupId,
+        'parent_account_id': account.parentAccountId,
+        'is_local_active': account.isLocalActive ? 1 : 0,
+        'join_status': account.joinStatus,
+        'pending_group_id': account.pendingGroupId,
+        'pending_requested_at': account.pendingRequestedAt,
+        'created_at': account.createdAt || now,
+        'updated_at': now
+      };
+      await this.rdbStore.insert('accounts', valuesBucket, relationalStore.ConflictResolution.ON_CONFLICT_REPLACE);
+    } catch (error) {
+      console.error(`保存帐号失败: ${JSON.stringify(error)}`);
+      throw new Error(`保存帐号失败: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  /**
+   * 更新帐号字段
+   */
+  public async updateAccountField(accountId: string, field: string, value: string | number): Promise<void> {
+    if (!this.rdbStore) {
+      throw new Error('数据库未初始化');
+    }
+    try {
+      const predicates = new relationalStore.RdbPredicates('accounts');
+      predicates.equalTo('account_id', accountId);
+      const now = Date.now();
+      let valuesBucket: relationalStore.ValuesBucket;
+      if (field === 'is_local_active') {
+        valuesBucket = { 'is_local_active': value as number, 'updated_at': now };
+      } else if (field === 'family_group_id') {
+        valuesBucket = { 'family_group_id': value as string, 'updated_at': now };
+      } else if (field === 'parent_account_id') {
+        valuesBucket = { 'parent_account_id': value as string, 'updated_at': now };
+      } else if (field === 'username') {
+        valuesBucket = { 'username': value as string, 'updated_at': now };
+      } else if (field === 'avatar') {
+        valuesBucket = { 'avatar': value as string, 'updated_at': now };
+      } else if (field === 'password_hash') {
+        valuesBucket = { 'password_hash': value as string, 'updated_at': now };
+      } else if (field === 'account_mode') {
+        valuesBucket = { 'account_mode': value as string, 'updated_at': now };
+      } else if (field === 'join_status') {
+        valuesBucket = { 'join_status': value as string, 'updated_at': now };
+      } else if (field === 'pending_group_id') {
+        valuesBucket = { 'pending_group_id': value as string, 'updated_at': now };
+      } else if (field === 'pending_requested_at') {
+        valuesBucket = { 'pending_requested_at': value as number, 'updated_at': now };
+      } else {
+        valuesBucket = { 'updated_at': now };
+      }
+      await this.rdbStore.update(valuesBucket, predicates);
+    } catch (error) {
+      console.error(`更新帐号字段失败: ${JSON.stringify(error)}`);
+      throw new Error(`更新帐号字段失败: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  /**
+   * 获取沟通组内所有帐号
+   */
+  public async getAccountsByFamilyGroup(groupId: string): Promise<UserAccount[]> {
+    if (!this.rdbStore) {
+      return [];
+    }
+    try {
+      const predicates = new relationalStore.RdbPredicates('accounts');
+      predicates.equalTo('family_group_id', groupId);
+      const resultSet = await this.rdbStore.query(predicates, [
+        'account_id', 'username', 'avatar', 'password_hash', 'account_mode',
+        'family_group_id', 'parent_account_id', 'is_local_active',
+        'join_status', 'pending_group_id', 'pending_requested_at',
+        'created_at', 'updated_at'
+      ]);
+      const accounts: UserAccount[] = [];
+      if (resultSet) {
+        while (await resultSet.goToNextRow()) {
+          accounts.push(this.parseAccountFromResultSet(resultSet));
+        }
+        resultSet.close();
+      }
+      return accounts;
+    } catch (error) {
+      console.error(`获取沟通组成员失败: ${JSON.stringify(error)}`);
+      return [];
+    }
+  }
+
+  /**
+   * 从结果集解析帐号对象
+   * @private
+   */
+  private parseAccountFromResultSet(resultSet: relationalStore.ResultSet): UserAccount {
+    const account = new UserAccount();
+    account.accountId = resultSet.getString(resultSet.getColumnIndex('account_id'));
+    account.username = resultSet.getString(resultSet.getColumnIndex('username'));
+    account.avatar = resultSet.getString(resultSet.getColumnIndex('avatar'));
+    account.passwordHash = resultSet.getString(resultSet.getColumnIndex('password_hash'));
+    const modeStr = resultSet.getString(resultSet.getColumnIndex('account_mode'));
+    account.accountMode = (modeStr === 'child' ? AccountMode.CHILD : AccountMode.PARENT);
+    account.familyGroupId = resultSet.getString(resultSet.getColumnIndex('family_group_id'));
+    account.parentAccountId = resultSet.getString(resultSet.getColumnIndex('parent_account_id'));
+    account.isLocalActive = this.getBooleanFromResultSet(resultSet, 'is_local_active');
+    // v4 新增字段
+    try {
+      account.joinStatus = resultSet.getString(resultSet.getColumnIndex('join_status'));
+    } catch (e) {
+      account.joinStatus = '';
+    }
+    try {
+      account.pendingGroupId = resultSet.getString(resultSet.getColumnIndex('pending_group_id'));
+    } catch (e) {
+      account.pendingGroupId = '';
+    }
+    try {
+      account.pendingRequestedAt = resultSet.getLong(resultSet.getColumnIndex('pending_requested_at'));
+    } catch (e) {
+      account.pendingRequestedAt = 0;
+    }
+    account.createdAt = resultSet.getLong(resultSet.getColumnIndex('created_at'));
+    account.updatedAt = resultSet.getLong(resultSet.getColumnIndex('updated_at'));
+    return account;
+  }
+
+  // ==================== 按帐号隔离配置 (Phase 1) ====================
+
+  /**
+   * 保存指定帐号的配置
+   */
+  public async saveAccountConfig(accountId: string, configJson: string): Promise<void> {
+    await this.saveConfig(`lanternlaw_config_${accountId}`, configJson);
+  }
+
+  /**
+   * 获取指定帐号的配置
+   */
+  public async getAccountConfig(accountId: string): Promise<string | null> {
+    return await this.getConfig(`lanternlaw_config_${accountId}`);
+  }
+
+  // ==================== 沟通组 CRUD (Phase 1) ====================
+
+  /**
+   * 获取沟通组
+   */
+  public async getFamilyGroup(groupId: string): Promise<FamilyGroup | null> {
+    if (!this.rdbStore) {
+      return null;
+    }
+    try {
+      const predicates = new relationalStore.RdbPredicates('family_groups');
+      predicates.equalTo('group_id', groupId);
+      const resultSet = await this.rdbStore.query(predicates, [
+        'group_id', 'group_name', 'parent_account_id',
+        'invitation_code', 'invitation_expires_at', 'pending_members',
+        'created_at', 'updated_at'
+      ]);
+      if (resultSet && await resultSet.goToFirstRow()) {
+        const group = this.parseFamilyGroupFromResultSet(resultSet);
+        resultSet.close();
+        return group;
+      }
+      if (resultSet) {
+        resultSet.close();
+      }
+      return null;
+    } catch (error) {
+      console.error(`获取沟通组失败: ${JSON.stringify(error)}`);
+      return null;
+    }
+  }
+
+  /**
+   * 保存沟通组（INSERT OR REPLACE）
+   */
+  public async saveFamilyGroup(group: FamilyGroup): Promise<void> {
+    if (!this.rdbStore) {
+      throw new Error('数据库未初始化');
+    }
+    try {
+      const now = Date.now();
+      const valuesBucket: relationalStore.ValuesBucket = {
+        'group_id': group.groupId,
+        'group_name': group.groupName,
+        'parent_account_id': group.parentAccountId,
+        'invitation_code': group.invitationCode,
+        'invitation_expires_at': group.invitationExpiresAt,
+        'pending_members': group.pendingMembers,
+        'created_at': group.createdAt || now,
+        'updated_at': now
+      };
+      await this.rdbStore.insert('family_groups', valuesBucket, relationalStore.ConflictResolution.ON_CONFLICT_REPLACE);
+    } catch (error) {
+      console.error(`保存沟通组失败: ${JSON.stringify(error)}`);
+      throw new Error(`保存沟通组失败: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  /**
+   * 根据邀请码获取沟通组（需检查过期时间）
+   */
+  public async getFamilyGroupByInvitationCode(code: string): Promise<FamilyGroup | null> {
+    if (!this.rdbStore) {
+      return null;
+    }
+    try {
+      const predicates = new relationalStore.RdbPredicates('family_groups');
+      predicates.equalTo('invitation_code', code);
+      const resultSet = await this.rdbStore.query(predicates, [
+        'group_id', 'group_name', 'parent_account_id',
+        'invitation_code', 'invitation_expires_at', 'pending_members',
+        'created_at', 'updated_at'
+      ]);
+      if (resultSet && await resultSet.goToFirstRow()) {
+        const group = this.parseFamilyGroupFromResultSet(resultSet);
+        resultSet.close();
+        // 检查邀请码是否过期
+        if (group.invitationExpiresAt > 0 && Date.now() > group.invitationExpiresAt) {
+          return null;
+        }
+        return group;
+      }
+      if (resultSet) {
+        resultSet.close();
+      }
+      return null;
+    } catch (error) {
+      console.error(`根据邀请码获取沟通组失败: ${JSON.stringify(error)}`);
+      return null;
+    }
+  }
+
+  /**
+   * 从结果集解析沟通组对象
+   * @private
+   */
+  private parseFamilyGroupFromResultSet(resultSet: relationalStore.ResultSet): FamilyGroup {
+    const group = new FamilyGroup();
+    group.groupId = resultSet.getString(resultSet.getColumnIndex('group_id'));
+    group.groupName = resultSet.getString(resultSet.getColumnIndex('group_name'));
+    group.parentAccountId = resultSet.getString(resultSet.getColumnIndex('parent_account_id'));
+    group.invitationCode = resultSet.getString(resultSet.getColumnIndex('invitation_code'));
+    group.invitationExpiresAt = resultSet.getLong(resultSet.getColumnIndex('invitation_expires_at'));
+    // v4 新增字段
+    try {
+      group.pendingMembers = resultSet.getString(resultSet.getColumnIndex('pending_members'));
+    } catch (e) {
+      group.pendingMembers = '';
+    }
+    group.createdAt = resultSet.getLong(resultSet.getColumnIndex('created_at'));
+    group.updatedAt = resultSet.getLong(resultSet.getColumnIndex('updated_at'));
+    return group;
+  }
+
+  // ==================== 消息 CRUD (Phase 1) ====================
+
+  /**
+   * 保存消息
+   */
+  public async saveMessage(msg: FamilyMessage): Promise<void> {
+    if (!this.rdbStore) {
+      throw new Error('数据库未初始化');
+    }
+    try {
+      const valuesBucket: relationalStore.ValuesBucket = {
+        'id': msg.id,
+        'sender_account_id': msg.senderAccountId,
+        'receiver_account_id': msg.receiverAccountId,
+        'message_type': msg.messageType,
+        'content': msg.content,
+        'is_read': msg.isRead ? 1 : 0,
+        'created_at': msg.createdAt || Date.now()
+      };
+      await this.rdbStore.insert('messages', valuesBucket, relationalStore.ConflictResolution.ON_CONFLICT_REPLACE);
+    } catch (error) {
+      console.error(`保存消息失败: ${JSON.stringify(error)}`);
+      throw new Error(`保存消息失败: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  /**
+   * 获取两个帐号之间的消息历史
+   */
+  public async getMessagesBetween(accountId1: string, accountId2: string): Promise<FamilyMessage[]> {
+    if (!this.rdbStore) {
+      return [];
+    }
+    try {
+      const sql = `SELECT * FROM messages WHERE ` +
+        `(sender_account_id = '${accountId1}' AND receiver_account_id = '${accountId2}') OR ` +
+        `(sender_account_id = '${accountId2}' AND receiver_account_id = '${accountId1}') ` +
+        `ORDER BY created_at DESC`;
+      const resultSet = await this.rdbStore.querySql(sql);
+      const messages: FamilyMessage[] = [];
+      if (resultSet) {
+        while (await resultSet.goToNextRow()) {
+          messages.push(this.parseMessageFromResultSet(resultSet));
+        }
+        resultSet.close();
+      }
+      return messages;
+    } catch (error) {
+      console.error(`获取消息历史失败: ${JSON.stringify(error)}`);
+      return [];
+    }
+  }
+
+  /**
+   * 获取指定帐号收到的所有消息（按时间倒序）
+   */
+  public async getMessagesByReceiver(accountId: string): Promise<FamilyMessage[]> {
+    if (!this.rdbStore) {
+      return [];
+    }
+    try {
+      const predicates = new relationalStore.RdbPredicates('messages');
+      predicates.equalTo('receiver_account_id', accountId);
+      predicates.orderByDesc('created_at');
+      const resultSet = await this.rdbStore.query(predicates);
+      const messages: FamilyMessage[] = [];
+      if (resultSet) {
+        while (await resultSet.goToNextRow()) {
+          messages.push(this.parseMessageFromResultSet(resultSet));
+        }
+        resultSet.close();
+      }
+      return messages;
+    } catch (error) {
+      console.error(`获取收到的消息失败: ${JSON.stringify(error)}`);
+      return [];
+    }
+  }
+
+  /**
+   * 获取指定帐号的未读消息数
+   */
+  public async getUnreadMessageCount(accountId: string): Promise<number> {
+    if (!this.rdbStore) {
+      return 0;
+    }
+    try {
+      const predicates = new relationalStore.RdbPredicates('messages');
+      predicates.equalTo('receiver_account_id', accountId);
+      predicates.equalTo('is_read', 0);
+      const resultSet = await this.rdbStore.query(predicates, ['count(*) as cnt']);
+      if (resultSet && await resultSet.goToFirstRow()) {
+        const count = resultSet.getLong(0);
+        resultSet.close();
+        return count;
+      }
+      if (resultSet) {
+        resultSet.close();
+      }
+      return 0;
+    } catch (error) {
+      console.error(`获取未读消息数失败: ${JSON.stringify(error)}`);
+      return 0;
+    }
+  }
+
+  /**
+   * 标记消息为已读
+   */
+  public async markMessagesAsRead(receiverAccountId: string, senderAccountId?: string): Promise<void> {
+    if (!this.rdbStore) {
+      return;
+    }
+    try {
+      const predicates = new relationalStore.RdbPredicates('messages');
+      predicates.equalTo('receiver_account_id', receiverAccountId);
+      predicates.equalTo('is_read', 0);
+      if (senderAccountId) {
+        predicates.equalTo('sender_account_id', senderAccountId);
+      }
+      const valuesBucket: relationalStore.ValuesBucket = {
+        'is_read': 1
+      };
+      await this.rdbStore.update(valuesBucket, predicates);
+    } catch (error) {
+      console.error(`标记消息已读失败: ${JSON.stringify(error)}`);
+    }
+  }
+
+  /**
+   * 从结果集解析消息对象
+   * @private
+   */
+  private parseMessageFromResultSet(resultSet: relationalStore.ResultSet): FamilyMessage {
+    const msg = new FamilyMessage();
+    msg.id = resultSet.getString(resultSet.getColumnIndex('id'));
+    msg.senderAccountId = resultSet.getString(resultSet.getColumnIndex('sender_account_id'));
+    msg.receiverAccountId = resultSet.getString(resultSet.getColumnIndex('receiver_account_id'));
+    msg.messageType = resultSet.getString(resultSet.getColumnIndex('message_type')) as MessageType;
+    msg.content = resultSet.getString(resultSet.getColumnIndex('content'));
+    msg.isRead = this.getBooleanFromResultSet(resultSet, 'is_read');
+    msg.createdAt = resultSet.getLong(resultSet.getColumnIndex('created_at'));
+    return msg;
   }
 
   // 关闭数据库

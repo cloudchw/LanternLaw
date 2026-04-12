@@ -6,6 +6,12 @@
     "pages/StatsPage",
     "pages/BlockingOverlayPage",
     "pages/DiagnosticsPage",
-    "pages/WidgetPage"
+    "pages/WidgetPage",
+    "pages/AccountModeSelectPage",
+    "pages/FamilyGroupPage",
+    "pages/JoinFamilyGroupPage",
+    "pages/ChildConfigPage",
+    "pages/MessageHistoryPage",
+    "pages/WaitingForApprovalPage"
   ]
 }

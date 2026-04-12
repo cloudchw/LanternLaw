@@ -65,6 +65,25 @@ export class ChildConfigObj extends cloudDatabase.DatabaseObject {
 }
 
 /**
+ * 白名单修改请求对象
+ * AGC 对象类型名: WhitelistRequestObj
+ * 儿童设备发起白名单修改，家长设备审批
+ */
+export class WhitelistRequestObj extends cloudDatabase.DatabaseObject {
+  requestId: string = '';
+  childAccountId: string = '';
+  appTokensText: string = '';
+  appCount: number = 0;
+  status: string = '';  // 'pending' | 'approved' | 'rejected'
+  createdAt: number = 0;
+  respondedAt: number = 0;
+
+  naturalbase_ClassName(): string {
+    return 'WhitelistRequestObj';
+  }
+}
+
+/**
  * 消息对象
  * AGC 对象类型名: MessageObj
  */

@@ -4,6 +4,7 @@
  * LanternLaw State Manager
  */
 import { LanternLawConfig } from '../models/LanternLawConfig';
+import { TimeRange } from '../models/TimeRange';
 import { DailyRecord } from '../models/DailyRecord';
 import { EscapeAttempt } from '../models/EscapeAttempt';
 import { LanternLawDatabase } from '../database/LanternLawDatabase';
@@ -17,11 +18,7 @@ import { ScreenTimeGuardManager } from '../services/ScreenTimeGuardManager';
 import { UserAccount } from '../models/UserAccount';
 
 export interface LanternLawConfigUpdate {
-  bedtime?: string;
-  wakeupTime?: string;
   lanternlawEnabled?: boolean;
-  vibrationEnabled?: boolean;
-  soundEnabled?: boolean;
 }
 
 export enum LanternLawState {
@@ -44,6 +41,7 @@ export class LanternLawStateManager {
   private listeners: LanternLawStateChangeListener[] = [];
   private updateTimer: TimerWorker | null = null;
   private database: LanternLawDatabase = LanternLawDatabase.getInstance();
+  private activeAccountId: string = '';
 
   // 灯律状态持续时间（分钟）
   private lanternlawStartTime: Date | null = null;
@@ -65,10 +63,21 @@ export class LanternLawStateManager {
 
 
   // 初始化管理器
-  public async initialize(context: Context): Promise<void> {
+  public async initialize(context: Context, accountId?: string): Promise<void> {
     try {
       // 验证参数
       ErrorHandler.validateParam('context', context, (ctx) => ctx !== null && ctx !== undefined);
+
+      // 设置活跃帐号ID
+      if (accountId) {
+        this.activeAccountId = accountId;
+      } else {
+        // 向后兼容：无 accountId 时尝试从 accounts 表获取活跃帐号
+        const activeAccount = await this.database.getActiveAccount();
+        if (activeAccount) {
+          this.activeAccountId = activeAccount.accountId;
+        }
+      }
 
       // 初始化数据库
       await ErrorHandler.safeAsync('初始化数据库', () => this.database.initialize(context), true);
@@ -126,8 +135,13 @@ export class LanternLawStateManager {
   private async loadConfig(): Promise<void> {
     console.info('[LanternLawStateManager] loadConfig 开始执行');
     await ErrorHandler.safeAsync('加载配置', async () => {
-      console.info('[LanternLawStateManager] 准备从数据库读取配置');
-      const configJson = await this.database.getConfig('lanternlaw_config');
+      console.info('[LanternLawStateManager] 准备从数据库读取配置, accountId: ' + this.activeAccountId);
+      // 优先使用按 accountId 隔离的配置 key
+      let configKey = 'lanternlaw_config';
+      if (this.activeAccountId) {
+        configKey = `lanternlaw_config_${this.activeAccountId}`;
+      }
+      const configJson = await this.database.getConfig(configKey);
       console.info('[LanternLawStateManager] 数据库返回的 configJson: ' + (configJson ? configJson.substring(0, 200) + '...' : 'null'));
       if (configJson) {
         console.info('[LanternLawStateManager] 准备解析 JSON');
@@ -147,13 +161,18 @@ export class LanternLawStateManager {
     await ErrorHandler.safeAsync('保存配置', async () => {
       // 验证配置
       console.info('[LanternLawStateManager] 验证配置');
-      ErrorHandler.validateParam('config', config, (cfg) => cfg !== null && cfg.isValid());
+      ErrorHandler.validateParam('config', config, (cfg): boolean => cfg !== null);
 
       console.info('[LanternLawStateManager] 配置验证通过，准备保存');
       this.config = config;
 
-      console.info('[LanternLawStateManager] 准备调用 database.saveConfig');
-      await this.database.saveConfig('lanternlaw_config', config.toJSON());
+      // 使用按 accountId 隔离的配置 key
+      let configKey = 'lanternlaw_config';
+      if (this.activeAccountId) {
+        configKey = `lanternlaw_config_${this.activeAccountId}`;
+      }
+      console.info('[LanternLawStateManager] 准备调用 database.saveConfig, key: ' + configKey);
+      await this.database.saveConfig(configKey, config.toJSON());
       console.info('[LanternLawStateManager] database.saveConfig 完成');
 
       // 重新计算状态
@@ -164,7 +183,7 @@ export class LanternLawStateManager {
       try {
         const guardManager = ScreenTimeGuardManager.getInstance();
         if (this.config.lanternlawEnabled) {
-          await guardManager.syncStrategies(this.config.timeRanges, this.config.whitelistApps);
+          await guardManager.syncStrategies(this.config.timeRanges, this.config.whitelistApps, this.activeAccountId);
         } else {
           await guardManager.stopAllStrategies();
         }
@@ -222,43 +241,68 @@ export class LanternLawStateManager {
       }
 
       const now = new Date();
-      const bedtime = TimeUtils.parseTimeString(this.config.bedtime);
-      const wakeupTime = TimeUtils.parseTimeString(this.config.wakeupTime);
+      const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
-      // 计算今天的灯律时间段
-      const lanternlawStart = new Date(now);
-      lanternlawStart.setHours(bedtime.hour, bedtime.minute, 0, 0);
+      // 检查当前时间是否落在任一启用的 timeRange 内
+      let activeRange: TimeRange | null = null;
+      for (const range of this.config.timeRanges) {
+        if (!range.enabled) continue;
+        const startMin = TimeUtils.parseTimeString(range.startTime).hour * 60 +
+          TimeUtils.parseTimeString(range.startTime).minute;
+        const endMin = TimeUtils.parseTimeString(range.endTime).hour * 60 +
+          TimeUtils.parseTimeString(range.endTime).minute;
 
-      const lanternlawEnd = new Date(now);
-      lanternlawEnd.setHours(wakeupTime.hour, wakeupTime.minute, 0, 0);
+        let inRange = false;
+        if (endMin > startMin) {
+          // 不跨天
+          inRange = currentMinutes >= startMin && currentMinutes < endMin;
+        } else {
+          // 跨天
+          inRange = currentMinutes >= startMin || currentMinutes < endMin;
+        }
 
-      // 如果解锁时间在就寝时间之前（跨夜）
-      if (wakeupTime.hour < bedtime.hour ||
-          (wakeupTime.hour === bedtime.hour && wakeupTime.minute < bedtime.minute)) {
-        lanternlawEnd.setDate(lanternlawEnd.getDate() + 1);
+        if (inRange) {
+          activeRange = range;
+          break;
+        }
       }
 
-      this.lanternlawStartTime = lanternlawStart;
-      this.lanternlawEndTime = lanternlawEnd;
+      if (activeRange) {
+        const rangeStart = TimeUtils.parseTimeString(activeRange.startTime);
+        const rangeEnd = TimeUtils.parseTimeString(activeRange.endTime);
 
-      // 检查是否在灯律时间内
-      if (now >= lanternlawStart && now < lanternlawEnd) {
+        const lanternlawStart = new Date(now);
+        lanternlawStart.setHours(rangeStart.hour, rangeStart.minute, 0, 0);
+
+        const lanternlawEnd = new Date(now);
+        lanternlawEnd.setHours(rangeEnd.hour, rangeEnd.minute, 0, 0);
+        if (rangeEnd.hour < rangeStart.hour ||
+            (rangeEnd.hour === rangeStart.hour && rangeEnd.minute < rangeStart.minute)) {
+          // 跨天且当前在午夜前
+          if (currentMinutes >= rangeStart.hour * 60 + rangeStart.minute) {
+            lanternlawEnd.setDate(lanternlawEnd.getDate() + 1);
+          }
+        }
+
+        this.lanternlawStartTime = lanternlawStart;
+        this.lanternlawEndTime = lanternlawEnd;
+
         await this.setState(LanternLawState.ACTIVE);
 
-        // 如果是新进入灯律状态，初始化记录
         if (this.todayRecord && this.todayRecord.lanternlawStart === 0) {
           this.todayRecord.lanternlawStart = lanternlawStart.getTime();
           this.todayRecord.lanternlawEnd = lanternlawEnd.getTime();
           await this.saveTodayRecord();
         }
       } else {
-        // 检查是否刚离开灯律状态
         const wasActive = this.currentState === LanternLawState.ACTIVE;
+        const prevStart = this.lanternlawStartTime;
+        this.lanternlawStartTime = null;
+        this.lanternlawEndTime = null;
         await this.setState(LanternLawState.IDLE);
 
-        // 如果刚离开灯律状态，计算实际时长
-        if (wasActive && this.todayRecord) {
-          const actualDuration = Math.floor((now.getTime() - lanternlawStart.getTime()) / (1000 * 60));
+        if (wasActive && this.todayRecord && prevStart) {
+          const actualDuration = Math.floor((now.getTime() - prevStart.getTime()) / (1000 * 60));
           this.todayRecord.actualDuration = Math.max(0, actualDuration);
           this.todayRecord.success = this.todayRecord.escapeCount === 0;
           await this.saveTodayRecord();
@@ -510,21 +554,6 @@ export class LanternLawStateManager {
   // 更新配置
   public async updateConfig(newConfig: LanternLawConfigUpdate): Promise<void> {
     await ErrorHandler.safeAsync('更新配置', async () => {
-      // 验证参数
-      if (newConfig.bedtime !== undefined) {
-        ErrorHandler.validateStringNotEmpty('bedtime', newConfig.bedtime);
-      }
-      if (newConfig.wakeupTime !== undefined) {
-        ErrorHandler.validateStringNotEmpty('wakeupTime', newConfig.wakeupTime);
-      }
-
-      // 更新配置
-      if (newConfig.bedtime !== undefined) {
-        this.config.bedtime = newConfig.bedtime;
-      }
-      if (newConfig.wakeupTime !== undefined) {
-        this.config.wakeupTime = newConfig.wakeupTime;
-      }
       if (newConfig.lanternlawEnabled !== undefined) {
         this.config.lanternlawEnabled = newConfig.lanternlawEnabled;
       }
@@ -606,6 +635,45 @@ export class LanternLawStateManager {
 
       return true;
     }, false) || false;
+  }
+
+  // ==================== 多帐号配置管理 ====================
+
+  /**
+   * 获取当前活跃帐号ID
+   */
+  public getActiveAccountId(): string {
+    return this.activeAccountId;
+  }
+
+  /**
+   * 设置当前活跃帐号ID
+   */
+  public setActiveAccountId(accountId: string): void {
+    this.activeAccountId = accountId;
+  }
+
+  /**
+   * 为指定帐号保存配置（家长管理儿童时使用）
+   */
+  public async saveConfigForAccount(accountId: string, config: LanternLawConfig): Promise<void> {
+    await ErrorHandler.safeAsync('保存指定帐号配置', async () => {
+      ErrorHandler.validateParam('config', config, (cfg): boolean => cfg !== null);
+      const configKey = `lanternlaw_config_${accountId}`;
+      await this.database.saveConfig(configKey, config.toJSON());
+    });
+  }
+
+  /**
+   * 加载指定帐号的配置（只读查看）
+   */
+  public async getConfigForAccount(accountId: string): Promise<LanternLawConfig> {
+    const configKey = `lanternlaw_config_${accountId}`;
+    const configJson = await this.database.getConfig(configKey);
+    if (configJson) {
+      return LanternLawConfig.fromJSON(configJson);
+    }
+    return new LanternLawConfig();
   }
 
   // ==================== 用户账号管理 ====================

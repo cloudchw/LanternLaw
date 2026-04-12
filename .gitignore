@@ -14,3 +14,10 @@
 /signature
 build-profile.json5
 *.eps
+*.log
+*.bak
+*.jpeg
+package.json
+package-lock.json
+entry/.hvigor/
+.remember/

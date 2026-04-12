@@ -1,6 +1,34 @@
 <svg width="192" height="192" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
-  <rect width="192" height="192" fill="#007DFF"/>
-  <circle cx="96" cy="96" r="40" fill="#FFFFFF"/>
-  <path d="M80 96 L96 112 L112 96" stroke="#007DFF" stroke-width="4" fill="none"/>
-  <rect x="70" y="130" width="52" height="8" rx="4" fill="#FFFFFF"/>
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="38%" r="45%">
+      <stop offset="0%" stop-color="#ffd166" stop-opacity="0.6"/>
+      <stop offset="40%" stop-color="#ffd166" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#ffd166" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#141830"/>
+      <stop offset="50%" stop-color="#1e2448"/>
+      <stop offset="100%" stop-color="#283060"/>
+    </linearGradient>
+    <radialGradient id="core" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fff8e8"/>
+      <stop offset="100%" stop-color="#ffd166"/>
+    </radialGradient>
+  </defs>
+  <rect width="192" height="192" rx="38" fill="url(#bg)"/>
+  <!-- Glow (enlarged) -->
+  <circle cx="96" cy="73" r="80" fill="url(#glow)"/>
+  <!-- Light source (1.5x) -->
+  <circle cx="96" cy="73" r="26" fill="#ffd166"/>
+  <circle cx="96" cy="73" r="16" fill="url(#core)"/>
+  <circle cx="96" cy="73" r="8" fill="#fffcf0" opacity="0.8"/>
+  <!-- Rays (enlarged) -->
+  <line x1="96" y1="38" x2="96" y2="24" stroke="#ffd166" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+  <line x1="126" y1="50" x2="136" y2="40" stroke="#ffd166" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+  <line x1="66" y1="50" x2="56" y2="40" stroke="#ffd166" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+  <line x1="142" y1="73" x2="156" y2="73" stroke="#ffd166" stroke-width="3" stroke-linecap="round" opacity="0.4"/>
+  <line x1="50" y1="73" x2="36" y2="73" stroke="#ffd166" stroke-width="3" stroke-linecap="round" opacity="0.4"/>
+  <!-- Hand (enlarged) -->
+  <path d="M78 97 L72 126 C72 132 78 138 87 138 L105 138 C114 138 120 132 120 126 L114 97"
+        fill="none" stroke="#c0c6e9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
 </svg>

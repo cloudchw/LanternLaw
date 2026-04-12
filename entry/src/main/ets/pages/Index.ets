@@ -96,7 +96,7 @@ struct Index {
           // 核心时钟区域
           this.ClockSection()
 
-          // 虚拟提灯系统
+          // 虚拟时间管控系统
           this.LanternSection()
 
           // 激励文本区域
@@ -145,7 +145,7 @@ struct Index {
   private TopStatusBar(): void {
     Row() {
       // 应用名称（简洁）
-      Text('提灯')
+      Text('掌灯人')
         .fontSize(16)
         .fontColor(this.COLORS.text)
         .fontWeight(FontWeight.Bold)
@@ -215,7 +215,7 @@ struct Index {
   }
 
   /**
-   * 提灯系统区域
+   * lanternlaw系统区域
    */
   @Builder
   private LanternSection(): void {
@@ -393,7 +393,7 @@ struct Index {
         this.todaySuccess = recentRecords.successRate > 0;
       }
 
-      // 获取提灯状态
+      // 获取掌灯人状态
       const lanternProgress = this.achievementManager.getLanternProgress();
       this.successDays = lanternProgress.current;
 

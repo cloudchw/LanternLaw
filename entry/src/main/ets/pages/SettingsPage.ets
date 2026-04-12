@@ -326,12 +326,12 @@ struct SettingsPage {
       Column() {
         // 应用信息
         Column() {
-          Text('LanternLaw - 提灯')
+          Text('LanternLaw - 掌灯人')
             .fontSize(18)
             .fontColor(this.COLORS.gold)
             .fontWeight(FontWeight.Bold)
 
-          Text('灯律 v1.0.0')
+          Text('掌灯人 v1.0.0')
             .fontSize(13)
             .fontColor(this.COLORS.textDim)
             .margin({ top: 4 })

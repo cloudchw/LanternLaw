@@ -1,0 +1,2184 @@
+- generic [ref=e5]:
+  - banner [ref=e10]:
+    - link [ref=e11] [cursor=pointer]:
+      - /url: /consumer/cn/
+      - img [ref=e13]
+    - generic:
+      - generic:
+        - generic [ref=e18]:
+          - link "文档" [ref=e19] [cursor=pointer]:
+            - /url: /consumer/cn/doc/
+            - img [ref=e21]
+            - generic [ref=e23]: 文档
+          - link "下载 App" [ref=e24] [cursor=pointer]:
+            - /url: https://developer.huawei.com/consumer/cn/huawei-app/
+            - img [ref=e26]
+            - generic [ref=e28]: 下载 App
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e32]: 我的
+            - img [ref=e34] [cursor=pointer]
+          - generic [ref=e37]:
+            - img [ref=e40]
+            - generic [ref=e43] [cursor=pointer]:
+              - generic [ref=e44]:
+                - generic [ref=e45]: Hello，
+                - generic [ref=e46]: 欢迎来到开发者联盟
+              - img [ref=e48]
+          - list [ref=e50]:
+            - link "个人中心" [ref=e51] [cursor=pointer]:
+              - /url: https://developer.huawei.com/consumer/cn/personalcenter/overview
+              - listitem [ref=e52]:
+                - generic [ref=e53]:
+                  - img [ref=e55]
+                  - text: 个人中心
+                - img [ref=e60]
+          - list [ref=e62]:
+            - link "我的学堂" [ref=e63] [cursor=pointer]:
+              - /url: https://developer.huawei.com/consumer/cn/training/mine/
+              - listitem [ref=e64]:
+                - generic [ref=e65]:
+                  - img [ref=e67]
+                  - text: 我的学堂
+                - img [ref=e77]
+            - link "我的收藏" [ref=e79] [cursor=pointer]:
+              - /url: https://developer.huawei.com/consumer/cn/personalcenter/myInfo/myCollection
+              - listitem [ref=e80]:
+                - generic [ref=e81]:
+                  - img [ref=e83]
+                  - text: 我的收藏
+                - img [ref=e88]
+            - link "我的活动" [ref=e90] [cursor=pointer]:
+              - /url: https://developer.huawei.com/consumer/cn/personalcenter/myActivity/activityList
+              - listitem [ref=e91]:
+                - generic [ref=e92]:
+                  - img [ref=e94]
+                  - text: 我的活动
+                - img [ref=e97]
+            - link "我的工单" [ref=e99] [cursor=pointer]:
+              - /url: https://developer.huawei.com/consumer/cn/personalcenter/myCustom/ticketlist
+              - listitem [ref=e100]:
+                - generic [ref=e101]:
+                  - img [ref=e103]
+                  - text: 我的工单
+                - img [ref=e108]
+          - generic [ref=e111] [cursor=pointer]: 立即登录
+      - generic:
+        - list [ref=e112]:
+          - listitem [ref=e113]:
+            - link "探索" [ref=e117] [cursor=pointer]:
+              - /url: /consumer/cn/discover/
+              - generic [ref=e118]: 探索
+          - listitem [ref=e119]:
+            - link "设计" [ref=e123] [cursor=pointer]:
+              - /url: /consumer/cn/design/
+              - generic [ref=e124]: 设计
+          - listitem [ref=e125]:
+            - link "开发" [ref=e129] [cursor=pointer]:
+              - /url: /consumer/cn/develop/
+              - generic [ref=e130]: 开发
+          - listitem [ref=e131]:
+            - link "分发" [ref=e135] [cursor=pointer]:
+              - /url: /consumer/cn/distribute/
+              - generic [ref=e136]: 分发
+          - listitem [ref=e137]:
+            - link "推广与变现" [ref=e141] [cursor=pointer]:
+              - /url: /consumer/cn/promote/
+              - generic [ref=e142]: 推广与变现
+          - listitem [ref=e143]:
+            - link "生态合作" [ref=e147] [cursor=pointer]:
+              - /url: /consumer/cn/cooperate/
+              - generic [ref=e148]: 生态合作
+          - listitem [ref=e149]:
+            - link "支持" [ref=e153] [cursor=pointer]:
+              - /url: /consumer/cn/support/
+              - generic [ref=e154]: 支持
+        - generic:
+          - generic [ref=e155]:
+            - img [ref=e157]
+            - text: 返回
+          - list [ref=e159]
+        - generic:
+          - generic [ref=e160]:
+            - img [ref=e162]
+            - text: 返回
+          - list [ref=e164]
+    - img [ref=e171]
+    - generic [ref=e178]:
+      - textbox "输入关键字搜索" [ref=e179]
+      - img [ref=e181] [cursor=pointer]
+  - generic [ref=e185]:
+    - generic [ref=e190]:
+      - paragraph [ref=e192]: HarmonyOS
+      - generic [ref=e197]:
+        - generic [ref=e198]:
+          - text: API参考
+          - img [ref=e200]
+        - img [ref=e205]
+    - generic [ref=e210]:
+      - generic [ref=e211]:
+        - generic [ref=e212]:
+          - img [ref=e214]
+          - generic [ref=e218]:
+            - text: 您当前正在浏览HarmonyOS最新文档，覆盖已发布的所有API版本，可在API参考中
+            - link "筛选您使用的API版本" [ref=e219] [cursor=pointer]:
+              - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-releases/doc-updates#section1810915471038
+            - text: 。详细的版本配套关系请参考
+            - link "版本说明" [ref=e220] [cursor=pointer]:
+              - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-releases/overview-allversion
+            - text: 。
+        - generic [ref=e223]:
+          - generic [ref=e225]:
+            - generic [ref=e226]:
+              - text: API参考
+              - img [ref=e229]
+            - generic [ref=e231]:
+              - text: 应用服务
+              - img [ref=e234]
+            - generic [ref=e236]:
+              - link "Screen Time Guard Kit（屏幕时间守护服务）" [ref=e238] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screen-time-guard-api
+              - img [ref=e241]
+            - generic [ref=e243]:
+              - link "ArkTS API" [ref=e245] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-arkts
+              - img [ref=e248]
+            - generic [ref=e250]: GuardService（屏幕时间守护服务）
+          - heading "GuardService（屏幕时间守护服务）" [level=1] [ref=e251]
+          - generic [ref=e252]:
+            - generic [ref=e253]: "更新时间: 2026-03-12 10:57"
+            - generic [ref=e254]:
+              - img [ref=e261]
+              - img [ref=e269] [cursor=pointer]
+      - generic [ref=e277]:
+        - generic [ref=e278]:
+          - generic [ref=e279]: 本文导读
+          - generic [ref=e282]:
+            - generic [ref=e284]:
+              - link "导入模块" [ref=e286] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section6355204817532
+              - link "GuardServiceErrorCode" [ref=e288] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section7913052143518
+              - link "requestUserAuth" [ref=e290] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section24022538179
+              - link "revokeUserAuth" [ref=e292] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section10875605199
+              - link "getUserAuthStatus" [ref=e294] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section12377142072717
+              - link "AuthStatus" [ref=e296] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section92636497495
+              - link "AppInfo" [ref=e298] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section76401996131
+              - link "addGuardStrategy" [ref=e300] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section26135455267
+              - link "GuardStrategy" [ref=e302] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section188761911193713
+              - link "TimeStrategy" [ref=e304] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section7640121574612
+              - link "TimeStrategyType" [ref=e306] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section133401616145119
+              - link "RestrictionType" [ref=e308] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section119174813532
+              - link "updateGuardStrategy" [ref=e310] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section1863133395413
+              - link "queryGuardStrategies" [ref=e312] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section1812105318579
+              - link "removeGuardStrategy" [ref=e314] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section116125615419
+              - link "startGuardStrategy" [ref=e316] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section18918313999
+              - link "stopGuardStrategy" [ref=e318] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section10788197141416
+              - link "setAppsRestriction" [ref=e320] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section48957119226
+              - link "releaseAppsRestriction" [ref=e322] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section0894037112812
+            - generic [ref=e323] [cursor=pointer]:
+              - generic [ref=e324]: 展开章节
+              - img [ref=e326]
+        - generic [ref=e332]:
+          - paragraph [ref=e333]: 本模块提供管控Screen Time Guard Kit对外开放能力，包括应用授权能力、使用时长管控、应用访问限制等功能。
+          - paragraph [ref=e334]:
+            - strong [ref=e335]: 模型约束：
+            - text: 此接口仅可在Stage模型下使用。
+          - paragraph [ref=e336]:
+            - strong [ref=e337]: 系统能力：
+            - text: SystemCapability.ScreenTimeGuard.GuardService
+          - paragraph [ref=e338]:
+            - strong [ref=e339]: 起始版本：
+            - text: 6.0.0(20)
+          - generic [ref=e340]:
+            - heading "导入模块" [level=2] [ref=e341]
+            - generic [ref=e342]:
+              - generic [ref=e343]: Phone|
+              - generic [ref=e344]: Tablet
+            - generic [ref=e345]:
+              - generic [ref=e350] [cursor=pointer]: 代码解读
+              - list [ref=e356]:
+                - listitem [ref=e357]: "import { guardService } from '@kit.ScreenTimeGuardKit';"
+          - generic [ref=e358]:
+            - heading "GuardServiceErrorCode" [level=2] [ref=e359]
+            - generic [ref=e360]:
+              - generic [ref=e361]: Phone|
+              - generic [ref=e362]: Tablet
+            - paragraph [ref=e363]: 该枚举定义了Screen Time Guard Kit屏幕时间守护服务错误码。
+            - paragraph [ref=e364]:
+              - strong [ref=e365]: 模型约束：
+              - text: 此枚举仅可在Stage模型下使用。
+            - paragraph [ref=e366]:
+              - strong [ref=e367]: 系统能力：
+              - text: SystemCapability.ScreenTimeGuard.GuardService
+            - paragraph [ref=e368]:
+              - strong [ref=e369]: 起始版本：
+              - text: 6.0.0(20)
+            - table [ref=e372]:
+              - rowgroup [ref=e373]:
+                - row "名称 值 说明" [ref=e374]:
+                  - columnheader "名称" [ref=e375]:
+                    - paragraph [ref=e376]:
+                      - strong [ref=e377]: 名称
+                  - columnheader "值" [ref=e378]:
+                    - paragraph [ref=e379]:
+                      - strong [ref=e380]: 值
+                  - columnheader "说明" [ref=e381]:
+                    - paragraph [ref=e382]:
+                      - strong [ref=e383]: 说明
+              - rowgroup [ref=e384]:
+                - row "INTERNAL_ERROR 1019000001 内部错误。" [ref=e385]:
+                  - cell "INTERNAL_ERROR" [ref=e386]:
+                    - paragraph [ref=e387]: INTERNAL_ERROR
+                  - cell "1019000001" [ref=e388]:
+                    - paragraph [ref=e389]:
+                      - link "1019000001" [ref=e390] [cursor=pointer]:
+                        - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-error-code#section146742215461
+                  - cell "内部错误。" [ref=e391]:
+                    - paragraph [ref=e392]: 内部错误。
+                - row "USER_NOT_AUTHORIZED 1019000002 用户未授权。" [ref=e393]:
+                  - cell "USER_NOT_AUTHORIZED" [ref=e394]:
+                    - paragraph [ref=e395]: USER_NOT_AUTHORIZED
+                  - cell "1019000002" [ref=e396]:
+                    - paragraph [ref=e397]:
+                      - link "1019000002" [ref=e398] [cursor=pointer]:
+                        - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-error-code#section20689133216551
+                  - cell "用户未授权。" [ref=e399]:
+                    - paragraph [ref=e400]: 用户未授权。
+                - row "USER_CANCELED 1019000003 用户取消。" [ref=e401]:
+                  - cell "USER_CANCELED" [ref=e402]:
+                    - paragraph [ref=e403]: USER_CANCELED
+                  - cell "1019000003" [ref=e404]:
+                    - paragraph [ref=e405]:
+                      - link "1019000003" [ref=e406] [cursor=pointer]:
+                        - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-error-code#section133431336165512
+                  - cell "用户取消。" [ref=e407]:
+                    - paragraph [ref=e408]: 用户取消。
+                - row "STRATEGIES_EXCEED_LIMIT 1019000004 策略数量超限。" [ref=e409]:
+                  - cell "STRATEGIES_EXCEED_LIMIT" [ref=e410]:
+                    - paragraph [ref=e411]: STRATEGIES_EXCEED_LIMIT
+                  - cell "1019000004" [ref=e412]:
+                    - paragraph [ref=e413]:
+                      - link "1019000004" [ref=e414] [cursor=pointer]:
+                        - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-error-code#section53113406554
+                  - cell "策略数量超限。" [ref=e415]:
+                    - paragraph [ref=e416]: 策略数量超限。
+                - row "STRATEGY_NAME_ALREADY_EXIST 1019000005 策略名称重复。" [ref=e417]:
+                  - cell "STRATEGY_NAME_ALREADY_EXIST" [ref=e418]:
+                    - paragraph [ref=e419]: STRATEGY_NAME_ALREADY_EXIST
+                  - cell "1019000005" [ref=e420]:
+                    - paragraph [ref=e421]:
+                      - link "1019000005" [ref=e422] [cursor=pointer]:
+                        - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-error-code#section166061643165510
+                  - cell "策略名称重复。" [ref=e423]:
+                    - paragraph [ref=e424]: 策略名称重复。
+                - row "NONEXISTENT_STRATEGY 1019000006 策略不存在。" [ref=e425]:
+                  - cell "NONEXISTENT_STRATEGY" [ref=e426]:
+                    - paragraph [ref=e427]: NONEXISTENT_STRATEGY
+                  - cell "1019000006" [ref=e428]:
+                    - paragraph [ref=e429]:
+                      - link "1019000006" [ref=e430] [cursor=pointer]:
+                        - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-error-code#section15125164745520
+                  - cell "策略不存在。" [ref=e431]:
+                    - paragraph [ref=e432]: 策略不存在。
+                - row "STRATEGY_ALREADY_EXECUTED 1019000007 策略重复执行。" [ref=e433]:
+                  - cell "STRATEGY_ALREADY_EXECUTED" [ref=e434]:
+                    - paragraph [ref=e435]: STRATEGY_ALREADY_EXECUTED
+                  - cell "1019000007" [ref=e436]:
+                    - paragraph [ref=e437]:
+                      - link "1019000007" [ref=e438] [cursor=pointer]:
+                        - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-error-code#section1826085035513
+                  - cell "策略重复执行。" [ref=e439]:
+                    - paragraph [ref=e440]: 策略重复执行。
+                - row "STRATEGY_NOT_STARTED 1019000008 策略未执行。" [ref=e441]:
+                  - cell "STRATEGY_NOT_STARTED" [ref=e442]:
+                    - paragraph [ref=e443]: STRATEGY_NOT_STARTED
+                  - cell "1019000008" [ref=e444]:
+                    - paragraph [ref=e445]:
+                      - link "1019000008" [ref=e446] [cursor=pointer]:
+                        - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-error-code#section730515419559
+                  - cell "策略未执行。" [ref=e447]:
+                    - paragraph [ref=e448]: 策略未执行。
+                - row "INVALID_PARAM 1019000009 无效参数。 起始版本：6.0.2(22)" [ref=e449]:
+                  - cell "INVALID_PARAM" [ref=e450]:
+                    - paragraph [ref=e451]: INVALID_PARAM
+                  - cell "1019000009" [ref=e452]:
+                    - paragraph [ref=e453]:
+                      - link "1019000009" [ref=e454] [cursor=pointer]:
+                        - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-error-code#section28550355113
+                  - cell "无效参数。 起始版本：6.0.2(22)" [ref=e455]:
+                    - paragraph [ref=e456]: 无效参数。
+                    - paragraph [ref=e457]:
+                      - strong [ref=e458]: 起始版本：
+                      - text: 6.0.2(22)
+          - generic [ref=e459]:
+            - heading "requestUserAuth" [level=2] [ref=e460]
+            - generic [ref=e461]:
+              - generic [ref=e462]: Phone|
+              - generic [ref=e463]: Tablet
+            - paragraph [ref=e464]: "requestUserAuth(context: common.UIAbilityContext): Promise<void>"
+            - paragraph [ref=e465]: 请求用户授权访问Screen Time Guard Kit的所有管控接口，使用Promise异步回调。
+            - paragraph [ref=e466]:
+              - strong [ref=e467]: 模型约束：
+              - text: 此接口仅可在Stage模型下使用。
+            - paragraph [ref=e468]:
+              - strong [ref=e469]: 需要权限：
+              - text: ohos.permission.MANAGE_SCREEN_TIME_GUARD
+            - paragraph [ref=e470]:
+              - strong [ref=e471]: 系统能力：
+              - text: SystemCapability.ScreenTimeGuard.GuardService
+            - paragraph [ref=e472]:
+              - strong [ref=e473]: 设备行为差异：
+              - text: 该接口在Phone、Tablet设备中可正常调用，在其他设备中返回801错误码。
+            - paragraph [ref=e474]:
+              - strong [ref=e475]: 起始版本：
+              - text: 6.0.0(20)
+            - paragraph [ref=e476]:
+              - strong [ref=e477]: 参数：
+            - table [ref=e480]:
+              - rowgroup [ref=e481]:
+                - row "参数名 类型 必填 说明" [ref=e482]:
+                  - columnheader "参数名" [ref=e483]:
+                    - paragraph [ref=e484]: 参数名
+                  - columnheader "类型" [ref=e485]:
+                    - paragraph [ref=e486]: 类型
+                  - columnheader "必填" [ref=e487]:
+                    - paragraph [ref=e488]: 必填
+                  - columnheader "说明" [ref=e489]:
+                    - paragraph [ref=e490]: 说明
+              - rowgroup [ref=e491]:
+                - row "context common.UIAbilityContext 是 UIAbility的上下文环境。" [ref=e492]:
+                  - cell "context" [ref=e493]:
+                    - paragraph [ref=e494]: context
+                  - cell "common.UIAbilityContext" [ref=e495]:
+                    - paragraph [ref=e496]:
+                      - link "common.UIAbilityContext" [ref=e497] [cursor=pointer]:
+                        - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/js-apis-inner-application-uiabilitycontext
+                  - cell "是" [ref=e498]:
+                    - paragraph [ref=e499]: 是
+                  - cell "UIAbility的上下文环境。" [ref=e500]:
+                    - paragraph [ref=e501]:
+                      - link "UIAbility" [ref=e502] [cursor=pointer]:
+                        - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/js-apis-app-ability-uiability
+                      - text: 的上下文环境。
+            - generic [ref=e503]:
+              - strong [ref=e504]: 返回值：
+              - table [ref=e507]:
+                - rowgroup [ref=e508]:
+                  - row "类型 说明" [ref=e509]:
+                    - columnheader "类型" [ref=e510]:
+                      - paragraph [ref=e511]: 类型
+                    - columnheader "说明" [ref=e512]:
+                      - paragraph [ref=e513]: 说明
+                  - row "Promise<void> Promise对象，无返回结果。" [ref=e514]:
+                    - cell "Promise<void>" [ref=e515]:
+                      - paragraph [ref=e516]: Promise<void>
+                    - cell "Promise对象，无返回结果。" [ref=e517]:
+                      - paragraph [ref=e518]: Promise对象，无返回结果。
+            - paragraph [ref=e519]:
+              - strong [ref=e520]: 错误码：
+            - paragraph [ref=e521]:
+              - text: 以下错误码的详细介绍请参见
+              - link "ArkTS API错误码" [ref=e522] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-error-code
+              - text: 和
+              - link "通用错误码" [ref=e523] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/errorcode-universal
+              - text: 。
+            - table [ref=e526]:
+              - rowgroup [ref=e527]:
+                - row "错误码ID 错误信息" [ref=e528]:
+                  - columnheader "错误码ID" [ref=e529]:
+                    - paragraph [ref=e530]: 错误码ID
+                  - columnheader "错误信息" [ref=e531]:
+                    - paragraph [ref=e532]: 错误信息
+                - row "201 Permission verification failed. The application does not have the permission required to call the API." [ref=e533]:
+                  - cell "201" [ref=e534]:
+                    - paragraph [ref=e535]: "201"
+                  - cell "Permission verification failed. The application does not have the permission required to call the API." [ref=e536]:
+                    - paragraph [ref=e537]: Permission verification failed. The application does not have the permission required to call the API.
+                - 'row "401 Parameter error. Possible causes: 1. Mandatory parameters are left unspecified. 2. Incorrect parameter types. 3.Parameter verification failed." [ref=e538]':
+                  - cell "401" [ref=e539]:
+                    - paragraph [ref=e540]: "401"
+                  - 'cell "Parameter error. Possible causes: 1. Mandatory parameters are left unspecified. 2. Incorrect parameter types. 3.Parameter verification failed." [ref=e541]':
+                    - paragraph [ref=e542]: "Parameter error. Possible causes: 1. Mandatory parameters are left unspecified. 2. Incorrect parameter types. 3.Parameter verification failed."
+                - row "801 Capability not supported. function requestUserAuth can not work correctly due to limited device capabilities." [ref=e543]:
+                  - cell "801" [ref=e544]:
+                    - paragraph [ref=e545]: "801"
+                  - cell "Capability not supported. function requestUserAuth can not work correctly due to limited device capabilities." [ref=e546]:
+                    - paragraph [ref=e547]: Capability not supported. function requestUserAuth can not work correctly due to limited device capabilities.
+                - row "1019000001 Internal error." [ref=e548]:
+                  - cell "1019000001" [ref=e549]:
+                    - paragraph [ref=e550]: "1019000001"
+                  - cell "Internal error." [ref=e551]:
+                    - paragraph [ref=e552]: Internal error.
+                - row "1019000002 The user has not authorized the application to access this interface." [ref=e553]:
+                  - cell "1019000002" [ref=e554]:
+                    - paragraph [ref=e555]: "1019000002"
+                  - cell "The user has not authorized the application to access this interface." [ref=e556]:
+                    - paragraph [ref=e557]: The user has not authorized the application to access this interface.
+            - paragraph [ref=e558]:
+              - strong [ref=e559]: 示例：
+            - generic [ref=e560]:
+              - generic [ref=e565] [cursor=pointer]: 代码解读
+              - list [ref=e571]:
+                - listitem [ref=e572]: "import { common } from '@kit.AbilityKit';"
+                - listitem [ref=e573]: "import { guardService } from '@kit.ScreenTimeGuardKit';"
+                - listitem [ref=e574]
+                - listitem [ref=e575]: "@Entry"
+                - listitem [ref=e576]: "@Component"
+                - listitem [ref=e577]: "struct TestPage {"
+                - listitem [ref=e578]:
+                  - text: build(
+                  - text: ") {"
+                - listitem [ref=e579]: "Column() {"
+                - listitem [ref=e580]: Button("TestRequestUserAuth")
+                - listitem [ref=e581]: ".onClick(() => {"
+                - listitem [ref=e582]: guardService.requestUserAuth(this.getUIContext().getHostContext() as common.UIAbilityContext)
+                - listitem [ref=e583]: ".then(() => {"
+                - listitem [ref=e584]: console.info('requestUserAuth invoke success');
+                - listitem [ref=e585]: "})"
+                - listitem [ref=e586]: "})"
+                - listitem [ref=e587]: "}"
+                - listitem [ref=e588]: "}"
+                - listitem [ref=e589]: "}"
+          - generic [ref=e590]:
+            - heading "revokeUserAuth" [level=2] [ref=e591]
+            - generic [ref=e592]:
+              - generic [ref=e593]: Phone|
+              - generic [ref=e594]: Tablet
+            - paragraph [ref=e595]: "revokeUserAuth(): Promise<void>"
+            - paragraph [ref=e596]: 取消用户授权访问Screen Time Guard Kit的相关管控接口，使用Promise异步回调。
+            - paragraph [ref=e597]:
+              - strong [ref=e598]: 模型约束：
+              - text: 此接口仅可在Stage模型下使用。
+            - paragraph [ref=e599]:
+              - strong [ref=e600]: 需要权限：
+              - text: ohos.permission.MANAGE_SCREEN_TIME_GUARD
+            - paragraph [ref=e601]:
+              - strong [ref=e602]: 系统能力：
+              - text: SystemCapability.ScreenTimeGuard.GuardService
+            - paragraph [ref=e603]:
+              - strong [ref=e604]: 设备行为差异：
+              - text: 该接口在Phone、Tablet设备中可正常调用，在其他设备中返回801错误码。
+            - paragraph [ref=e605]:
+              - strong [ref=e606]: 起始版本：
+              - text: 6.0.0(20)
+            - generic [ref=e607]:
+              - strong [ref=e608]: 返回值：
+              - table [ref=e611]:
+                - rowgroup [ref=e612]:
+                  - row "类型 说明" [ref=e613]:
+                    - columnheader "类型" [ref=e614]:
+                      - paragraph [ref=e615]: 类型
+                    - columnheader "说明" [ref=e616]:
+                      - paragraph [ref=e617]: 说明
+                  - row "Promise<void> Promise对象，无返回结果。" [ref=e618]:
+                    - cell "Promise<void>" [ref=e619]:
+                      - paragraph [ref=e620]: Promise<void>
+                    - cell "Promise对象，无返回结果。" [ref=e621]:
+                      - paragraph [ref=e622]: Promise对象，无返回结果。
+            - paragraph [ref=e623]:
+              - strong [ref=e624]: 错误码：
+            - paragraph [ref=e625]:
+              - text: 以下错误码的详细介绍请参见
+              - link "ArkTS API错误码" [ref=e626] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-error-code
+              - text: 和
+              - link "通用错误码" [ref=e627] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/errorcode-universal
+              - text: 。
+            - table [ref=e630]:
+              - rowgroup [ref=e631]:
+                - row "错误码ID 错误信息" [ref=e632]:
+                  - columnheader "错误码ID" [ref=e633]:
+                    - paragraph [ref=e634]: 错误码ID
+                  - columnheader "错误信息" [ref=e635]:
+                    - paragraph [ref=e636]: 错误信息
+                - row "201 Permission verification failed. The application does not have the permission required to call the API." [ref=e637]:
+                  - cell "201" [ref=e638]:
+                    - paragraph [ref=e639]: "201"
+                  - cell "Permission verification failed. The application does not have the permission required to call the API." [ref=e640]:
+                    - paragraph [ref=e641]: Permission verification failed. The application does not have the permission required to call the API.
+                - row "801 Capability not supported. function revokeUserAuth can not work correctly due to limited device capabilities." [ref=e642]:
+                  - cell "801" [ref=e643]:
+                    - paragraph [ref=e644]: "801"
+                  - cell "Capability not supported. function revokeUserAuth can not work correctly due to limited device capabilities." [ref=e645]:
+                    - paragraph [ref=e646]: Capability not supported. function revokeUserAuth can not work correctly due to limited device capabilities.
+                - row "1019000001 Internal error." [ref=e647]:
+                  - cell "1019000001" [ref=e648]:
+                    - paragraph [ref=e649]: "1019000001"
+                  - cell "Internal error." [ref=e650]:
+                    - paragraph [ref=e651]: Internal error.
+            - paragraph [ref=e652]:
+              - strong [ref=e653]: 示例：
+            - generic [ref=e654]:
+              - generic [ref=e659] [cursor=pointer]: 代码解读
+              - list [ref=e665]:
+                - listitem [ref=e666]: "import { guardService } from '@kit.ScreenTimeGuardKit';"
+                - listitem [ref=e667]
+                - listitem [ref=e668]:
+                  - text: function testRevokeUserAuth(
+                  - text: ") {"
+                - listitem [ref=e669]: guardService.revokeUserAuth()
+                - listitem [ref=e670]: ".then(() => {"
+                - listitem [ref=e671]: console.info('revokeUserAuth invoke success.');
+                - listitem [ref=e672]: "})"
+                - listitem [ref=e673]: "}"
+          - generic [ref=e674]:
+            - heading "getUserAuthStatus" [level=2] [ref=e675]
+            - generic [ref=e676]:
+              - generic [ref=e677]: Phone|
+              - generic [ref=e678]: Tablet
+            - paragraph [ref=e679]: "getUserAuthStatus(): Promise<AuthStatus>"
+            - paragraph [ref=e680]: 获取用户授权状态，使用Promise异步回调。
+            - paragraph [ref=e681]:
+              - strong [ref=e682]: 模型约束：
+              - text: 此接口仅可在Stage模型下使用。
+            - paragraph [ref=e683]:
+              - strong [ref=e684]: 需要权限：
+              - text: ohos.permission.MANAGE_SCREEN_TIME_GUARD
+            - paragraph [ref=e685]:
+              - strong [ref=e686]: 系统能力：
+              - text: SystemCapability.ScreenTimeGuard.GuardService
+            - paragraph [ref=e687]:
+              - strong [ref=e688]: 设备行为差异：
+              - text: 该接口在Phone、Tablet设备中可正常调用，在其他设备中返回801错误码。
+            - paragraph [ref=e689]:
+              - strong [ref=e690]: 起始版本：
+              - text: 6.0.0(20)
+            - generic [ref=e691]:
+              - strong [ref=e692]: 返回值：
+              - table [ref=e695]:
+                - rowgroup [ref=e696]:
+                  - row "类型 说明" [ref=e697]:
+                    - columnheader "类型" [ref=e698]:
+                      - paragraph [ref=e699]: 类型
+                    - columnheader "说明" [ref=e700]:
+                      - paragraph [ref=e701]: 说明
+                  - row "Promise<AuthStatus> Promise对象，返回用户授权状态。" [ref=e702]:
+                    - cell "Promise<AuthStatus>" [ref=e703]:
+                      - paragraph [ref=e704]:
+                        - text: Promise<
+                        - link "AuthStatus" [ref=e705] [cursor=pointer]:
+                          - /url: /consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section92636497495
+                        - text: ">"
+                    - cell "Promise对象，返回用户授权状态。" [ref=e706]:
+                      - paragraph [ref=e707]: Promise对象，返回用户授权状态。
+            - paragraph [ref=e708]:
+              - strong [ref=e709]: 错误码：
+            - paragraph [ref=e710]:
+              - text: 以下错误码的详细介绍请参见
+              - link "ArkTS API错误码" [ref=e711] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-error-code
+              - text: 和
+              - link "通用错误码" [ref=e712] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/errorcode-universal
+              - text: 。
+            - table [ref=e715]:
+              - rowgroup [ref=e716]:
+                - row "错误码ID 错误信息" [ref=e717]:
+                  - columnheader "错误码ID" [ref=e718]:
+                    - paragraph [ref=e719]: 错误码ID
+                  - columnheader "错误信息" [ref=e720]:
+                    - paragraph [ref=e721]: 错误信息
+                - row "201 Permission verification failed. The application does not have the permission required to call the API." [ref=e722]:
+                  - cell "201" [ref=e723]:
+                    - paragraph [ref=e724]: "201"
+                  - cell "Permission verification failed. The application does not have the permission required to call the API." [ref=e725]:
+                    - paragraph [ref=e726]: Permission verification failed. The application does not have the permission required to call the API.
+                - row "801 Capability not supported. function getUserAuthStatus can not work correctly due to limited device capabilities." [ref=e727]:
+                  - cell "801" [ref=e728]:
+                    - paragraph [ref=e729]: "801"
+                  - cell "Capability not supported. function getUserAuthStatus can not work correctly due to limited device capabilities." [ref=e730]:
+                    - paragraph [ref=e731]: Capability not supported. function getUserAuthStatus can not work correctly due to limited device capabilities.
+                - row "1019000001 Internal error." [ref=e732]:
+                  - cell "1019000001" [ref=e733]:
+                    - paragraph [ref=e734]: "1019000001"
+                  - cell "Internal error." [ref=e735]:
+                    - paragraph [ref=e736]: Internal error.
+            - paragraph [ref=e737]:
+              - strong [ref=e738]: 示例：
+            - generic [ref=e739]:
+              - generic [ref=e744] [cursor=pointer]: 代码解读
+              - list [ref=e750]:
+                - listitem [ref=e751]: "import { guardService } from '@kit.ScreenTimeGuardKit';"
+                - listitem [ref=e752]
+                - listitem [ref=e753]:
+                  - text: function testGetUserAuthStatus(
+                  - text: ") {"
+                - listitem [ref=e754]: guardService.getUserAuthStatus()
+                - listitem [ref=e755]:
+                  - text: .then(
+                  - generic [ref=e756]: (status) =>
+                  - text: "{"
+                - listitem [ref=e757]: const statusToMsg = ['AUTH_INIT', 'AUTH_GRANTED', 'AUTH_DENIED'];
+                - listitem [ref=e758]: console.info('getUserAuthStatus invoke success. ' + statusToMsg[status + 1]);
+                - listitem [ref=e759]: "})"
+                - listitem [ref=e760]: "}"
+          - generic [ref=e761]:
+            - heading "AuthStatus" [level=2] [ref=e762]
+            - generic [ref=e763]:
+              - generic [ref=e764]: Phone|
+              - generic [ref=e765]: Tablet
+            - paragraph [ref=e766]: 用户授权状态类型的枚举。
+            - paragraph [ref=e767]:
+              - strong [ref=e768]: 模型约束：
+              - text: 此枚举仅可在Stage模型下使用。
+            - paragraph [ref=e769]:
+              - strong [ref=e770]: 系统能力：
+              - text: SystemCapability.ScreenTimeGuard.GuardService
+            - paragraph [ref=e771]:
+              - strong [ref=e772]: 起始版本：
+              - text: 6.0.0(20)
+            - table [ref=e775]:
+              - rowgroup [ref=e776]:
+                - row "名称 值 说明" [ref=e777]:
+                  - columnheader "名称" [ref=e778]:
+                    - paragraph [ref=e779]: 名称
+                  - columnheader "值" [ref=e780]:
+                    - paragraph [ref=e781]: 值
+                  - columnheader "说明" [ref=e782]:
+                    - paragraph [ref=e783]: 说明
+              - rowgroup [ref=e784]:
+                - row "AUTH_INIT -1 初始状态" [ref=e785]:
+                  - cell "AUTH_INIT" [ref=e786]:
+                    - paragraph [ref=e787]: AUTH_INIT
+                  - cell "-1" [ref=e788]:
+                    - paragraph [ref=e789]: "-1"
+                  - cell "初始状态" [ref=e790]:
+                    - paragraph [ref=e791]: 初始状态
+                - row "AUTH_GRANTED 0 用户已授权" [ref=e792]:
+                  - cell "AUTH_GRANTED" [ref=e793]:
+                    - paragraph [ref=e794]: AUTH_GRANTED
+                  - cell "0" [ref=e795]:
+                    - paragraph [ref=e796]: "0"
+                  - cell "用户已授权" [ref=e797]:
+                    - paragraph [ref=e798]: 用户已授权
+                - row "AUTH_DENIED 1 用户已拒绝" [ref=e799]:
+                  - cell "AUTH_DENIED" [ref=e800]:
+                    - paragraph [ref=e801]: AUTH_DENIED
+                  - cell "1" [ref=e802]:
+                    - paragraph [ref=e803]: "1"
+                  - cell "用户已拒绝" [ref=e804]:
+                    - paragraph [ref=e805]: 用户已拒绝
+          - generic [ref=e806]:
+            - heading "AppInfo" [level=2] [ref=e807]
+            - generic [ref=e808]:
+              - generic [ref=e809]: Phone|
+              - generic [ref=e810]: Tablet
+            - paragraph [ref=e811]: 该接口为应用token信息。
+            - paragraph [ref=e812]:
+              - strong [ref=e813]: 模型约束：
+              - text: 此接口仅可在Stage模型下使用。
+            - paragraph [ref=e814]:
+              - strong [ref=e815]: 系统能力：
+              - text: SystemCapability.ScreenTimeGuard.GuardService
+            - paragraph [ref=e816]:
+              - strong [ref=e817]: 起始版本：
+              - text: 6.0.0(20)
+            - table [ref=e820]:
+              - rowgroup [ref=e821]:
+                - row "名称 类型 只读 可选 说明" [ref=e822]:
+                  - columnheader "名称" [ref=e823]:
+                    - paragraph [ref=e824]:
+                      - strong [ref=e825]: 名称
+                  - columnheader "类型" [ref=e826]:
+                    - paragraph [ref=e827]:
+                      - strong [ref=e828]: 类型
+                  - columnheader "只读" [ref=e829]:
+                    - paragraph [ref=e830]: 只读
+                  - columnheader "可选" [ref=e831]:
+                    - paragraph [ref=e832]: 可选
+                  - columnheader "说明" [ref=e833]:
+                    - paragraph [ref=e834]:
+                      - strong [ref=e835]: 说明
+              - rowgroup [ref=e836]:
+                - row "appTokens string[] 否 否 应用token数组。 数组数量上限：100。 说明 token数组中存在错误的tokens，若只是部分错误，则取其中正常的tokens做显示和应用。 该数组可以为空数组，即用户不设置任何应用在禁止/允许清单中，是正常场景。" [ref=e837]:
+                  - cell "appTokens" [ref=e838]:
+                    - paragraph [ref=e839]: appTokens
+                  - cell "string[]" [ref=e840]:
+                    - paragraph [ref=e841]: string[]
+                  - cell "否" [ref=e842]:
+                    - paragraph [ref=e843]: 否
+                  - cell "否" [ref=e844]:
+                    - paragraph [ref=e845]: 否
+                  - cell "应用token数组。 数组数量上限：100。 说明 token数组中存在错误的tokens，若只是部分错误，则取其中正常的tokens做显示和应用。 该数组可以为空数组，即用户不设置任何应用在禁止/允许清单中，是正常场景。" [ref=e846]:
+                    - paragraph [ref=e847]: 应用token数组。
+                    - paragraph [ref=e848]: 数组数量上限：100。
+                    - generic [ref=e850]:
+                      - generic [ref=e851]: 说明
+                      - list [ref=e853]:
+                        - listitem [ref=e854]: token数组中存在错误的tokens，若只是部分错误，则取其中正常的tokens做显示和应用。
+                        - listitem [ref=e855]: 该数组可以为空数组，即用户不设置任何应用在禁止/允许清单中，是正常场景。
+          - generic [ref=e856]:
+            - heading "addGuardStrategy" [level=2] [ref=e857]
+            - generic [ref=e858]:
+              - generic [ref=e859]: Phone|
+              - generic [ref=e860]: Tablet
+            - paragraph [ref=e861]: "addGuardStrategy(guardStrategy: GuardStrategy): Promise<void>"
+            - paragraph [ref=e862]: 添加屏幕时间管控策略，使用Promise异步回调。
+            - paragraph [ref=e863]:
+              - strong [ref=e864]: 模型约束：
+              - text: 此接口仅可在Stage模型下使用。
+            - paragraph [ref=e865]:
+              - strong [ref=e866]: 需要权限：
+              - text: ohos.permission.MANAGE_SCREEN_TIME_GUARD
+            - paragraph [ref=e867]:
+              - strong [ref=e868]: 系统能力：
+              - text: SystemCapability.ScreenTimeGuard.GuardService
+            - paragraph [ref=e869]:
+              - strong [ref=e870]: 设备行为差异：
+              - text: 该接口在Phone、Tablet设备中可正常调用，在其他设备中返回801错误码。
+            - paragraph [ref=e871]:
+              - strong [ref=e872]: 起始版本：
+              - text: 6.0.0(20)
+            - paragraph [ref=e873]:
+              - strong [ref=e874]: 参数：
+            - table [ref=e877]:
+              - rowgroup [ref=e878]:
+                - row "参数名 类型 必填 说明" [ref=e879]:
+                  - columnheader "参数名" [ref=e880]:
+                    - paragraph [ref=e881]: 参数名
+                  - columnheader "类型" [ref=e882]:
+                    - paragraph [ref=e883]: 类型
+                  - columnheader "必填" [ref=e884]:
+                    - paragraph [ref=e885]: 必填
+                  - columnheader "说明" [ref=e886]:
+                    - paragraph [ref=e887]: 说明
+              - rowgroup [ref=e888]:
+                - row "guardStrategy GuardStrategy 是 管控策略。 说明 添加管控策略时策略数量的上限为50条。" [ref=e889]:
+                  - cell "guardStrategy" [ref=e890]:
+                    - paragraph [ref=e891]: guardStrategy
+                  - cell "GuardStrategy" [ref=e892]:
+                    - paragraph [ref=e893]:
+                      - link "GuardStrategy" [ref=e894] [cursor=pointer]:
+                        - /url: /consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section188761911193713
+                  - cell "是" [ref=e895]:
+                    - paragraph [ref=e896]: 是
+                  - cell "管控策略。 说明 添加管控策略时策略数量的上限为50条。" [ref=e897]:
+                    - paragraph [ref=e898]: 管控策略。
+                    - generic [ref=e900]:
+                      - generic [ref=e901]: 说明
+                      - paragraph [ref=e903]: 添加管控策略时策略数量的上限为50条。
+            - generic [ref=e904]:
+              - strong [ref=e905]: 返回值：
+              - table [ref=e908]:
+                - rowgroup [ref=e909]:
+                  - row "类型 说明" [ref=e910]:
+                    - columnheader "类型" [ref=e911]:
+                      - paragraph [ref=e912]: 类型
+                    - columnheader "说明" [ref=e913]:
+                      - paragraph [ref=e914]: 说明
+                  - row "Promise<void> Promise对象，无返回结果。" [ref=e915]:
+                    - cell "Promise<void>" [ref=e916]:
+                      - paragraph [ref=e917]: Promise<void>
+                    - cell "Promise对象，无返回结果。" [ref=e918]:
+                      - paragraph [ref=e919]: Promise对象，无返回结果。
+            - paragraph [ref=e920]:
+              - strong [ref=e921]: 错误码：
+            - paragraph [ref=e922]:
+              - text: 以下错误码的详细介绍请参见
+              - link "ArkTS API错误码" [ref=e923] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-error-code
+              - text: 和
+              - link "通用错误码" [ref=e924] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/errorcode-universal
+              - text: 。
+            - table [ref=e927]:
+              - rowgroup [ref=e928]:
+                - row "错误码ID 错误信息" [ref=e929]:
+                  - columnheader "错误码ID" [ref=e930]:
+                    - paragraph [ref=e931]: 错误码ID
+                  - columnheader "错误信息" [ref=e932]:
+                    - paragraph [ref=e933]: 错误信息
+                - row "201 Permission verification failed. The application does not have the permission required to call the API." [ref=e934]:
+                  - cell "201" [ref=e935]:
+                    - paragraph [ref=e936]: "201"
+                  - cell "Permission verification failed. The application does not have the permission required to call the API." [ref=e937]:
+                    - paragraph [ref=e938]: Permission verification failed. The application does not have the permission required to call the API.
+                - 'row "401 Parameter error. Possible causes: 1. Mandatory parameters are left unspecified. 2. Incorrect parameter types. 3.Parameter verification failed." [ref=e939]':
+                  - cell "401" [ref=e940]:
+                    - paragraph [ref=e941]: "401"
+                  - 'cell "Parameter error. Possible causes: 1. Mandatory parameters are left unspecified. 2. Incorrect parameter types. 3.Parameter verification failed." [ref=e942]':
+                    - paragraph [ref=e943]: "Parameter error. Possible causes: 1. Mandatory parameters are left unspecified. 2. Incorrect parameter types. 3.Parameter verification failed."
+                - row "801 Capability not supported. function addGuardStrategy can not work correctly due to limited device capabilities." [ref=e944]:
+                  - cell "801" [ref=e945]:
+                    - paragraph [ref=e946]: "801"
+                  - cell "Capability not supported. function addGuardStrategy can not work correctly due to limited device capabilities." [ref=e947]:
+                    - paragraph [ref=e948]: Capability not supported. function addGuardStrategy can not work correctly due to limited device capabilities.
+                - row "1019000001 Internal error." [ref=e949]:
+                  - cell "1019000001" [ref=e950]:
+                    - paragraph [ref=e951]: "1019000001"
+                  - cell "Internal error." [ref=e952]:
+                    - paragraph [ref=e953]: Internal error.
+                - row "1019000002 The user has not authorized the application to access this interface." [ref=e954]:
+                  - cell "1019000002" [ref=e955]:
+                    - paragraph [ref=e956]: "1019000002"
+                  - cell "The user has not authorized the application to access this interface." [ref=e957]:
+                    - paragraph [ref=e958]: The user has not authorized the application to access this interface.
+                - row "1019000004 The number of strategies exceeds the upper limit." [ref=e959]:
+                  - cell "1019000004" [ref=e960]:
+                    - paragraph [ref=e961]: "1019000004"
+                  - cell "The number of strategies exceeds the upper limit." [ref=e962]:
+                    - paragraph [ref=e963]: The number of strategies exceeds the upper limit.
+                - row "1019000005 The strategy name is already existed." [ref=e964]:
+                  - cell "1019000005" [ref=e965]:
+                    - paragraph [ref=e966]: "1019000005"
+                  - cell "The strategy name is already existed." [ref=e967]:
+                    - paragraph [ref=e968]: The strategy name is already existed.
+            - paragraph [ref=e969]:
+              - strong [ref=e970]: 示例：
+            - generic [ref=e971]:
+              - generic [ref=e976] [cursor=pointer]: 代码解读
+              - list [ref=e982]:
+                - listitem [ref=e983]: "import { guardService } from '@kit.ScreenTimeGuardKit';"
+                - listitem [ref=e984]
+                - listitem [ref=e985]:
+                  - text: function testAddGuardStrategy(
+                  - text: ") {"
+                - listitem [ref=e986]: "const time: guardService.TimeStrategy = {"
+                - listitem [ref=e987]: "type: guardService.TimeStrategyType.START_END_TIME_TYPE,"
+                - listitem [ref=e988]: "startTime: \"08:00\","
+                - listitem [ref=e989]: "endTime: \"19:00\","
+                - listitem [ref=e990]: "repeat: [1,2,3]"
+                - listitem [ref=e991]: "}"
+                - listitem [ref=e992]: "const info: guardService.AppInfo = {"
+                - listitem [ref=e993]: "appTokens: [] // 可以通过调用startAppPicker接口获取相应的应用token"
+                - listitem [ref=e994]: "}"
+                - listitem [ref=e995]: "const strategy: guardService.GuardStrategy = {"
+                - listitem [ref=e996]: "name: \"TestStrategy\","
+                - listitem [ref=e997]: "timeStrategy: time,"
+                - listitem [ref=e998]: "appInfo: info,"
+                - listitem [ref=e999]: "appRestrictionType: guardService.RestrictionType.BLOCKLIST_TYPE"
+                - listitem [ref=e1000]: "}"
+                - listitem [ref=e1001]: guardService.addGuardStrategy(strategy)
+                - listitem [ref=e1002]: ".then(() => {"
+                - listitem [ref=e1003]: console.info('addGuardStrategy invoke success.');
+                - listitem [ref=e1004]: "})"
+                - listitem [ref=e1005]: "}"
+          - generic [ref=e1006]:
+            - heading "GuardStrategy" [level=2] [ref=e1007]
+            - generic [ref=e1008]:
+              - generic [ref=e1009]: Phone|
+              - generic [ref=e1010]: Tablet
+            - paragraph [ref=e1011]: 该接口为守护策略对象。
+            - paragraph [ref=e1012]:
+              - strong [ref=e1013]: 模型约束：
+              - text: 此接口仅可在Stage模型下使用。
+            - paragraph [ref=e1014]:
+              - strong [ref=e1015]: 系统能力：
+              - text: SystemCapability.ScreenTimeGuard.GuardService
+            - paragraph [ref=e1016]:
+              - strong [ref=e1017]: 起始版本：
+              - text: 6.0.0(20)
+            - table [ref=e1020]:
+              - rowgroup [ref=e1021]:
+                - row "名称 类型 只读 可选 说明" [ref=e1022]:
+                  - columnheader "名称" [ref=e1023]:
+                    - paragraph [ref=e1024]:
+                      - strong [ref=e1025]: 名称
+                  - columnheader "类型" [ref=e1026]:
+                    - paragraph [ref=e1027]:
+                      - strong [ref=e1028]: 类型
+                  - columnheader "只读" [ref=e1029]:
+                    - paragraph [ref=e1030]: 只读
+                  - columnheader "可选" [ref=e1031]:
+                    - paragraph [ref=e1032]: 可选
+                  - columnheader "说明" [ref=e1033]:
+                    - paragraph [ref=e1034]:
+                      - strong [ref=e1035]: 说明
+              - rowgroup [ref=e1036]:
+                - row "name string 否 否 策略名称。 说明 长度不超过64字符，仅支持字母、数字和下划线，超出范围时返回401错误码。" [ref=e1037]:
+                  - cell "name" [ref=e1038]:
+                    - paragraph [ref=e1039]: name
+                  - cell "string" [ref=e1040]:
+                    - paragraph [ref=e1041]: string
+                  - cell "否" [ref=e1042]:
+                    - paragraph [ref=e1043]: 否
+                  - cell "否" [ref=e1044]:
+                    - paragraph [ref=e1045]: 否
+                  - cell "策略名称。 说明 长度不超过64字符，仅支持字母、数字和下划线，超出范围时返回401错误码。" [ref=e1046]:
+                    - paragraph [ref=e1047]: 策略名称。
+                    - generic [ref=e1049]:
+                      - generic [ref=e1050]: 说明
+                      - paragraph [ref=e1052]: 长度不超过64字符，仅支持字母、数字和下划线，超出范围时返回401错误码。
+                - row "timeStrategy TimeStrategy 否 否 时间策略。" [ref=e1053]:
+                  - cell "timeStrategy" [ref=e1054]:
+                    - paragraph [ref=e1055]: timeStrategy
+                  - cell "TimeStrategy" [ref=e1056]:
+                    - paragraph [ref=e1057]:
+                      - link "TimeStrategy" [ref=e1058] [cursor=pointer]:
+                        - /url: /consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section7640121574612
+                  - cell "否" [ref=e1059]:
+                    - paragraph [ref=e1060]: 否
+                  - cell "否" [ref=e1061]:
+                    - paragraph [ref=e1062]: 否
+                  - cell "时间策略。" [ref=e1063]:
+                    - paragraph [ref=e1064]: 时间策略。
+                - row "appInfo AppInfo 否 否 应用信息。" [ref=e1065]:
+                  - cell "appInfo" [ref=e1066]:
+                    - paragraph [ref=e1067]: appInfo
+                  - cell "AppInfo" [ref=e1068]:
+                    - paragraph [ref=e1069]:
+                      - link "AppInfo" [ref=e1070] [cursor=pointer]:
+                        - /url: /consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section76401996131
+                  - cell "否" [ref=e1071]:
+                    - paragraph [ref=e1072]: 否
+                  - cell "否" [ref=e1073]:
+                    - paragraph [ref=e1074]: 否
+                  - cell "应用信息。" [ref=e1075]:
+                    - paragraph [ref=e1076]: 应用信息。
+                - row "appRestrictionType RestrictionType 否 否 限制类型。" [ref=e1077]:
+                  - cell "appRestrictionType" [ref=e1078]:
+                    - paragraph [ref=e1079]: appRestrictionType
+                  - cell "RestrictionType" [ref=e1080]:
+                    - paragraph [ref=e1081]:
+                      - link "RestrictionType" [ref=e1082] [cursor=pointer]:
+                        - /url: /consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section119174813532
+                  - cell "否" [ref=e1083]:
+                    - paragraph [ref=e1084]: 否
+                  - cell "否" [ref=e1085]:
+                    - paragraph [ref=e1086]: 否
+                  - cell "限制类型。" [ref=e1087]:
+                    - paragraph [ref=e1088]: 限制类型。
+          - generic [ref=e1089]:
+            - heading "TimeStrategy" [level=2] [ref=e1090]
+            - generic [ref=e1091]:
+              - generic [ref=e1092]: Phone|
+              - generic [ref=e1093]: Tablet
+            - paragraph [ref=e1094]: 该接口为时间策略对象。
+            - paragraph [ref=e1095]:
+              - strong [ref=e1096]: 模型约束：
+              - text: 此接口仅可在Stage模型下使用。
+            - paragraph [ref=e1097]:
+              - strong [ref=e1098]: 系统能力：
+              - text: SystemCapability.ScreenTimeGuard.GuardService
+            - paragraph [ref=e1099]:
+              - strong [ref=e1100]: 起始版本：
+              - text: 6.0.0(20)
+            - table [ref=e1103]:
+              - rowgroup [ref=e1104]:
+                - row "名称 类型 只读 可选 说明" [ref=e1105]:
+                  - columnheader "名称" [ref=e1106]:
+                    - paragraph [ref=e1107]:
+                      - strong [ref=e1108]: 名称
+                  - columnheader "类型" [ref=e1109]:
+                    - paragraph [ref=e1110]:
+                      - strong [ref=e1111]: 类型
+                  - columnheader "只读" [ref=e1112]:
+                    - paragraph [ref=e1113]: 只读
+                  - columnheader "可选" [ref=e1114]:
+                    - paragraph [ref=e1115]: 可选
+                  - columnheader "说明" [ref=e1116]:
+                    - paragraph [ref=e1117]:
+                      - strong [ref=e1118]: 说明
+              - rowgroup [ref=e1119]:
+                - row "type TimeStrategyType 否 否 时间管控策略类型。" [ref=e1120]:
+                  - cell "type" [ref=e1121]:
+                    - paragraph [ref=e1122]: type
+                  - cell "TimeStrategyType" [ref=e1123]:
+                    - paragraph [ref=e1124]:
+                      - link "TimeStrategyType" [ref=e1125] [cursor=pointer]:
+                        - /url: /consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section133401616145119
+                  - cell "否" [ref=e1126]:
+                    - paragraph [ref=e1127]: 否
+                  - cell "否" [ref=e1128]:
+                    - paragraph [ref=e1129]: 否
+                  - cell "时间管控策略类型。" [ref=e1130]:
+                    - paragraph [ref=e1131]: 时间管控策略类型。
+                - row "startTime string 否 是 起始时间，以\"HH:mm\"的形式。参数范围：\"00:00\"-\"23:59\"。 说明 若TimeStrategyType为START_END_TIME_TYPE，则此参数必填。" [ref=e1132]:
+                  - cell "startTime" [ref=e1133]:
+                    - paragraph [ref=e1134]: startTime
+                  - cell "string" [ref=e1135]:
+                    - paragraph [ref=e1136]: string
+                  - cell "否" [ref=e1137]:
+                    - paragraph [ref=e1138]: 否
+                  - cell "是" [ref=e1139]:
+                    - paragraph [ref=e1140]: 是
+                  - cell "起始时间，以\"HH:mm\"的形式。参数范围：\"00:00\"-\"23:59\"。 说明 若TimeStrategyType为START_END_TIME_TYPE，则此参数必填。" [ref=e1141]:
+                    - paragraph [ref=e1142]: 起始时间，以"HH:mm"的形式。参数范围："00:00"-"23:59"。
+                    - generic [ref=e1144]:
+                      - generic [ref=e1145]: 说明
+                      - paragraph [ref=e1147]: 若TimeStrategyType为START_END_TIME_TYPE，则此参数必填。
+                - row "endTime string 否 是 结束时间，以\"HH:mm\"的形式。参数范围：\"00:00\"-\"23:59\"。 说明 1. 若TimeStrategyType为START_END_TIME_TYPE，则此参数必填。 2. 若结束时间小于起始时间，则代表的是次日。 3. startTime与endTime的值不能相同，相同时返回401错误码。" [ref=e1148]:
+                  - cell "endTime" [ref=e1149]:
+                    - paragraph [ref=e1150]: endTime
+                  - cell "string" [ref=e1151]:
+                    - paragraph [ref=e1152]: string
+                  - cell "否" [ref=e1153]:
+                    - paragraph [ref=e1154]: 否
+                  - cell "是" [ref=e1155]:
+                    - paragraph [ref=e1156]: 是
+                  - cell "结束时间，以\"HH:mm\"的形式。参数范围：\"00:00\"-\"23:59\"。 说明 1. 若TimeStrategyType为START_END_TIME_TYPE，则此参数必填。 2. 若结束时间小于起始时间，则代表的是次日。 3. startTime与endTime的值不能相同，相同时返回401错误码。" [ref=e1157]:
+                    - paragraph [ref=e1158]: 结束时间，以"HH:mm"的形式。参数范围："00:00"-"23:59"。
+                    - generic [ref=e1160]:
+                      - generic [ref=e1161]: 说明
+                      - generic [ref=e1162]:
+                        - paragraph [ref=e1163]: 1. 若TimeStrategyType为START_END_TIME_TYPE，则此参数必填。
+                        - paragraph [ref=e1164]: 2. 若结束时间小于起始时间，则代表的是次日。
+                        - paragraph [ref=e1165]: 3. startTime与endTime的值不能相同，相同时返回401错误码。
+                - row "totalDuration number 否 是 总时长，单位为min。参数范围：0-1440。 说明 若TimeStrategyType为TOTAL_DURATION_TYPE，则此参数必填。" [ref=e1166]:
+                  - cell "totalDuration" [ref=e1167]:
+                    - paragraph [ref=e1168]: totalDuration
+                  - cell "number" [ref=e1169]:
+                    - paragraph [ref=e1170]: number
+                  - cell "否" [ref=e1171]:
+                    - paragraph [ref=e1172]: 否
+                  - cell "是" [ref=e1173]:
+                    - paragraph [ref=e1174]: 是
+                  - cell "总时长，单位为min。参数范围：0-1440。 说明 若TimeStrategyType为TOTAL_DURATION_TYPE，则此参数必填。" [ref=e1175]:
+                    - paragraph [ref=e1176]: 总时长，单位为min。参数范围：0-1440。
+                    - generic [ref=e1178]:
+                      - generic [ref=e1179]: 说明
+                      - paragraph [ref=e1181]: 若TimeStrategyType为TOTAL_DURATION_TYPE，则此参数必填。
+                - row "repeat number[] 否 是 重复执行时间，支持填写1~7，代表周一到周日。 如果传入的是空数组则表示只执行一次。 说明 TimeStrategyType为START_END_TIME_TYPE时此参数才生效。" [ref=e1182]:
+                  - cell "repeat" [ref=e1183]:
+                    - paragraph [ref=e1184]: repeat
+                  - cell "number[]" [ref=e1185]:
+                    - paragraph [ref=e1186]: number[]
+                  - cell "否" [ref=e1187]:
+                    - paragraph [ref=e1188]: 否
+                  - cell "是" [ref=e1189]:
+                    - paragraph [ref=e1190]: 是
+                  - cell "重复执行时间，支持填写1~7，代表周一到周日。 如果传入的是空数组则表示只执行一次。 说明 TimeStrategyType为START_END_TIME_TYPE时此参数才生效。" [ref=e1191]:
+                    - paragraph [ref=e1192]: 重复执行时间，支持填写1~7，代表周一到周日。
+                    - paragraph [ref=e1193]: 如果传入的是空数组则表示只执行一次。
+                    - generic [ref=e1195]:
+                      - generic [ref=e1196]: 说明
+                      - paragraph [ref=e1198]: TimeStrategyType为START_END_TIME_TYPE时此参数才生效。
+          - generic [ref=e1199]:
+            - heading "TimeStrategyType" [level=2] [ref=e1200]
+            - generic [ref=e1201]:
+              - generic [ref=e1202]: Phone|
+              - generic [ref=e1203]: Tablet
+            - paragraph [ref=e1204]: 时长策略类型的枚举。
+            - paragraph [ref=e1205]:
+              - strong [ref=e1206]: 模型约束：
+              - text: 此枚举仅可在Stage模型下使用。
+            - paragraph [ref=e1207]:
+              - strong [ref=e1208]: 系统能力：
+              - text: SystemCapability.ScreenTimeGuard.GuardService
+            - paragraph [ref=e1209]:
+              - strong [ref=e1210]: 起始版本：
+              - text: 6.0.0(20)
+            - table [ref=e1213]:
+              - rowgroup [ref=e1214]:
+                - row "名称 值 说明" [ref=e1215]:
+                  - columnheader "名称" [ref=e1216]:
+                    - paragraph [ref=e1217]: 名称
+                  - columnheader "值" [ref=e1218]:
+                    - paragraph [ref=e1219]: 值
+                  - columnheader "说明" [ref=e1220]:
+                    - paragraph [ref=e1221]: 说明
+              - rowgroup [ref=e1222]:
+                - row "START_END_TIME_TYPE 1 起始时间策略类型，表示策略在配置的起始时间和结束时间内生效。如果为此类型，则TimeStrategy接口中的startTime、endTime必填，totalDuration非必填。" [ref=e1223]:
+                  - cell "START_END_TIME_TYPE" [ref=e1224]:
+                    - paragraph [ref=e1225]: START_END_TIME_TYPE
+                  - cell "1" [ref=e1226]:
+                    - paragraph [ref=e1227]: "1"
+                  - cell "起始时间策略类型，表示策略在配置的起始时间和结束时间内生效。如果为此类型，则TimeStrategy接口中的startTime、endTime必填，totalDuration非必填。" [ref=e1228]:
+                    - paragraph [ref=e1229]:
+                      - text: 起始时间策略类型，表示策略在配置的起始时间和结束时间内生效。如果为此类型，则
+                      - link "TimeStrategy" [ref=e1230] [cursor=pointer]:
+                        - /url: /consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section7640121574612
+                      - text: 接口中的startTime、endTime必填，totalDuration非必填。
+                - row "TOTAL_DURATION_TYPE 2 总时长策略类型，表示策略生效的总时长，从调用startGuardStrategy接口成功后开始计时。如果为此类型，则TimeStrategy接口中的startTime、endTime非必填，totalDuration必填。" [ref=e1231]:
+                  - cell "TOTAL_DURATION_TYPE" [ref=e1232]:
+                    - paragraph [ref=e1233]: TOTAL_DURATION_TYPE
+                  - cell "2" [ref=e1234]:
+                    - paragraph [ref=e1235]: "2"
+                  - cell "总时长策略类型，表示策略生效的总时长，从调用startGuardStrategy接口成功后开始计时。如果为此类型，则TimeStrategy接口中的startTime、endTime非必填，totalDuration必填。" [ref=e1236]:
+                    - paragraph [ref=e1237]:
+                      - text: 总时长策略类型，表示策略生效的总时长，从调用
+                      - link "startGuardStrategy" [ref=e1238] [cursor=pointer]:
+                        - /url: /consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section18918313999
+                      - text: 接口成功后开始计时。如果为此类型，则
+                      - link "TimeStrategy" [ref=e1239] [cursor=pointer]:
+                        - /url: /consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section7640121574612
+                      - text: 接口中的startTime、endTime非必填，totalDuration必填。
+                - row "INCLUSIVE_DURATION_TYPE 3 共享时长策略类型，表示策略关联的所有应用共享同一可用时长配额，超额后所有应用均受时长限制，从调用startGuardStrategy接口成功后开始计时。如果为此类型，则TimeStrategy接口中的startTime、endTime非必填，totalDuration必填，RestrictionType只支持TRUSTLIST_TYPE。 起始版本：6.0.2(22)" [ref=e1240]:
+                  - cell "INCLUSIVE_DURATION_TYPE" [ref=e1241]:
+                    - paragraph [ref=e1242]: INCLUSIVE_DURATION_TYPE
+                  - cell "3" [ref=e1243]:
+                    - paragraph [ref=e1244]: "3"
+                  - cell "共享时长策略类型，表示策略关联的所有应用共享同一可用时长配额，超额后所有应用均受时长限制，从调用startGuardStrategy接口成功后开始计时。如果为此类型，则TimeStrategy接口中的startTime、endTime非必填，totalDuration必填，RestrictionType只支持TRUSTLIST_TYPE。 起始版本：6.0.2(22)" [ref=e1245]:
+                    - paragraph [ref=e1246]:
+                      - text: 共享时长策略类型，表示策略关联的所有应用共享同一可用时长配额，超额后所有应用均受时长限制，从调用
+                      - link "startGuardStrategy" [ref=e1247] [cursor=pointer]:
+                        - /url: /consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section18918313999
+                      - text: 接口成功后开始计时。如果为此类型，则
+                      - link "TimeStrategy" [ref=e1248] [cursor=pointer]:
+                        - /url: /consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section7640121574612
+                      - text: 接口中的startTime、endTime非必填，totalDuration必填，RestrictionType只支持TRUSTLIST_TYPE。
+                    - paragraph [ref=e1249]:
+                      - strong [ref=e1250]: 起始版本：
+                      - text: 6.0.2(22)
+          - generic [ref=e1251]:
+            - heading "RestrictionType" [level=2] [ref=e1252]
+            - generic [ref=e1253]:
+              - generic [ref=e1254]: Phone|
+              - generic [ref=e1255]: Tablet
+            - paragraph [ref=e1256]: 限制类型的枚举。
+            - paragraph [ref=e1257]:
+              - strong [ref=e1258]: 模型约束：
+              - text: 此枚举仅可在Stage模型下使用。
+            - paragraph [ref=e1259]:
+              - strong [ref=e1260]: 系统能力：
+              - text: SystemCapability.ScreenTimeGuard.GuardService
+            - paragraph [ref=e1261]:
+              - strong [ref=e1262]: 起始版本：
+              - text: 6.0.0(20)
+            - table [ref=e1265]:
+              - rowgroup [ref=e1266]:
+                - row "名称 值 说明" [ref=e1267]:
+                  - columnheader "名称" [ref=e1268]:
+                    - paragraph [ref=e1269]: 名称
+                  - columnheader "值" [ref=e1270]:
+                    - paragraph [ref=e1271]: 值
+                  - columnheader "说明" [ref=e1272]:
+                    - paragraph [ref=e1273]: 说明
+              - rowgroup [ref=e1274]:
+                - row "TRUSTLIST_TYPE 1 按允许清单做限制。" [ref=e1275]:
+                  - cell "TRUSTLIST_TYPE" [ref=e1276]:
+                    - paragraph [ref=e1277]: TRUSTLIST_TYPE
+                  - cell "1" [ref=e1278]:
+                    - paragraph [ref=e1279]: "1"
+                  - cell "按允许清单做限制。" [ref=e1280]:
+                    - paragraph [ref=e1281]: 按允许清单做限制。
+                - row "BLOCKLIST_TYPE 2 按禁止清单做限制。" [ref=e1282]:
+                  - cell "BLOCKLIST_TYPE" [ref=e1283]:
+                    - paragraph [ref=e1284]: BLOCKLIST_TYPE
+                  - cell "2" [ref=e1285]:
+                    - paragraph [ref=e1286]: "2"
+                  - cell "按禁止清单做限制。" [ref=e1287]:
+                    - paragraph [ref=e1288]: 按禁止清单做限制。
+          - generic [ref=e1289]:
+            - heading "updateGuardStrategy" [level=2] [ref=e1290]
+            - generic [ref=e1291]:
+              - generic [ref=e1292]: Phone|
+              - generic [ref=e1293]: Tablet
+            - paragraph [ref=e1294]: "updateGuardStrategy(strategyName: string, guardStrategy: GuardStrategy): Promise<void>"
+            - paragraph [ref=e1295]: 修改屏幕时间管控策略，使用Promise异步回调。
+            - paragraph [ref=e1296]:
+              - strong [ref=e1297]: 模型约束：
+              - text: 此接口仅可在Stage模型下使用。
+            - paragraph [ref=e1298]:
+              - strong [ref=e1299]: 需要权限：
+              - text: ohos.permission.MANAGE_SCREEN_TIME_GUARD
+            - paragraph [ref=e1300]:
+              - strong [ref=e1301]: 系统能力：
+              - text: SystemCapability.ScreenTimeGuard.GuardService
+            - paragraph [ref=e1302]:
+              - strong [ref=e1303]: 设备行为差异：
+              - text: 该接口在Phone、Tablet设备中可正常调用，在其他设备中返回801错误码。
+            - paragraph [ref=e1304]:
+              - strong [ref=e1305]: 起始版本：
+              - text: 6.0.0(20)
+            - paragraph [ref=e1306]:
+              - strong [ref=e1307]: 参数：
+            - table [ref=e1310]:
+              - rowgroup [ref=e1311]:
+                - row "参数名 类型 必填 说明" [ref=e1312]:
+                  - columnheader "参数名" [ref=e1313]:
+                    - paragraph [ref=e1314]: 参数名
+                  - columnheader "类型" [ref=e1315]:
+                    - paragraph [ref=e1316]: 类型
+                  - columnheader "必填" [ref=e1317]:
+                    - paragraph [ref=e1318]: 必填
+                  - columnheader "说明" [ref=e1319]:
+                    - paragraph [ref=e1320]: 说明
+              - rowgroup [ref=e1321]:
+                - row "strategyName string 是 待更新的时间管控策略名称。 说明 长度不超过64字符，仅支持字母、数字和下划线，超出范围时返回401错误码。" [ref=e1322]:
+                  - cell "strategyName" [ref=e1323]:
+                    - paragraph [ref=e1324]: strategyName
+                  - cell "string" [ref=e1325]:
+                    - paragraph [ref=e1326]: string
+                  - cell "是" [ref=e1327]:
+                    - paragraph [ref=e1328]: 是
+                  - cell "待更新的时间管控策略名称。 说明 长度不超过64字符，仅支持字母、数字和下划线，超出范围时返回401错误码。" [ref=e1329]:
+                    - paragraph [ref=e1330]: 待更新的时间管控策略名称。
+                    - generic [ref=e1332]:
+                      - generic [ref=e1333]: 说明
+                      - paragraph [ref=e1335]: 长度不超过64字符，仅支持字母、数字和下划线，超出范围时返回401错误码。
+                - row "guardStrategy GuardStrategy 是 新的时间管控策略。 说明 如想修改策略名称，可以在guardStrategy的name属性中传入新名称。但不能是已存在的名称，如果名称已存在则返回401错误码。" [ref=e1336]:
+                  - cell "guardStrategy" [ref=e1337]:
+                    - paragraph [ref=e1338]: guardStrategy
+                  - cell "GuardStrategy" [ref=e1339]:
+                    - paragraph [ref=e1340]:
+                      - link "GuardStrategy" [ref=e1341] [cursor=pointer]:
+                        - /url: /consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section188761911193713
+                  - cell "是" [ref=e1342]:
+                    - paragraph [ref=e1343]: 是
+                  - cell "新的时间管控策略。 说明 如想修改策略名称，可以在guardStrategy的name属性中传入新名称。但不能是已存在的名称，如果名称已存在则返回401错误码。" [ref=e1344]:
+                    - paragraph [ref=e1345]: 新的时间管控策略。
+                    - generic [ref=e1347]:
+                      - generic [ref=e1348]: 说明
+                      - paragraph [ref=e1350]: 如想修改策略名称，可以在guardStrategy的name属性中传入新名称。但不能是已存在的名称，如果名称已存在则返回401错误码。
+            - generic [ref=e1351]:
+              - strong [ref=e1352]: 返回值：
+              - table [ref=e1355]:
+                - rowgroup [ref=e1356]:
+                  - row "类型 说明" [ref=e1357]:
+                    - columnheader "类型" [ref=e1358]:
+                      - paragraph [ref=e1359]: 类型
+                    - columnheader "说明" [ref=e1360]:
+                      - paragraph [ref=e1361]: 说明
+                  - row "Promise<void> Promise对象，无返回结果。" [ref=e1362]:
+                    - cell "Promise<void>" [ref=e1363]:
+                      - paragraph [ref=e1364]: Promise<void>
+                    - cell "Promise对象，无返回结果。" [ref=e1365]:
+                      - paragraph [ref=e1366]: Promise对象，无返回结果。
+            - paragraph [ref=e1367]:
+              - strong [ref=e1368]: 错误码：
+            - paragraph [ref=e1369]:
+              - text: 以下错误码的详细介绍请参见
+              - link "ArkTS API错误码" [ref=e1370] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-error-code
+              - text: 和
+              - link "通用错误码" [ref=e1371] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/errorcode-universal
+              - text: 。
+            - table [ref=e1374]:
+              - rowgroup [ref=e1375]:
+                - row "错误码ID 错误信息" [ref=e1376]:
+                  - columnheader "错误码ID" [ref=e1377]:
+                    - paragraph [ref=e1378]: 错误码ID
+                  - columnheader "错误信息" [ref=e1379]:
+                    - paragraph [ref=e1380]: 错误信息
+                - row "201 Permission verification failed. The application does not have the permission required to call the API." [ref=e1381]:
+                  - cell "201" [ref=e1382]:
+                    - paragraph [ref=e1383]: "201"
+                  - cell "Permission verification failed. The application does not have the permission required to call the API." [ref=e1384]:
+                    - paragraph [ref=e1385]: Permission verification failed. The application does not have the permission required to call the API.
+                - 'row "401 Parameter error. Possible causes: 1. Mandatory parameters are left unspecified. 2. Incorrect parameter types. 3.Parameter verification failed." [ref=e1386]':
+                  - cell "401" [ref=e1387]:
+                    - paragraph [ref=e1388]: "401"
+                  - 'cell "Parameter error. Possible causes: 1. Mandatory parameters are left unspecified. 2. Incorrect parameter types. 3.Parameter verification failed." [ref=e1389]':
+                    - paragraph [ref=e1390]: "Parameter error. Possible causes: 1. Mandatory parameters are left unspecified. 2. Incorrect parameter types. 3.Parameter verification failed."
+                - row "801 Capability not supported. function updateGuardStrategy can not work correctly due to limited device capabilities." [ref=e1391]:
+                  - cell "801" [ref=e1392]:
+                    - paragraph [ref=e1393]: "801"
+                  - cell "Capability not supported. function updateGuardStrategy can not work correctly due to limited device capabilities." [ref=e1394]:
+                    - paragraph [ref=e1395]: Capability not supported. function updateGuardStrategy can not work correctly due to limited device capabilities.
+                - row "1019000001 Internal error." [ref=e1396]:
+                  - cell "1019000001" [ref=e1397]:
+                    - paragraph [ref=e1398]: "1019000001"
+                  - cell "Internal error." [ref=e1399]:
+                    - paragraph [ref=e1400]: Internal error.
+                - row "1019000002 The user has not authorized the application to access this interface." [ref=e1401]:
+                  - cell "1019000002" [ref=e1402]:
+                    - paragraph [ref=e1403]: "1019000002"
+                  - cell "The user has not authorized the application to access this interface." [ref=e1404]:
+                    - paragraph [ref=e1405]: The user has not authorized the application to access this interface.
+                - row "1019000006 Nonexistent strategy." [ref=e1406]:
+                  - cell "1019000006" [ref=e1407]:
+                    - paragraph [ref=e1408]: "1019000006"
+                  - cell "Nonexistent strategy." [ref=e1409]:
+                    - paragraph [ref=e1410]: Nonexistent strategy.
+            - paragraph [ref=e1411]:
+              - strong [ref=e1412]: 示例：
+            - generic [ref=e1413]:
+              - generic [ref=e1418] [cursor=pointer]: 代码解读
+              - list [ref=e1424]:
+                - listitem [ref=e1425]: "import { guardService } from '@kit.ScreenTimeGuardKit';"
+                - listitem [ref=e1426]
+                - listitem [ref=e1427]:
+                  - text: function testUpdateGuardService(
+                  - text: ") {"
+                - listitem [ref=e1428]: "const time: guardService.TimeStrategy = {"
+                - listitem [ref=e1429]: "type: guardService.TimeStrategyType.START_END_TIME_TYPE,"
+                - listitem [ref=e1430]: "startTime: \"08:00\","
+                - listitem [ref=e1431]: "endTime: \"19:00\","
+                - listitem [ref=e1432]: "repeat: [1,2,3,4,5]"
+                - listitem [ref=e1433]: "}"
+                - listitem [ref=e1434]: "const info: guardService.AppInfo = {"
+                - listitem [ref=e1435]: "appTokens: [] // 可以通过调用startAppPicker接口获取相应的应用token"
+                - listitem [ref=e1436]: "}"
+                - listitem [ref=e1437]: "const strategy: guardService.GuardStrategy = {"
+                - listitem [ref=e1438]: "name: \"TestStrategyChanged\","
+                - listitem [ref=e1439]: "timeStrategy: time,"
+                - listitem [ref=e1440]: "appInfo: info,"
+                - listitem [ref=e1441]: "appRestrictionType: guardService.RestrictionType.BLOCKLIST_TYPE"
+                - listitem [ref=e1442]: "}"
+                - listitem [ref=e1443]: // "TestStrategy"策略需提前通过addGuardStrategy接口添加
+                - listitem [ref=e1444]: guardService.updateGuardStrategy("TestStrategy", strategy)
+                - listitem [ref=e1445]: ".then(() => {"
+                - listitem [ref=e1446]: console.info('updateGuardStrategy invoke success.');
+                - listitem [ref=e1447]: "})"
+                - listitem [ref=e1448]: "}"
+          - generic [ref=e1449]:
+            - heading "queryGuardStrategies" [level=2] [ref=e1450]
+            - generic [ref=e1451]:
+              - generic [ref=e1452]: Phone|
+              - generic [ref=e1453]: Tablet
+            - paragraph [ref=e1454]: "queryGuardStrategies(): Promise<GuardStrategy[]>"
+            - paragraph [ref=e1455]: 查询该应用下的所有管控策略，使用Promise异步回调。
+            - paragraph [ref=e1456]:
+              - strong [ref=e1457]: 模型约束：
+              - text: 此接口仅可在Stage模型下使用。
+            - paragraph [ref=e1458]:
+              - strong [ref=e1459]: 需要权限：
+              - text: ohos.permission.MANAGE_SCREEN_TIME_GUARD
+            - paragraph [ref=e1460]:
+              - strong [ref=e1461]: 系统能力：
+              - text: SystemCapability.ScreenTimeGuard.GuardService
+            - paragraph [ref=e1462]:
+              - strong [ref=e1463]: 设备行为差异：
+              - text: 该接口在Phone、Tablet设备中可正常调用，在其他设备中返回801错误码。
+            - paragraph [ref=e1464]:
+              - strong [ref=e1465]: 起始版本：
+              - text: 6.0.0(20)
+            - generic [ref=e1466]:
+              - strong [ref=e1467]: 返回值：
+              - table [ref=e1470]:
+                - rowgroup [ref=e1471]:
+                  - row "类型 说明" [ref=e1472]:
+                    - columnheader "类型" [ref=e1473]:
+                      - paragraph [ref=e1474]: 类型
+                    - columnheader "说明" [ref=e1475]:
+                      - paragraph [ref=e1476]: 说明
+                  - row "Promise<GuardStrategy[]> Promise对象，返回该应用下所有管控策略的数组。" [ref=e1477]:
+                    - cell "Promise<GuardStrategy[]>" [ref=e1478]:
+                      - paragraph [ref=e1479]:
+                        - text: Promise<
+                        - link "GuardStrategy[]" [ref=e1480] [cursor=pointer]:
+                          - /url: /consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section188761911193713
+                        - text: ">"
+                    - cell "Promise对象，返回该应用下所有管控策略的数组。" [ref=e1481]:
+                      - paragraph [ref=e1482]: Promise对象，返回该应用下所有管控策略的数组。
+            - paragraph [ref=e1483]:
+              - strong [ref=e1484]: 错误码：
+            - paragraph [ref=e1485]:
+              - text: 以下错误码的详细介绍请参见
+              - link "ArkTS API错误码" [ref=e1486] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-error-code
+              - text: 和
+              - link "通用错误码" [ref=e1487] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/errorcode-universal
+              - text: 。
+            - table [ref=e1490]:
+              - rowgroup [ref=e1491]:
+                - row "错误码ID 错误信息" [ref=e1492]:
+                  - columnheader "错误码ID" [ref=e1493]:
+                    - paragraph [ref=e1494]: 错误码ID
+                  - columnheader "错误信息" [ref=e1495]:
+                    - paragraph [ref=e1496]: 错误信息
+                - row "201 Permission verification failed. The application does not have the permission required to call the API." [ref=e1497]:
+                  - cell "201" [ref=e1498]:
+                    - paragraph [ref=e1499]: "201"
+                  - cell "Permission verification failed. The application does not have the permission required to call the API." [ref=e1500]:
+                    - paragraph [ref=e1501]: Permission verification failed. The application does not have the permission required to call the API.
+                - row "801 Capability not supported. function queryGuardStrategies can not work correctly due to limited device capabilities." [ref=e1502]:
+                  - cell "801" [ref=e1503]:
+                    - paragraph [ref=e1504]: "801"
+                  - cell "Capability not supported. function queryGuardStrategies can not work correctly due to limited device capabilities." [ref=e1505]:
+                    - paragraph [ref=e1506]: Capability not supported. function queryGuardStrategies can not work correctly due to limited device capabilities.
+                - row "1019000001 Internal error." [ref=e1507]:
+                  - cell "1019000001" [ref=e1508]:
+                    - paragraph [ref=e1509]: "1019000001"
+                  - cell "Internal error." [ref=e1510]:
+                    - paragraph [ref=e1511]: Internal error.
+                - row "1019000002 The user has not authorized the application to access this interface." [ref=e1512]:
+                  - cell "1019000002" [ref=e1513]:
+                    - paragraph [ref=e1514]: "1019000002"
+                  - cell "The user has not authorized the application to access this interface." [ref=e1515]:
+                    - paragraph [ref=e1516]: The user has not authorized the application to access this interface.
+            - paragraph [ref=e1517]:
+              - strong [ref=e1518]: 示例：
+            - generic [ref=e1519]:
+              - generic [ref=e1524] [cursor=pointer]: 代码解读
+              - list [ref=e1530]:
+                - listitem [ref=e1531]: "import { guardService } from '@kit.ScreenTimeGuardKit';"
+                - listitem [ref=e1532]
+                - listitem [ref=e1533]:
+                  - text: function testQueryGuardStrategies(
+                  - text: ") {"
+                - listitem [ref=e1534]: guardService.queryGuardStrategies()
+                - listitem [ref=e1535]:
+                  - text: .then(
+                  - generic [ref=e1536]: "(guardStrategy: guardService.GuardStrategy[]) =>"
+                  - text: "{"
+                - listitem [ref=e1537]: "console.info('queryGuardStrategies invoke success, GuardStrategies: ' + guardStrategy);"
+                - listitem [ref=e1538]: "})"
+                - listitem [ref=e1539]: "}"
+          - generic [ref=e1540]:
+            - heading "removeGuardStrategy" [level=2] [ref=e1541]
+            - generic [ref=e1542]:
+              - generic [ref=e1543]: Phone|
+              - generic [ref=e1544]: Tablet
+            - paragraph [ref=e1545]: "removeGuardStrategy(strategyName: string): Promise<void>"
+            - paragraph [ref=e1546]: 删除管控策略，使用Promise异步回调。
+            - paragraph [ref=e1547]:
+              - strong [ref=e1548]: 模型约束：
+              - text: 此接口仅可在Stage模型下使用。
+            - paragraph [ref=e1549]:
+              - strong [ref=e1550]: 需要权限：
+              - text: ohos.permission.MANAGE_SCREEN_TIME_GUARD
+            - paragraph [ref=e1551]:
+              - strong [ref=e1552]: 系统能力：
+              - text: SystemCapability.ScreenTimeGuard.GuardService
+            - paragraph [ref=e1553]:
+              - strong [ref=e1554]: 设备行为差异：
+              - text: 该接口在Phone、Tablet设备中可正常调用，在其他设备中返回801错误码。
+            - paragraph [ref=e1555]:
+              - strong [ref=e1556]: 起始版本：
+              - text: 6.0.0(20)
+            - generic [ref=e1557]:
+              - strong [ref=e1558]: 参数：
+              - table [ref=e1561]:
+                - rowgroup [ref=e1562]:
+                  - row "参数名 类型 必填 说明" [ref=e1563]:
+                    - columnheader "参数名" [ref=e1564]:
+                      - paragraph [ref=e1565]: 参数名
+                    - columnheader "类型" [ref=e1566]:
+                      - paragraph [ref=e1567]: 类型
+                    - columnheader "必填" [ref=e1568]:
+                      - paragraph [ref=e1569]: 必填
+                    - columnheader "说明" [ref=e1570]:
+                      - paragraph [ref=e1571]: 说明
+                - rowgroup [ref=e1572]:
+                  - row "strategyName string 是 时间管控策略名称。 说明 长度不超过64字符，仅支持字母、数字和下划线，超出范围时返回401错误码。" [ref=e1573]:
+                    - cell "strategyName" [ref=e1574]:
+                      - paragraph [ref=e1575]: strategyName
+                    - cell "string" [ref=e1576]:
+                      - paragraph [ref=e1577]: string
+                    - cell "是" [ref=e1578]:
+                      - paragraph [ref=e1579]: 是
+                    - cell "时间管控策略名称。 说明 长度不超过64字符，仅支持字母、数字和下划线，超出范围时返回401错误码。" [ref=e1580]:
+                      - paragraph [ref=e1581]: 时间管控策略名称。
+                      - generic [ref=e1583]:
+                        - generic [ref=e1584]: 说明
+                        - paragraph [ref=e1586]: 长度不超过64字符，仅支持字母、数字和下划线，超出范围时返回401错误码。
+            - generic [ref=e1587]:
+              - strong [ref=e1588]: 返回值：
+              - table [ref=e1591]:
+                - rowgroup [ref=e1592]:
+                  - row "类型 说明" [ref=e1593]:
+                    - columnheader "类型" [ref=e1594]:
+                      - paragraph [ref=e1595]: 类型
+                    - columnheader "说明" [ref=e1596]:
+                      - paragraph [ref=e1597]: 说明
+                  - row "Promise<void> Promise对象，无返回结果。" [ref=e1598]:
+                    - cell "Promise<void>" [ref=e1599]:
+                      - paragraph [ref=e1600]: Promise<void>
+                    - cell "Promise对象，无返回结果。" [ref=e1601]:
+                      - paragraph [ref=e1602]: Promise对象，无返回结果。
+            - paragraph [ref=e1603]:
+              - strong [ref=e1604]: 错误码：
+            - paragraph [ref=e1605]:
+              - text: 以下错误码的详细介绍请参见
+              - link "ArkTS API错误码" [ref=e1606] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-error-code
+              - text: 和
+              - link "通用错误码" [ref=e1607] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/errorcode-universal
+              - text: 。
+            - table [ref=e1610]:
+              - rowgroup [ref=e1611]:
+                - row "错误码ID 错误信息" [ref=e1612]:
+                  - columnheader "错误码ID" [ref=e1613]:
+                    - paragraph [ref=e1614]: 错误码ID
+                  - columnheader "错误信息" [ref=e1615]:
+                    - paragraph [ref=e1616]: 错误信息
+                - row "201 Permission verification failed. The application does not have the permission required to call the API." [ref=e1617]:
+                  - cell "201" [ref=e1618]:
+                    - paragraph [ref=e1619]: "201"
+                  - cell "Permission verification failed. The application does not have the permission required to call the API." [ref=e1620]:
+                    - paragraph [ref=e1621]: Permission verification failed. The application does not have the permission required to call the API.
+                - 'row "401 Parameter error. Possible causes: 1. Mandatory parameters are left unspecified. 2. Incorrect parameter types. 3.Parameter verification failed." [ref=e1622]':
+                  - cell "401" [ref=e1623]:
+                    - paragraph [ref=e1624]: "401"
+                  - 'cell "Parameter error. Possible causes: 1. Mandatory parameters are left unspecified. 2. Incorrect parameter types. 3.Parameter verification failed." [ref=e1625]':
+                    - paragraph [ref=e1626]: "Parameter error. Possible causes: 1. Mandatory parameters are left unspecified. 2. Incorrect parameter types. 3.Parameter verification failed."
+                - row "801 Capability not supported. function removeGuardStrategy can not work correctly due to limited device capabilities." [ref=e1627]:
+                  - cell "801" [ref=e1628]:
+                    - paragraph [ref=e1629]: "801"
+                  - cell "Capability not supported. function removeGuardStrategy can not work correctly due to limited device capabilities." [ref=e1630]:
+                    - paragraph [ref=e1631]: Capability not supported. function removeGuardStrategy can not work correctly due to limited device capabilities.
+                - row "1019000001 Internal error." [ref=e1632]:
+                  - cell "1019000001" [ref=e1633]:
+                    - paragraph [ref=e1634]: "1019000001"
+                  - cell "Internal error." [ref=e1635]:
+                    - paragraph [ref=e1636]: Internal error.
+                - row "1019000002 The user has not authorized the application to access this interface." [ref=e1637]:
+                  - cell "1019000002" [ref=e1638]:
+                    - paragraph [ref=e1639]: "1019000002"
+                  - cell "The user has not authorized the application to access this interface." [ref=e1640]:
+                    - paragraph [ref=e1641]: The user has not authorized the application to access this interface.
+                - row "1019000006 Nonexistent strategy." [ref=e1642]:
+                  - cell "1019000006" [ref=e1643]:
+                    - paragraph [ref=e1644]: "1019000006"
+                  - cell "Nonexistent strategy." [ref=e1645]:
+                    - paragraph [ref=e1646]: Nonexistent strategy.
+            - paragraph [ref=e1647]:
+              - strong [ref=e1648]: 示例：
+            - generic [ref=e1649]:
+              - generic [ref=e1654] [cursor=pointer]: 代码解读
+              - list [ref=e1660]:
+                - listitem [ref=e1661]: "import { guardService } from '@kit.ScreenTimeGuardKit';"
+                - listitem [ref=e1662]
+                - listitem [ref=e1663]:
+                  - text: function testRemoveGuardStrategy(
+                  - text: ") {"
+                - listitem [ref=e1664]: guardService.removeGuardStrategy("TestStrategy")
+                - listitem [ref=e1665]: ".then(() => {"
+                - listitem [ref=e1666]: console.info('removeGuardStrategy invoke success');
+                - listitem [ref=e1667]: "})"
+                - listitem [ref=e1668]: "}"
+          - generic [ref=e1669]:
+            - heading "startGuardStrategy" [level=2] [ref=e1670]
+            - generic [ref=e1671]:
+              - generic [ref=e1672]: Phone|
+              - generic [ref=e1673]: Tablet
+            - paragraph [ref=e1674]: "startGuardStrategy(strategyName: string): Promise<void>"
+            - paragraph [ref=e1675]: 根据策略名称，立即启动指定的管控策略，使用Promise异步回调。
+            - paragraph [ref=e1676]:
+              - strong [ref=e1677]: 模型约束：
+              - text: 此接口仅可在Stage模型下使用。
+            - paragraph [ref=e1678]:
+              - strong [ref=e1679]: 需要权限：
+              - text: ohos.permission.MANAGE_SCREEN_TIME_GUARD
+            - paragraph [ref=e1680]:
+              - strong [ref=e1681]: 系统能力：
+              - text: SystemCapability.ScreenTimeGuard.GuardService
+            - paragraph [ref=e1682]:
+              - strong [ref=e1683]: 设备行为差异：
+              - text: 该接口在Phone、Tablet设备中可正常调用，在其他设备中返回801错误码。
+            - paragraph [ref=e1684]:
+              - strong [ref=e1685]: 起始版本：
+              - text: 6.0.0(20)
+            - paragraph [ref=e1686]:
+              - strong [ref=e1687]: 参数：
+            - table [ref=e1690]:
+              - rowgroup [ref=e1691]:
+                - row "参数名 类型 必填 说明" [ref=e1692]:
+                  - columnheader "参数名" [ref=e1693]:
+                    - paragraph [ref=e1694]: 参数名
+                  - columnheader "类型" [ref=e1695]:
+                    - paragraph [ref=e1696]: 类型
+                  - columnheader "必填" [ref=e1697]:
+                    - paragraph [ref=e1698]: 必填
+                  - columnheader "说明" [ref=e1699]:
+                    - paragraph [ref=e1700]: 说明
+              - rowgroup [ref=e1701]:
+                - row "strategyName string 是 时间管控策略名称。 说明 长度不超过64字符，仅支持字母、数字和下划线，超出范围时返回401错误码。" [ref=e1702]:
+                  - cell "strategyName" [ref=e1703]:
+                    - paragraph [ref=e1704]: strategyName
+                  - cell "string" [ref=e1705]:
+                    - paragraph [ref=e1706]: string
+                  - cell "是" [ref=e1707]:
+                    - paragraph [ref=e1708]: 是
+                  - cell "时间管控策略名称。 说明 长度不超过64字符，仅支持字母、数字和下划线，超出范围时返回401错误码。" [ref=e1709]:
+                    - paragraph [ref=e1710]: 时间管控策略名称。
+                    - generic [ref=e1712]:
+                      - generic [ref=e1713]: 说明
+                      - paragraph [ref=e1715]: 长度不超过64字符，仅支持字母、数字和下划线，超出范围时返回401错误码。
+            - generic [ref=e1716]:
+              - strong [ref=e1717]: 返回值：
+              - table [ref=e1720]:
+                - rowgroup [ref=e1721]:
+                  - row "类型 说明" [ref=e1722]:
+                    - columnheader "类型" [ref=e1723]:
+                      - paragraph [ref=e1724]: 类型
+                    - columnheader "说明" [ref=e1725]:
+                      - paragraph [ref=e1726]: 说明
+                  - row "Promise<void> Promise对象，无返回结果。" [ref=e1727]:
+                    - cell "Promise<void>" [ref=e1728]:
+                      - paragraph [ref=e1729]: Promise<void>
+                    - cell "Promise对象，无返回结果。" [ref=e1730]:
+                      - paragraph [ref=e1731]: Promise对象，无返回结果。
+            - paragraph [ref=e1732]:
+              - strong [ref=e1733]: 错误码：
+            - paragraph [ref=e1734]:
+              - text: 以下错误码的详细介绍请参见
+              - link "ArkTS API错误码" [ref=e1735] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-error-code
+              - text: 和
+              - link "通用错误码" [ref=e1736] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/errorcode-universal
+              - text: 。
+            - table [ref=e1739]:
+              - rowgroup [ref=e1740]:
+                - row "错误码ID 错误信息" [ref=e1741]:
+                  - columnheader "错误码ID" [ref=e1742]:
+                    - paragraph [ref=e1743]: 错误码ID
+                  - columnheader "错误信息" [ref=e1744]:
+                    - paragraph [ref=e1745]: 错误信息
+                - row "201 Permission verification failed. The application does not have the permission required to call the API." [ref=e1746]:
+                  - cell "201" [ref=e1747]:
+                    - paragraph [ref=e1748]: "201"
+                  - cell "Permission verification failed. The application does not have the permission required to call the API." [ref=e1749]:
+                    - paragraph [ref=e1750]: Permission verification failed. The application does not have the permission required to call the API.
+                - 'row "401 Parameter error. Possible causes: 1. Mandatory parameters are left unspecified. 2. Incorrect parameter types. 3.Parameter verification failed." [ref=e1751]':
+                  - cell "401" [ref=e1752]:
+                    - paragraph [ref=e1753]: "401"
+                  - 'cell "Parameter error. Possible causes: 1. Mandatory parameters are left unspecified. 2. Incorrect parameter types. 3.Parameter verification failed." [ref=e1754]':
+                    - paragraph [ref=e1755]: "Parameter error. Possible causes: 1. Mandatory parameters are left unspecified. 2. Incorrect parameter types. 3.Parameter verification failed."
+                - row "801 Capability not supported. function startGuardStrategy can not work correctly due to limited device capabilities." [ref=e1756]:
+                  - cell "801" [ref=e1757]:
+                    - paragraph [ref=e1758]: "801"
+                  - cell "Capability not supported. function startGuardStrategy can not work correctly due to limited device capabilities." [ref=e1759]:
+                    - paragraph [ref=e1760]: Capability not supported. function startGuardStrategy can not work correctly due to limited device capabilities.
+                - row "1019000001 Internal error." [ref=e1761]:
+                  - cell "1019000001" [ref=e1762]:
+                    - paragraph [ref=e1763]: "1019000001"
+                  - cell "Internal error." [ref=e1764]:
+                    - paragraph [ref=e1765]: Internal error.
+                - row "1019000002 The user has not authorized the application to access this interface." [ref=e1766]:
+                  - cell "1019000002" [ref=e1767]:
+                    - paragraph [ref=e1768]: "1019000002"
+                  - cell "The user has not authorized the application to access this interface." [ref=e1769]:
+                    - paragraph [ref=e1770]: The user has not authorized the application to access this interface.
+                - row "1019000006 Nonexistent strategy." [ref=e1771]:
+                  - cell "1019000006" [ref=e1772]:
+                    - paragraph [ref=e1773]: "1019000006"
+                  - cell "Nonexistent strategy." [ref=e1774]:
+                    - paragraph [ref=e1775]: Nonexistent strategy.
+                - row "1019000007 The strategy is already being executed." [ref=e1776]:
+                  - cell "1019000007" [ref=e1777]:
+                    - paragraph [ref=e1778]: "1019000007"
+                  - cell "The strategy is already being executed." [ref=e1779]:
+                    - paragraph [ref=e1780]: The strategy is already being executed.
+            - generic [ref=e1781]:
+              - strong [ref=e1782]: 示例：
+              - generic [ref=e1783]:
+                - generic [ref=e1788] [cursor=pointer]: 代码解读
+                - list [ref=e1794]:
+                  - listitem [ref=e1795]: "import { guardService } from '@kit.ScreenTimeGuardKit';"
+                  - listitem [ref=e1796]
+                  - listitem [ref=e1797]:
+                    - text: function testStartGuardStrategy(
+                    - text: ") {"
+                  - listitem [ref=e1798]: guardService.startGuardStrategy("TestStrategy")
+                  - listitem [ref=e1799]: ".then(() => {"
+                  - listitem [ref=e1800]: console.info('startGuardStrategy invoke success');
+                  - listitem [ref=e1801]: "})"
+                  - listitem [ref=e1802]: "}"
+          - generic [ref=e1803]:
+            - heading "stopGuardStrategy" [level=2] [ref=e1804]
+            - generic [ref=e1805]:
+              - generic [ref=e1806]: Phone|
+              - generic [ref=e1807]: Tablet
+            - paragraph [ref=e1808]: "stopGuardStrategy(strategyName: string): Promise<void>"
+            - paragraph [ref=e1809]: 根据策略名称，立即停止指定的管控策略，使用Promise异步回调。
+            - paragraph [ref=e1810]:
+              - strong [ref=e1811]: 模型约束：
+              - text: 此接口仅可在Stage模型下使用。
+            - paragraph [ref=e1812]:
+              - strong [ref=e1813]: 需要权限：
+              - text: ohos.permission.MANAGE_SCREEN_TIME_GUARD
+            - paragraph [ref=e1814]:
+              - strong [ref=e1815]: 系统能力：
+              - text: SystemCapability.ScreenTimeGuard.GuardService
+            - paragraph [ref=e1816]:
+              - strong [ref=e1817]: 设备行为差异：
+              - text: 该接口在Phone、Tablet设备中可正常调用，在其他设备中返回801错误码。
+            - paragraph [ref=e1818]:
+              - strong [ref=e1819]: 起始版本：
+              - text: 6.0.0(20)
+            - paragraph [ref=e1820]:
+              - strong [ref=e1821]: 参数：
+            - table [ref=e1824]:
+              - rowgroup [ref=e1825]:
+                - row "参数名 类型 必填 说明" [ref=e1826]:
+                  - columnheader "参数名" [ref=e1827]:
+                    - paragraph [ref=e1828]: 参数名
+                  - columnheader "类型" [ref=e1829]:
+                    - paragraph [ref=e1830]: 类型
+                  - columnheader "必填" [ref=e1831]:
+                    - paragraph [ref=e1832]: 必填
+                  - columnheader "说明" [ref=e1833]:
+                    - paragraph [ref=e1834]: 说明
+              - rowgroup [ref=e1835]:
+                - row "strategyName string 是 时间管控策略名称。 说明 长度不超过64字符，仅支持字母、数字和下划线，超出范围时返回401错误码。" [ref=e1836]:
+                  - cell "strategyName" [ref=e1837]:
+                    - paragraph [ref=e1838]: strategyName
+                  - cell "string" [ref=e1839]:
+                    - paragraph [ref=e1840]: string
+                  - cell "是" [ref=e1841]:
+                    - paragraph [ref=e1842]: 是
+                  - cell "时间管控策略名称。 说明 长度不超过64字符，仅支持字母、数字和下划线，超出范围时返回401错误码。" [ref=e1843]:
+                    - paragraph [ref=e1844]: 时间管控策略名称。
+                    - generic [ref=e1846]:
+                      - generic [ref=e1847]: 说明
+                      - paragraph [ref=e1849]: 长度不超过64字符，仅支持字母、数字和下划线，超出范围时返回401错误码。
+            - generic [ref=e1850]:
+              - strong [ref=e1851]: 返回值：
+              - table [ref=e1854]:
+                - rowgroup [ref=e1855]:
+                  - row "类型 说明" [ref=e1856]:
+                    - columnheader "类型" [ref=e1857]:
+                      - paragraph [ref=e1858]: 类型
+                    - columnheader "说明" [ref=e1859]:
+                      - paragraph [ref=e1860]: 说明
+                  - row "Promise<void> Promise对象，无返回结果。" [ref=e1861]:
+                    - cell "Promise<void>" [ref=e1862]:
+                      - paragraph [ref=e1863]: Promise<void>
+                    - cell "Promise对象，无返回结果。" [ref=e1864]:
+                      - paragraph [ref=e1865]: Promise对象，无返回结果。
+            - paragraph [ref=e1866]:
+              - strong [ref=e1867]: 错误码：
+            - paragraph [ref=e1868]:
+              - text: 以下错误码的详细介绍请参见
+              - link "ArkTS API错误码" [ref=e1869] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-error-code
+              - text: 和
+              - link "通用错误码" [ref=e1870] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/errorcode-universal
+              - text: 。
+            - table [ref=e1873]:
+              - rowgroup [ref=e1874]:
+                - row "错误码ID 错误信息" [ref=e1875]:
+                  - columnheader "错误码ID" [ref=e1876]:
+                    - paragraph [ref=e1877]: 错误码ID
+                  - columnheader "错误信息" [ref=e1878]:
+                    - paragraph [ref=e1879]: 错误信息
+                - row "201 Permission verification failed. The application does not have the permission required to call the API." [ref=e1880]:
+                  - cell "201" [ref=e1881]:
+                    - paragraph [ref=e1882]: "201"
+                  - cell "Permission verification failed. The application does not have the permission required to call the API." [ref=e1883]:
+                    - paragraph [ref=e1884]: Permission verification failed. The application does not have the permission required to call the API.
+                - 'row "401 Parameter error. Possible causes: 1. Mandatory parameters are left unspecified. 2. Incorrect parameter types. 3.Parameter verification failed." [ref=e1885]':
+                  - cell "401" [ref=e1886]:
+                    - paragraph [ref=e1887]: "401"
+                  - 'cell "Parameter error. Possible causes: 1. Mandatory parameters are left unspecified. 2. Incorrect parameter types. 3.Parameter verification failed." [ref=e1888]':
+                    - paragraph [ref=e1889]: "Parameter error. Possible causes: 1. Mandatory parameters are left unspecified. 2. Incorrect parameter types. 3.Parameter verification failed."
+                - row "801 Capability not supported. function stopGuardStrategy can not work correctly due to limited device capabilities." [ref=e1890]:
+                  - cell "801" [ref=e1891]:
+                    - paragraph [ref=e1892]: "801"
+                  - cell "Capability not supported. function stopGuardStrategy can not work correctly due to limited device capabilities." [ref=e1893]:
+                    - paragraph [ref=e1894]: Capability not supported. function stopGuardStrategy can not work correctly due to limited device capabilities.
+                - row "1019000001 Internal error." [ref=e1895]:
+                  - cell "1019000001" [ref=e1896]:
+                    - paragraph [ref=e1897]: "1019000001"
+                  - cell "Internal error." [ref=e1898]:
+                    - paragraph [ref=e1899]: Internal error.
+                - row "1019000002 The user has not authorized the application to access this interface." [ref=e1900]:
+                  - cell "1019000002" [ref=e1901]:
+                    - paragraph [ref=e1902]: "1019000002"
+                  - cell "The user has not authorized the application to access this interface." [ref=e1903]:
+                    - paragraph [ref=e1904]: The user has not authorized the application to access this interface.
+                - row "1019000006 Nonexistent strategy." [ref=e1905]:
+                  - cell "1019000006" [ref=e1906]:
+                    - paragraph [ref=e1907]: "1019000006"
+                  - cell "Nonexistent strategy." [ref=e1908]:
+                    - paragraph [ref=e1909]: Nonexistent strategy.
+                - row "1019000008 This strategy has not been started yet." [ref=e1910]:
+                  - cell "1019000008" [ref=e1911]:
+                    - paragraph [ref=e1912]: "1019000008"
+                  - cell "This strategy has not been started yet." [ref=e1913]:
+                    - paragraph [ref=e1914]: This strategy has not been started yet.
+            - paragraph [ref=e1915]:
+              - strong [ref=e1916]: 示例：
+            - generic [ref=e1917]:
+              - generic [ref=e1922] [cursor=pointer]: 代码解读
+              - list [ref=e1928]:
+                - listitem [ref=e1929]: "import { guardService } from '@kit.ScreenTimeGuardKit';"
+                - listitem [ref=e1930]
+                - listitem [ref=e1931]:
+                  - text: function testStopGuardStrategy(
+                  - text: ") {"
+                - listitem [ref=e1932]: guardService.stopGuardStrategy("TestStrategy")
+                - listitem [ref=e1933]: ".then(() => {"
+                - listitem [ref=e1934]: console.info('stopGuardStrategy invoke success');
+                - listitem [ref=e1935]: "})"
+                - listitem [ref=e1936]: "}"
+          - generic [ref=e1937]:
+            - heading "setAppsRestriction" [level=2] [ref=e1938]
+            - generic [ref=e1939]:
+              - generic [ref=e1940]: Phone|
+              - generic [ref=e1941]: Tablet
+            - paragraph [ref=e1942]: "setAppsRestriction(appInfo: AppInfo, restrictionType: RestrictionType): Promise<void>"
+            - paragraph [ref=e1943]: 可根据传入应用token数组，以及限制类型（黑/允许清单），实现对相应的应用添加访问限制，使用Promise异步回调。
+            - paragraph [ref=e1944]:
+              - strong [ref=e1945]: 模型约束：
+              - text: 此接口仅可在Stage模型下使用。
+            - paragraph [ref=e1946]:
+              - strong [ref=e1947]: 需要权限：
+              - text: ohos.permission.MANAGE_SCREEN_TIME_GUARD
+            - paragraph [ref=e1948]:
+              - strong [ref=e1949]: 系统能力：
+              - text: SystemCapability.ScreenTimeGuard.GuardService
+            - paragraph [ref=e1950]:
+              - strong [ref=e1951]: 设备行为差异：
+              - text: 该接口在Phone、Tablet设备中可正常调用，在其他设备中返回801错误码。
+            - paragraph [ref=e1952]:
+              - strong [ref=e1953]: 起始版本：
+              - text: 6.0.0(20)
+            - paragraph [ref=e1954]:
+              - strong [ref=e1955]: 参数：
+            - table [ref=e1958]:
+              - rowgroup [ref=e1959]:
+                - row "参数名 类型 必填 说明" [ref=e1960]:
+                  - columnheader "参数名" [ref=e1961]:
+                    - paragraph [ref=e1962]: 参数名
+                  - columnheader "类型" [ref=e1963]:
+                    - paragraph [ref=e1964]: 类型
+                  - columnheader "必填" [ref=e1965]:
+                    - paragraph [ref=e1966]: 必填
+                  - columnheader "说明" [ref=e1967]:
+                    - paragraph [ref=e1968]: 说明
+              - rowgroup [ref=e1969]:
+                - row "appInfo AppInfo 是 被选择的应用token集合，是一个字符串数组。" [ref=e1970]:
+                  - cell "appInfo" [ref=e1971]:
+                    - paragraph [ref=e1972]: appInfo
+                  - cell "AppInfo" [ref=e1973]:
+                    - paragraph [ref=e1974]:
+                      - link "AppInfo" [ref=e1975] [cursor=pointer]:
+                        - /url: /consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section76401996131
+                  - cell "是" [ref=e1976]:
+                    - paragraph [ref=e1977]: 是
+                  - cell "被选择的应用token集合，是一个字符串数组。" [ref=e1978]:
+                    - paragraph [ref=e1979]: 被选择的应用token集合，是一个字符串数组。
+                - row "restrictionType RestrictionType 是 限制类型 TRUSTLIST_TYPE表示对appInfo外的应用进行限制，BLOCKLIST_TYPE表示对appInfo内的应用进行限制。" [ref=e1980]:
+                  - cell "restrictionType" [ref=e1981]:
+                    - paragraph [ref=e1982]: restrictionType
+                  - cell "RestrictionType" [ref=e1983]:
+                    - paragraph [ref=e1984]:
+                      - link "RestrictionType" [ref=e1985] [cursor=pointer]:
+                        - /url: /consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section119174813532
+                  - cell "是" [ref=e1986]:
+                    - paragraph [ref=e1987]: 是
+                  - cell "限制类型 TRUSTLIST_TYPE表示对appInfo外的应用进行限制，BLOCKLIST_TYPE表示对appInfo内的应用进行限制。" [ref=e1988]:
+                    - paragraph [ref=e1989]: 限制类型
+                    - paragraph [ref=e1990]: TRUSTLIST_TYPE表示对appInfo外的应用进行限制，BLOCKLIST_TYPE表示对appInfo内的应用进行限制。
+            - generic [ref=e1991]:
+              - strong [ref=e1992]: 返回值：
+              - table [ref=e1995]:
+                - rowgroup [ref=e1996]:
+                  - row "类型 说明" [ref=e1997]:
+                    - columnheader "类型" [ref=e1998]:
+                      - paragraph [ref=e1999]: 类型
+                    - columnheader "说明" [ref=e2000]:
+                      - paragraph [ref=e2001]: 说明
+                  - row "Promise<void> Promise对象，无返回结果。" [ref=e2002]:
+                    - cell "Promise<void>" [ref=e2003]:
+                      - paragraph [ref=e2004]: Promise<void>
+                    - cell "Promise对象，无返回结果。" [ref=e2005]:
+                      - paragraph [ref=e2006]: Promise对象，无返回结果。
+            - paragraph [ref=e2007]:
+              - strong [ref=e2008]: 错误码：
+            - paragraph [ref=e2009]:
+              - text: 以下错误码的详细介绍请参见
+              - link "ArkTS API错误码" [ref=e2010] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-error-code
+              - text: 和
+              - link "通用错误码" [ref=e2011] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/errorcode-universal
+              - text: 。
+            - table [ref=e2014]:
+              - rowgroup [ref=e2015]:
+                - row "错误码ID 错误信息" [ref=e2016]:
+                  - columnheader "错误码ID" [ref=e2017]:
+                    - paragraph [ref=e2018]: 错误码ID
+                  - columnheader "错误信息" [ref=e2019]:
+                    - paragraph [ref=e2020]: 错误信息
+                - row "201 Permission verification failed. The application does not have the permission required to call the API." [ref=e2021]:
+                  - cell "201" [ref=e2022]:
+                    - paragraph [ref=e2023]: "201"
+                  - cell "Permission verification failed. The application does not have the permission required to call the API." [ref=e2024]:
+                    - paragraph [ref=e2025]: Permission verification failed. The application does not have the permission required to call the API.
+                - 'row "401 Parameter error. Possible causes: 1. Mandatory parameters are left unspecified. 2. Incorrect parameter types. 3.Parameter verification failed." [ref=e2026]':
+                  - cell "401" [ref=e2027]:
+                    - paragraph [ref=e2028]: "401"
+                  - 'cell "Parameter error. Possible causes: 1. Mandatory parameters are left unspecified. 2. Incorrect parameter types. 3.Parameter verification failed." [ref=e2029]':
+                    - paragraph [ref=e2030]: "Parameter error. Possible causes: 1. Mandatory parameters are left unspecified. 2. Incorrect parameter types. 3.Parameter verification failed."
+                - row "801 Capability not supported. function setAppsRestriction can not work correctly due to limited device capabilities." [ref=e2031]:
+                  - cell "801" [ref=e2032]:
+                    - paragraph [ref=e2033]: "801"
+                  - cell "Capability not supported. function setAppsRestriction can not work correctly due to limited device capabilities." [ref=e2034]:
+                    - paragraph [ref=e2035]: Capability not supported. function setAppsRestriction can not work correctly due to limited device capabilities.
+                - row "1019000001 Internal error." [ref=e2036]:
+                  - cell "1019000001" [ref=e2037]:
+                    - paragraph [ref=e2038]: "1019000001"
+                  - cell "Internal error." [ref=e2039]:
+                    - paragraph [ref=e2040]: Internal error.
+                - row "1019000002 The user has not authorized the application to access this interface." [ref=e2041]:
+                  - cell "1019000002" [ref=e2042]:
+                    - paragraph [ref=e2043]: "1019000002"
+                  - cell "The user has not authorized the application to access this interface." [ref=e2044]:
+                    - paragraph [ref=e2045]: The user has not authorized the application to access this interface.
+            - paragraph [ref=e2046]:
+              - strong [ref=e2047]: 示例：
+            - generic [ref=e2048]:
+              - generic [ref=e2053] [cursor=pointer]: 代码解读
+              - list [ref=e2059]:
+                - listitem [ref=e2060]: "import { guardService } from '@kit.ScreenTimeGuardKit';"
+                - listitem [ref=e2061]
+                - listitem [ref=e2062]:
+                  - text: function testSetAppsRestriction(
+                  - text: ") {"
+                - listitem [ref=e2063]: "let selectedTokens: string[] = []; // 可以通过调用startAppPicker接口获取相应的应用token"
+                - listitem [ref=e2064]: "let appInfo: guardService.AppInfo = { appTokens: selectedTokens };"
+                - listitem [ref=e2065]: "let restrictionType: guardService.RestrictionType = guardService.RestrictionType.BLOCKLIST_TYPE;"
+                - listitem [ref=e2066]: guardService.setAppsRestriction(appInfo, restrictionType)
+                - listitem [ref=e2067]: ".then(() => {"
+                - listitem [ref=e2068]: console.info('setAppsRestriction invoke success');
+                - listitem [ref=e2069]: "});"
+                - listitem [ref=e2070]: "}"
+          - generic [ref=e2071]:
+            - heading "releaseAppsRestriction" [level=2] [ref=e2072]
+            - generic [ref=e2073]:
+              - generic [ref=e2074]: Phone|
+              - generic [ref=e2075]: Tablet
+            - paragraph [ref=e2076]: "releaseAppsRestriction(appInfo: AppInfo, restrictionType: RestrictionType): Promise<void>"
+            - paragraph [ref=e2077]: 可根据传入应用token数组，以及限制类型（黑/允许清单），实现对相应的应用解除访问限制，使用Promise异步回调。
+            - paragraph [ref=e2078]:
+              - strong [ref=e2079]: 模型约束：
+              - text: 此接口仅可在Stage模型下使用。
+            - paragraph [ref=e2080]:
+              - strong [ref=e2081]: 需要权限：
+              - text: ohos.permission.MANAGE_SCREEN_TIME_GUARD
+            - paragraph [ref=e2082]:
+              - strong [ref=e2083]: 系统能力：
+              - text: SystemCapability.ScreenTimeGuard.GuardService
+            - paragraph [ref=e2084]:
+              - strong [ref=e2085]: 设备行为差异：
+              - text: 该接口在Phone、Tablet设备中可正常调用，在其他设备中返回801错误码。
+            - paragraph [ref=e2086]:
+              - strong [ref=e2087]: 起始版本：
+              - text: 6.0.0(20)
+            - paragraph [ref=e2088]:
+              - strong [ref=e2089]: 参数：
+            - table [ref=e2092]:
+              - rowgroup [ref=e2093]:
+                - row "参数名 类型 必填 说明" [ref=e2094]:
+                  - columnheader "参数名" [ref=e2095]:
+                    - paragraph [ref=e2096]: 参数名
+                  - columnheader "类型" [ref=e2097]:
+                    - paragraph [ref=e2098]: 类型
+                  - columnheader "必填" [ref=e2099]:
+                    - paragraph [ref=e2100]: 必填
+                  - columnheader "说明" [ref=e2101]:
+                    - paragraph [ref=e2102]: 说明
+              - rowgroup [ref=e2103]:
+                - row "appInfo AppInfo 是 被选择的应用token集合，是一个字符串数组。" [ref=e2104]:
+                  - cell "appInfo" [ref=e2105]:
+                    - paragraph [ref=e2106]: appInfo
+                  - cell "AppInfo" [ref=e2107]:
+                    - paragraph [ref=e2108]:
+                      - link "AppInfo" [ref=e2109] [cursor=pointer]:
+                        - /url: /consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section76401996131
+                  - cell "是" [ref=e2110]:
+                    - paragraph [ref=e2111]: 是
+                  - cell "被选择的应用token集合，是一个字符串数组。" [ref=e2112]:
+                    - paragraph [ref=e2113]: 被选择的应用token集合，是一个字符串数组。
+                - row "restrictionType RestrictionType 是 限制类型 TRUSTLIST_TYPE表示对appInfo外的应用进行限制，BLOCKLIST_TYPE表示对appInfo内的应用进行限制。" [ref=e2114]:
+                  - cell "restrictionType" [ref=e2115]:
+                    - paragraph [ref=e2116]: restrictionType
+                  - cell "RestrictionType" [ref=e2117]:
+                    - paragraph [ref=e2118]:
+                      - link "RestrictionType" [ref=e2119] [cursor=pointer]:
+                        - /url: /consumer/cn/doc/harmonyos-references/screentimeguard-guardservice#section119174813532
+                  - cell "是" [ref=e2120]:
+                    - paragraph [ref=e2121]: 是
+                  - cell "限制类型 TRUSTLIST_TYPE表示对appInfo外的应用进行限制，BLOCKLIST_TYPE表示对appInfo内的应用进行限制。" [ref=e2122]:
+                    - paragraph [ref=e2123]: 限制类型
+                    - paragraph [ref=e2124]: TRUSTLIST_TYPE表示对appInfo外的应用进行限制，BLOCKLIST_TYPE表示对appInfo内的应用进行限制。
+            - generic [ref=e2125]:
+              - strong [ref=e2126]: 返回值：
+              - table [ref=e2129]:
+                - rowgroup [ref=e2130]:
+                  - row "类型 说明" [ref=e2131]:
+                    - columnheader "类型" [ref=e2132]:
+                      - paragraph [ref=e2133]: 类型
+                    - columnheader "说明" [ref=e2134]:
+                      - paragraph [ref=e2135]: 说明
+                  - row "Promise<void> Promise对象，无返回结果。" [ref=e2136]:
+                    - cell "Promise<void>" [ref=e2137]:
+                      - paragraph [ref=e2138]: Promise<void>
+                    - cell "Promise对象，无返回结果。" [ref=e2139]:
+                      - paragraph [ref=e2140]: Promise对象，无返回结果。
+            - paragraph [ref=e2141]:
+              - strong [ref=e2142]: 错误码：
+            - paragraph [ref=e2143]:
+              - text: 以下错误码的详细介绍请参见
+              - link "ArkTS API错误码" [ref=e2144] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-error-code
+              - text: 和
+              - link "通用错误码" [ref=e2145] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/errorcode-universal
+              - text: 。
+            - table [ref=e2148]:
+              - rowgroup [ref=e2149]:
+                - row "错误码ID 错误信息" [ref=e2150]:
+                  - columnheader "错误码ID" [ref=e2151]:
+                    - paragraph [ref=e2152]: 错误码ID
+                  - columnheader "错误信息" [ref=e2153]:
+                    - paragraph [ref=e2154]: 错误信息
+                - row "201 Permission verification failed. The application does not have the permission required to call the API." [ref=e2155]:
+                  - cell "201" [ref=e2156]:
+                    - paragraph [ref=e2157]: "201"
+                  - cell "Permission verification failed. The application does not have the permission required to call the API." [ref=e2158]:
+                    - paragraph [ref=e2159]: Permission verification failed. The application does not have the permission required to call the API.
+                - 'row "401 Parameter error. Possible causes: 1. Mandatory parameters are left unspecified. 2. Incorrect parameter types. 3.Parameter verification failed." [ref=e2160]':
+                  - cell "401" [ref=e2161]:
+                    - paragraph [ref=e2162]: "401"
+                  - 'cell "Parameter error. Possible causes: 1. Mandatory parameters are left unspecified. 2. Incorrect parameter types. 3.Parameter verification failed." [ref=e2163]':
+                    - paragraph [ref=e2164]: "Parameter error. Possible causes: 1. Mandatory parameters are left unspecified. 2. Incorrect parameter types. 3.Parameter verification failed."
+                - row "801 Capability not supported. function releaseAppsRestriction can not work correctly due to limited device capabilities." [ref=e2165]:
+                  - cell "801" [ref=e2166]:
+                    - paragraph [ref=e2167]: "801"
+                  - cell "Capability not supported. function releaseAppsRestriction can not work correctly due to limited device capabilities." [ref=e2168]:
+                    - paragraph [ref=e2169]: Capability not supported. function releaseAppsRestriction can not work correctly due to limited device capabilities.
+                - row "1019000001 Internal error." [ref=e2170]:
+                  - cell "1019000001" [ref=e2171]:
+                    - paragraph [ref=e2172]: "1019000001"
+                  - cell "Internal error." [ref=e2173]:
+                    - paragraph [ref=e2174]: Internal error.
+                - row "1019000002 The user has not authorized the application to access this interface." [ref=e2175]:
+                  - cell "1019000002" [ref=e2176]:
+                    - paragraph [ref=e2177]: "1019000002"
+                  - cell "The user has not authorized the application to access this interface." [ref=e2178]:
+                    - paragraph [ref=e2179]: The user has not authorized the application to access this interface.
+            - paragraph [ref=e2180]:
+              - strong [ref=e2181]: 示例：
+            - generic [ref=e2182]:
+              - generic [ref=e2187] [cursor=pointer]: 代码解读
+              - list [ref=e2193]:
+                - listitem [ref=e2194]: "import { guardService } from '@kit.ScreenTimeGuardKit';"
+                - listitem [ref=e2195]
+                - listitem [ref=e2196]:
+                  - text: function testReleaseAppsRestriction(
+                  - text: ") {"
+                - listitem [ref=e2197]: "let selectedTokens: string[] = []; // 可以通过调用startAppPicker获取相应应用的token"
+                - listitem [ref=e2198]: "let appInfo: guardService.AppInfo = { appTokens: selectedTokens };"
+                - listitem [ref=e2199]: "let restrictionType: guardService.RestrictionType = guardService.RestrictionType.BLOCKLIST_TYPE;"
+                - listitem [ref=e2200]: guardService.releaseAppsRestriction(appInfo, restrictionType)
+                - listitem [ref=e2201]: ".then(() => {"
+                - listitem [ref=e2202]: console.info('releaseAppsRestriction invoke success');
+                - listitem [ref=e2203]: "});"
+                - listitem [ref=e2204]: "}"
+        - generic [ref=e2205]:
+          - link "ArkTS API" [ref=e2208] [cursor=pointer]:
+            - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-arkts
+            - img [ref=e2210]
+            - generic [ref=e2212]: ArkTS API
+          - link "AppPicker（应用选择页）" [ref=e2215] [cursor=pointer]:
+            - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-app-picker
+            - generic [ref=e2216]: AppPicker（应用选择页）
+            - img [ref=e2218]
+        - generic [ref=e2220]:
+          - generic [ref=e2221]: 相关推荐
+          - generic [ref=e2222]:
+            - generic [ref=e2223]:
+              - emphasis [ref=e2224]:
+                - generic [ref=e2225]: 文档
+              - link "TimeGuardExtensionContext（屏幕时间守护扩展Context）" [ref=e2227] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-timeguardextensioncontext
+            - generic [ref=e2228]:
+              - emphasis [ref=e2229]:
+                - generic [ref=e2230]: 文档
+              - link "TimeGuardExtensionAbility（屏幕时间守护扩展Ability）" [ref=e2232] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-timeguardextensionability
+            - generic [ref=e2233]:
+              - emphasis [ref=e2234]:
+                - generic [ref=e2235]: 文档
+              - link "屏幕" [ref=e2237] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/atomic-ascf/apis-screen
+            - generic [ref=e2238]:
+              - emphasis [ref=e2239]:
+                - generic [ref=e2240]: 文档
+              - link "如何实现应用的屏幕自动旋转" [ref=e2242] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-faqs/faqs-arkui-374
+            - generic [ref=e2243]:
+              - emphasis [ref=e2244]:
+                - generic [ref=e2245]: 文档
+              - link "aip_retrieval_query.h" [ref=e2247] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/dataaugmentation-aip-retrieval-query
+            - generic [ref=e2248]:
+              - emphasis [ref=e2249]:
+                - generic [ref=e2250]: 文档
+              - link "1001502014 应用未申请scopes或permissions权限的可能原因和解决方法" [ref=e2252] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-faq-2
+            - generic [ref=e2253]:
+              - emphasis [ref=e2254]:
+                - generic [ref=e2255]: 文档
+              - link "serviceNotification（服务通知）" [ref=e2257] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/push-servicenotification
+            - generic [ref=e2258]:
+              - emphasis [ref=e2259]:
+                - generic [ref=e2260]: 文档
+              - link "Screen Time Guard Kit简介" [ref=e2262] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentimeguard-introduction
+            - generic [ref=e2263]:
+              - emphasis [ref=e2264]:
+                - generic [ref=e2265]: 文档
+              - link "AppPicker（应用选择页）" [ref=e2267] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/doc/harmonyos-references/screentimeguard-app-picker
+            - generic [ref=e2268]:
+              - emphasis [ref=e2269]:
+                - generic [ref=e2270]: 示例代码
+              - link "基于屏幕时间守护服务实现应用访问限制功能" [ref=e2272] [cursor=pointer]:
+                - /url: https://gitcode.com/harmonyos_samples/screentimeguard_kit_samplecode_appscontrol_arkts
+        - generic [ref=e2276]:
+          - generic [ref=e2277]: 意见反馈
+          - generic [ref=e2278]:
+            - generic [ref=e2279]:
+              - generic [ref=e2280]: 以上内容对您是否有帮助？
+              - generic [ref=e2281]:
+                - generic [ref=e2282] [cursor=pointer]:
+                  - generic:
+                    - img
+                - generic [ref=e2284] [cursor=pointer]:
+                  - generic:
+                    - img
+            - generic [ref=e2285]: 意见反馈
+          - generic [ref=e2286]:
+            - generic [ref=e2287]: 如果您有其他疑问，您也可以通过开发者社区问答频道来和我们联系探讨。
+            - generic [ref=e2288]:
+              - link "社区提问" [ref=e2289] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/forum/
+              - link "智能客服提问" [ref=e2290] [cursor=pointer]:
+                - /url: https://developer.huawei.com/consumer/cn/customerService/#/bot-dev-top/faq-top/faq-talk-top
+      - generic [ref=e2292]:
+        - generic [ref=e2293]:
+          - generic [ref=e2295] [cursor=pointer]:
+            - generic [ref=e2296]:
+              - textbox [ref=e2298]
+              - generic "简体中文" [ref=e2299]
+            - img [ref=e2301]
+          - list [ref=e2304]:
+            - listitem [ref=e2305]:
+              - img [ref=e2307] [cursor=pointer]
+            - listitem [ref=e2308]:
+              - img [ref=e2310] [cursor=pointer]
+            - listitem [ref=e2311]:
+              - img [ref=e2313] [cursor=pointer]
+            - listitem [ref=e2314]:
+              - img [ref=e2316] [cursor=pointer]
+            - listitem [ref=e2317]:
+              - img [ref=e2319] [cursor=pointer]
+            - listitem [ref=e2320]:
+              - img [ref=e2322] [cursor=pointer]
+        - generic [ref=e2323]:
+          - generic [ref=e2325]: 华为开发者联盟 版权所有 ©2026
+          - generic [ref=e2326]:
+            - link "使用条款" [ref=e2328] [cursor=pointer]:
+              - /url: /consumer/cn/devservice/use
+            - link "华为开发者联盟用户协议" [ref=e2330] [cursor=pointer]:
+              - /url: /consumer/cn/doc/start/useragreement-0000001494912825
+            - link "关于华为开发者联盟与隐私的声明" [ref=e2332] [cursor=pointer]:
+              - /url: /consumer/cn/devservice/term
+            - link "cookies" [ref=e2334] [cursor=pointer]:
+              - /url: https://consumer.huawei.com/cn/legal/cookie-policy/
+            - link "开源软件声明" [ref=e2336] [cursor=pointer]:
+              - /url: /consumer/cn/opensource/
